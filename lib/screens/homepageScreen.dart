@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: appBar(),
+      appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -53,8 +53,12 @@ class HomeScreen extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CategoryChip(label: 'Entertainment', color: Colors.orange),
-                CategoryChip(label: 'Food', color: Colors.grey),
+                CategoryChip(
+                    label: 'Entertainment',
+                    color: const Color.fromARGB(255, 255, 152, 0)),
+                CategoryChip(
+                    label: 'Food',
+                    color: const Color.fromARGB(255, 158, 158, 158)),
                 CategoryChip(label: 'Desert', color: Colors.grey),
                 CategoryChip(label: 'Sea', color: Colors.grey),
               ],
