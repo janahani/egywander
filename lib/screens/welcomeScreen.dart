@@ -1,22 +1,74 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../screens/homepageScreen.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+  late Timer _timer;
+
+  final List<String> _images = [
+    'assets/images/welcomescreen.jpg',
+    'assets/images/welcomescreen1.jpg',
+    'assets/images/welcomescreen2.jpg',
+    'assets/images/welcomescreen3.jpg',
+    'assets/images/welcomescreen4.jpg',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentPage);
+
+    // Set up the auto-scroll timer
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_currentPage < _images.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.slowMiddle,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/welcomescreen.jpg'),
+          // Image slideshow
+          PageView.builder(
+            controller: _pageController,
+            itemCount: _images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return Image.asset(
+                _images[index],
                 fit: BoxFit.cover,
-              ),
-            ),
+              );
+            },
           ),
           // Transparent overlay
           Container(
@@ -48,6 +100,7 @@ class WelcomeScreen extends StatelessWidget {
                   "Let's make",
                   style: TextStyle(
                     color: Colors.white,
+                    fontWeight: FontWeight.w300,
                     fontSize: 36,
                   ),
                 ),
@@ -55,42 +108,11 @@ class WelcomeScreen extends StatelessWidget {
                   "your dream vacation.",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 36,
+                    fontSize: 38,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Colors.orange,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
                 // Centering the "Get Started" button
                 Center(
                   child: Container(
@@ -110,12 +132,11 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                HomeScreen(), 
+                            builder: (context) => HomeScreen(),
                           ),
                         );
                       },
-                     style: ElevatedButton.styleFrom(
+                      style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
                         padding: const EdgeInsets.symmetric(
@@ -130,9 +151,28 @@ class WelcomeScreen extends StatelessWidget {
                         "Get Started",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 21,
+                          fontWeight: FontWeight.normal,
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Page indicators
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    _images.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: _currentPage == index
+                            ? Colors.orange
+                            : Colors.white,
+                        shape: BoxShape.circle,
                       ),
                     ),
                   ),
