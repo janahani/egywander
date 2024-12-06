@@ -20,7 +20,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           backgroundColor: Colors.orange,
-          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back), // Back button icon
+            onPressed: () {
+              Navigator.of(context).pop(); // Pop the current screen off the stack
+            },
+          ),
           title: Text(
             'Reminders',
             textAlign: TextAlign.start,
