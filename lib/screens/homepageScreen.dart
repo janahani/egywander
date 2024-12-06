@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/categorychip.dart';
 import '../widgets/travelcard.dart';
+import 'notificationsScreen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -8,32 +9,39 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: Icon(Icons.menu, color: Colors.black),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.notifications, color: Colors.black),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: CircleAvatar(
-                  radius: 8,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    '2',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: Icon(Icons.menu, color: Colors.black),
+          actions: [
+            Stack(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.notifications, color: Colors.black),
+                  onPressed: () {
+                    // Navigate to NotificationsScreen when the IconButton is pressed
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: Colors.red,
+                    child: const Text(
+                      '2',
+                      style: TextStyle(fontSize: 12, color: Colors.white),
+                    ),
                   ),
                 ),
-              )
-            ],
-          )
-        ],
-      ),
+              ],
+            ),
+          ]),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
@@ -67,8 +75,12 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CategoryChip(label: 'Entertainment', color: Colors.orange),
-                CategoryChip(label: 'Food', color: Colors.grey),
+                CategoryChip(
+                    label: 'Entertainment',
+                    color: const Color.fromARGB(255, 255, 152, 0)),
+                CategoryChip(
+                    label: 'Food',
+                    color: const Color.fromARGB(255, 158, 158, 158)),
                 CategoryChip(label: 'Desert', color: Colors.grey),
                 CategoryChip(label: 'Sea', color: Colors.grey),
               ],
@@ -99,9 +111,7 @@ class HomeScreen extends StatelessWidget {
                 )
               ],
             ),
-            
             SizedBox(height: 20),
-
             Expanded(
               child: ListView(
                 scrollDirection: Axis.horizontal,
