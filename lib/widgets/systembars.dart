@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../screens/notificationsScreen.dart';
 
-AppBar appBar() {
+AppBar appBar(context) {
   return AppBar(
     elevation: 0,
     backgroundColor: Colors.transparent,
@@ -16,7 +17,15 @@ AppBar appBar() {
         children: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {},
+             onPressed: () {
+                    // Navigate to NotificationsScreen when the IconButton is pressed
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
           ),
           const Positioned(
             right: 10,
