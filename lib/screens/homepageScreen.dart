@@ -1,59 +1,45 @@
 import 'package:flutter/material.dart';
 import '../widgets/categorychip.dart';
 import '../widgets/travelcard.dart';
+import '../widgets/systembars.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: Icon(Icons.menu, color: Colors.black),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.notifications, color: Colors.black),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: CircleAvatar(
-                  radius: 8,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    '2',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                  ),
-                ),
-              )
-            ],
-          )
-        ],
-      ),
+      appBar: appBar(),
+      bottomNavigationBar: bottomNavigationBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Schedule your',
-              style: TextStyle(fontSize: 24, color: Colors.black54),
+            const SizedBox(
+              height: 10,
             ),
-            Text(
-              'trip to Egypt!',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Schedule your',
+                  style: TextStyle(fontSize: 24, color: Colors.black54),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'trip to Egypt!',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 hintText: 'Search places',
                 filled: true,
                 fillColor: Colors.white,
@@ -63,8 +49,8 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Row(
+            const SizedBox(height: 20),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CategoryChip(label: 'Entertainment', color: Colors.orange),
@@ -73,11 +59,11 @@ class HomeScreen extends StatelessWidget {
                 CategoryChip(label: 'Sea', color: Colors.grey),
               ],
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Available Places',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -87,6 +73,7 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextButton(
+                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),),
                     onPressed: () {},
                     child: Text(
                       'View All',
@@ -99,23 +86,21 @@ class HomeScreen extends StatelessWidget {
                 )
               ],
             ),
-            
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
             Expanded(
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: [
+                children: const [
                   TravelCard(
-                    image: 'assets/welcomescreen.jpg',
+                    image: 'assets/images/welcomescreen.jpg',
                     title: 'Aswan Temple',
                     location: 'Aswan, Egypt',
                     people: '+15',
                   ),
                   TravelCard(
-                    image: 'assets/welcomescreen.jpg',
-                    title: 'Luxor',
-                    location: 'Luxor, Egypt',
+                    image: 'assets/images/pyramids.jpg',
+                    title: 'Pyramids of Giza',
+                    location: 'Giza, Egypt',
                     people: '+20',
                   ),
                 ],
