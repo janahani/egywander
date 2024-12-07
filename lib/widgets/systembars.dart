@@ -12,7 +12,6 @@ AppBar appBar(context) {
           color: Colors.orange, fontSize: 20, fontWeight: FontWeight.bold),
     ),
     centerTitle: true,
-    leading: const Icon(Icons.menu, color: Colors.black),
     actions: [
       Stack(
         children: [

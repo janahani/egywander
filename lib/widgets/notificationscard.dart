@@ -24,7 +24,7 @@ class ReminderCard extends StatelessWidget {
         width: 393,
         height: 131,
         decoration: BoxDecoration(
-          color: isHighlighted ? Colors.grey : Colors.white, // Highlighted card gets grey background
+          color: isHighlighted ? Color.fromRGBO(255, 165, 80, 1.0): Colors.white, // Highlighted card gets grey background
           boxShadow: [
             BoxShadow(
               blurRadius: 4,

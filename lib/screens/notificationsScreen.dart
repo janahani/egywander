@@ -19,25 +19,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          backgroundColor: Colors.grey[100],
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back), // Back button icon
-            onPressed: () {
-              Navigator.of(context).pop(); // Pop the current screen off the stack
-            },
-          ),
-          title: Text(
-            'Reminders',
-            textAlign: TextAlign.start,
-            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  fontFamily: 'Inter Tight',
-                  letterSpacing: 0.0,
-                ),
-          ),
-          centerTitle: false,
-          elevation: 2,
-        ),
+        appBar: appBar(context),
         bottomNavigationBar: bottomNavigationBar(context),
         body: SafeArea(
           top: true,
