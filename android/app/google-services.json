@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "94969573446",
+    "project_id": "egywanders",
+    "storage_bucket": "egywanders.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94969573446:android:61bb2362cc3ada8e3b9a47",
+        "android_client_info": {
+          "package_name": "com.example.egywander"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-dtf3e62C_qwVC9h0hhd6Vam0vigJVDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

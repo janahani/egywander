@@ -1,4 +1,5 @@
 import 'package:egywander/screens/accountScreen.dart';
+import 'package:egywander/screens/homepageScreen.dart';
 import 'package:egywander/screens/scheduleScreen.dart';
 import 'package:flutter/material.dart';
 import '../screens/notificationsScreen.dart';
@@ -53,7 +54,13 @@ BottomNavigationBar bottomNavigationBar(BuildContext context) {
     unselectedItemColor: const Color.fromARGB(255, 231, 231, 231),
     onTap: (index) {
       // Handling tap for different indexes
-      if (index == 2) { // Account tab index
+      if (index == 0) { // Account tab index
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } 
+      else if (index == 2) { // Account tab index
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ScheduleScreen()),
