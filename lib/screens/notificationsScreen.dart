@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '/widgets/notificationscard.dart'; // Import the ReminderCard widget
+import '/widgets/notificationscard.dart';
+import '../widgets/systembars.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -37,6 +38,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           centerTitle: false,
           elevation: 2,
         ),
+        bottomNavigationBar: bottomNavigationBar(),
         body: SafeArea(
           top: true,
           child: ListView(
