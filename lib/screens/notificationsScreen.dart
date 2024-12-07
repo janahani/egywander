@@ -38,7 +38,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           centerTitle: false,
           elevation: 2,
         ),
-        bottomNavigationBar: bottomNavigationBar(),
+        bottomNavigationBar: bottomNavigationBar(context),
         body: SafeArea(
           top: true,
           child: ListView(
