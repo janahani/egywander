@@ -24,7 +24,7 @@ class ReminderCard extends StatelessWidget {
         width: 393,
         height: 131,
         decoration: BoxDecoration(
-          color: isHighlighted ? Colors.grey : Colors.white, // Highlighted card gets orange background
+          color: isHighlighted ? Colors.grey : Colors.white, // Highlighted card gets grey background
           boxShadow: [
             BoxShadow(
               blurRadius: 4,
@@ -42,17 +42,27 @@ class ReminderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Align(
-                  alignment: AlignmentDirectional(-1, -1),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      date,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontFamily: 'Inter Tight',
-                            letterSpacing: 0.0,
-                          ),
-                    ),
+                // Increased padding from the top
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0), // More padding from the top
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10), // Padding to prevent icon from being stuck
+                        child: Icon(Icons.date_range, color: Colors.black, size: 18), // Black icon for date
+                      ),
+                      SizedBox(width: 6), // Space between icon and date text
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2), // Less vertical padding
+                        child: Text(
+                          date,
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                fontFamily: 'Inter Tight',
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Align(
@@ -68,20 +78,27 @@ class ReminderCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Align(
-                  alignment: AlignmentDirectional(-1, 1),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      time,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontFamily: 'Inter Tight',
-                            color: Colors.red,
-                            letterSpacing: 0.0,
-                            fontStyle: FontStyle.italic,
-                          ),
+                // Row for Time with smaller Icon and padding adjustments
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10), // Padding to prevent icon from being stuck
+                      child: Icon(Icons.access_time, color: Colors.black, size: 18), // Black icon for time
                     ),
-                  ),
+                    SizedBox(width: 6), // Space between icon and time text
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2), // Less vertical padding
+                      child: Text(
+                        time,
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              fontFamily: 'Inter Tight',
+                              color: Colors.red,
+                              letterSpacing: 0.0,
+                              fontStyle: FontStyle.italic,
+                            ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
