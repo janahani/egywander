@@ -1,3 +1,4 @@
+import 'package:egywander/screens/accountsettingsScreen.dart';
 import 'package:egywander/screens/loginScreen.dart';
 import 'package:egywander/widgets/systembars.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,15 @@ class AccountScreen extends StatelessWidget {
               icon: Icons.settings,
               text: "Account Settings",
               onTap: () {
-                // Add functionality here
+                Future.delayed(Duration(milliseconds: 100), () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AccountSettingsScreen(), // Navigate to AboutUsScreen
+                    ),
+                  );
+                });
               },
             ),
             SizedBox(height: 10),
