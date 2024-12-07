@@ -351,34 +351,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         const SizedBox(height: 20),
                         FadeInUp(
-                          duration: const Duration(milliseconds: 2300),
+                          duration: const Duration(milliseconds: 2400),
                           child: ElevatedButton(
                             onPressed: _submitForm,
                             style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all<Color>(
-                                  Color.fromARGB(255, 242, 227, 194)),
-                              padding: MaterialStateProperty.all(
-                                const EdgeInsets.symmetric(
-                                  horizontal: 100,
-                                  vertical: 15,
-                                ),
-                              ),
-                              shape: MaterialStateProperty.all(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 242, 227, 194)),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
                               ),
-                              foregroundColor: MaterialStateProperty.all(
-                                  Colors.orange), // Set text color
+                              elevation: MaterialStateProperty.all(0),
                             ),
-                            child: const Text(
-                              "Register",
-                              style: TextStyle(
-                                fontSize: 18,
-                                // fontWeight: FontWeight.bold,
+                            child: const SizedBox(
+                              height: 50,
+                              child: Center(
+                                child: Text(
+                                  "Register",
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Login Navigation
+                        FadeInUp(
+                          duration: const Duration(milliseconds: 2500),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Already have an account?",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginScreen()),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  overlayColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                ),
+                                child: const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
