@@ -1,4 +1,5 @@
 import 'package:egywander/screens/accountScreen.dart';
+import 'package:egywander/screens/favoritesScreen.dart';
 import 'package:egywander/screens/homepageScreen.dart';
 import 'package:egywander/screens/scheduleScreen.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,12 @@ BottomNavigationBar bottomNavigationBar(BuildContext context) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } 
+      else if (index == 1) { // Account tab index
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FavoritesScreen()),
         );
       } 
       else if (index == 2) { // Account tab index

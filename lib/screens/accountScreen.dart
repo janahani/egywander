@@ -3,7 +3,7 @@ import 'package:egywander/screens/loginScreen.dart';
 import 'package:egywander/widgets/systembars.dart';
 import 'package:flutter/material.dart';
 import '/widgets/accountmenubtns.dart';
-import 'aboutusScreen.dart'; // Import About Us screen
+import 'aboutusScreen.dart';
 
 class AccountScreen extends StatelessWidget {
   @override
@@ -44,21 +44,18 @@ class AccountScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            // Buttons with rounded edges and gray background
+            // Menu Buttons
             buildMenuButton(
               context,
               icon: Icons.person_add,
               text: "Login/Register",
               onTap: () {
-                Future.delayed(Duration(milliseconds: 100), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          LoginScreen(), // Navigate to AboutUsScreen
-                    ),
-                  );
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
+                  ),
+                );
               },
             ),
             SizedBox(height: 10),
@@ -67,15 +64,12 @@ class AccountScreen extends StatelessWidget {
               icon: Icons.settings,
               text: "Account Settings",
               onTap: () {
-                Future.delayed(Duration(milliseconds: 100), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AccountSettingsScreen(), // Navigate to AboutUsScreen
-                    ),
-                  );
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AccountSettingsScreen(),
+                  ),
+                );
               },
             ),
             SizedBox(height: 10),
@@ -84,16 +78,12 @@ class AccountScreen extends StatelessWidget {
               icon: Icons.info,
               text: "About Us",
               onTap: () {
-                // Show the splash effect first and then navigate
-                Future.delayed(Duration(milliseconds: 100), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AboutUsScreen(), // Navigate to AboutUsScreen
-                    ),
-                  );
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AboutUsScreen(),
+                  ),
+                );
               },
             ),
             SizedBox(height: 10),
@@ -102,7 +92,7 @@ class AccountScreen extends StatelessWidget {
               icon: Icons.logout,
               text: "Logout",
               onTap: () {
-                // Add functionality here
+                // Add functionality for logout
               },
             ),
           ],
