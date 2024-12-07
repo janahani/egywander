@@ -252,6 +252,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: const BorderSide(
+                                      color: Colors.orange, width: 2),
+                                ),
                                 filled: true,
                                 fillColor: Colors.white,
                               ),
