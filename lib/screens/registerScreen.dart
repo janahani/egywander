@@ -356,7 +356,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onPressed: _submitForm,
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all(Colors.orange),
+                                  MaterialStateProperty.all<Color>(
+                                  Color.fromARGB(255, 242, 227, 194)),
                               padding: MaterialStateProperty.all(
                                 const EdgeInsets.symmetric(
                                   horizontal: 100,
@@ -368,12 +369,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
+                              foregroundColor: MaterialStateProperty.all(
+                                  Colors.orange), // Set text color
                             ),
                             child: const Text(
                               "Register",
                               style: TextStyle(
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                // fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
