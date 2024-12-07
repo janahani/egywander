@@ -1,3 +1,4 @@
+import 'package:egywander/screens/loginScreen.dart';
 import 'package:egywander/widgets/systembars.dart';
 import 'package:flutter/material.dart';
 import '/widgets/accountmenubtns.dart';
@@ -46,9 +47,17 @@ class AccountScreen extends StatelessWidget {
             buildMenuButton(
               context,
               icon: Icons.person_add,
-              text: "Register",
+              text: "Login/Register",
               onTap: () {
-                // Add functionality here
+                Future.delayed(Duration(milliseconds: 100), () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          LoginScreen(), // Navigate to AboutUsScreen
+                    ),
+                  );
+                });
               },
             ),
             SizedBox(height: 10),
