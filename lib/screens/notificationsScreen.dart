@@ -20,7 +20,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         key: scaffoldKey,
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.grey[100],
           leading: IconButton(
             icon: Icon(Icons.arrow_back), // Back button icon
             onPressed: () {
@@ -43,23 +43,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           top: true,
           child: ListView(
             children: [
-              // ReminderCard for Pyramids with isHighlighted set to true
-              ReminderCard(
-                date: 'Today, 06/12/2024',
-                location: 'Pyramids of Giza',
-                time: '3-5 pm',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTYyMDF8MHwxfHNlYXJjaHw1fHxweXJhbWlkc3xlbnwwfHx8fDE3MzM1MTMxMTJ8MA&ixlib=rb-4.0.3&q=80&w=400',
-                isHighlighted: true, // Highlighted card
+              // Increased padding for ReminderCard
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add more padding
+                child: ReminderCard(
+                  date: 'Today, 06/12/2024',
+                  location: 'Pyramids of Giza',
+                  time: '3-5 pm',
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTYyMDF8MHwxfHNlYXJjaHw1fHxweXJhbWlkc3xlbnwwfHx8fDE3MzM1MTMxMTJ8MA&ixlib=rb-4.0.3&q=80&w=400',
+                  isHighlighted: true, // Highlighted card
+                ),
               ),
-              // ReminderCard for Khan El Khalili without highlight
-              ReminderCard(
-                date: 'Yesterday, 05/12/2024',
-                location: 'Khan El Khalili',
-                time: '5-7 pm',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1729956816147-92d4d2ef48ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTYyMDF8MHwxfHNlYXJjaHwzfHxraGFuJTIwZWwlMjBraGFsaWxpfGVufDB8fHx8MTczMzUxNDQ1NXww&ixlib=rb-4.0.3&q=80&w=1080',
-                isHighlighted: false, // Default (not highlighted)
+              SizedBox(height: 10), // Space between cards
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add more padding
+                child: ReminderCard(
+                  date: 'Yesterday, 05/12/2024',
+                  location: 'Khan El Khalili',
+                  time: '5-7 pm',
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1729956816147-92d4d2ef48ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTYyMDF8MHwxfHNlYXJjaHwzfHxraGFuJTIwZWwlMjBraGFsaWxpfGVufDB8fHx8MTczMzUxNDQ1NXww&ixlib=rb-4.0.3&q=80&w=1080',
+                  isHighlighted: false, // Default (not highlighted)
+                ),
               ),
             ],
           ),
