@@ -61,8 +61,8 @@ BottomNavigationBar bottomNavigationBar() {
         label: 'Favorites',
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.search),
-        label: 'Search',
+        icon: Icon(Icons.event),
+        label: 'Schedule',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.account_box),
