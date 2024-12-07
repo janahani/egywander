@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/systembars.dart';
 
 
 class ActivityScreen extends StatelessWidget {
@@ -13,6 +14,8 @@ class ActivityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBar(context),
+      bottomNavigationBar: bottomNavigationBar(context),
       backgroundColor: Colors.grey[100],
       body: Container(
         width: double.infinity,
