@@ -20,18 +20,90 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final List<String> genders = ["Male", "Female"];
   final List<String> cuisines = ["Egyptian", "Italian", "Chinese", "Other"];
 
+  // Email Validation
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  // Name Validation (only letters)
+  String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Name is required';
+    }
+    if (!RegExp(r"^[a-zA-Z]+$").hasMatch(value)) {
+      return 'Name must contain only letters';
+    }
+    return null;
+  }
+
+  // Age Validation (2 digits only)
+  String? validateAge(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Age is required';
+    }
+    if (!RegExp(r"^\d{1,2}$").hasMatch(value)) {
+      return 'Age must be a valid number with at most 2 digits';
+    }
+    return null;
+  }
+
+  // Password Validation (at least 8 characters)
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    return null;
+  }
+
+  // Confirm Password Validation (must match Password)
+  String? validateConfirmPassword(String? value, String? password) {
+    if (value == null || value.isEmpty) {
+      return 'Confirm password is required';
+    }
+    if (value != password) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
+  // Restaurant Phone Number Validation
+  String? validateRestaurantPhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    // Regex for 5-digit hotline or 11-digit mobile number starting with 0
+    if (!RegExp(r"^\d{5}$").hasMatch(value) &&
+        !RegExp(r"^0\d{10}$").hasMatch(value)) {
+      return 'Phone number must be either a 5-digit hotline or an 11-digit number starting with 0';
+    }
+    return null;
+  }
+
+  String? validateRequired(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return '$fieldName is required';
+    }
+    return null;
+  }
+
   Widget _buildTextField(String labelText,
       {bool obscureText = false,
-      TextInputType keyboardType = TextInputType.text}) {
+      TextInputType keyboardType = TextInputType.text,
+      String? Function(String?)? validator}) {
     return TextFormField(
       obscureText: obscureText,
       keyboardType: keyboardType,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$labelText is required';
-        }
-        return null;
-      },
+      validator: (value) =>
+          validateRequired(value, labelText), // Pass field name here
       decoration: InputDecoration(
         labelText: labelText,
         border: OutlineInputBorder(
@@ -47,9 +119,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  String? password;
+
   // form submission
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {}
+    if (_formKey.currentState!.validate()) {
+      // Form is valid, proceed with submission
+    }
   }
 
   @override
@@ -160,22 +236,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1200),
-                          child: _buildTextField("First Name"),
+                          child: _buildTextField("First Name",
+                              validator: validateName),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1300),
-                          child: _buildTextField("Last Name"),
+                          child: _buildTextField("Last Name",
+                              validator: validateName),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1400),
-                          child: _buildTextField("Email"),
+                          child: _buildTextField("Email",
+                              validator: validateEmail),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1500),
-                          child: _buildTextField("Age"),
+                          child: _buildTextField("Age",
+                              validator: validateAge,
+                              keyboardType: TextInputType.number),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
@@ -211,13 +292,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1800),
-                          child: _buildTextField("Password", obscureText: true),
+                          child: _buildTextField("Password",
+                              obscureText: true, validator: validatePassword),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1900),
                           child: _buildTextField("Confirm Password",
-                              obscureText: true),
+                              obscureText: true,
+                              validator: (value) =>
+                                  validateConfirmPassword(value, password)),
                         ),
                         const SizedBox(height: 20),
                         // Additional Fields for Owner
@@ -252,11 +336,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: const BorderSide(
-                                      color: Colors.orange, width: 2),
-                                ),
                                 filled: true,
                                 fillColor: Colors.white,
                               ),
@@ -265,75 +344,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 20),
                           FadeInUp(
                             duration: const Duration(milliseconds: 2300),
-                            child: _buildTextField("Restaurant Phone Number"),
+                            child: _buildTextField("Restaurant Phone Number",
+                                validator: validateRestaurantPhoneNumber),
                           ),
-                          const SizedBox(height: 20),
                         ],
-                        // Register Button
+
+                        const SizedBox(height: 20),
                         FadeInUp(
-                          duration: const Duration(milliseconds: 2400),
+                          duration: const Duration(milliseconds: 2300),
                           child: ElevatedButton(
                             onPressed: _submitForm,
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  const Color.fromARGB(255, 242, 227, 194)),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.orange),
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                  horizontal: 100,
+                                  vertical: 15,
+                                ),
+                              ),
+                              shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                              ),
-                              elevation: MaterialStateProperty.all(0),
-                            ),
-                            child: const SizedBox(
-                              height: 50,
-                              child: Center(
-                                child: Text(
-                                  "Register",
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Login Navigation
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 2500),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                "Already have an account?",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
+                            child: const Text(
+                              "Register",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginScreen()),
-                                  );
-                                },
-                                style: ButtonStyle(
-                                  overlayColor: MaterialStateProperty.all(
-                                      Colors.transparent),
-                                ),
-                                child: const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
