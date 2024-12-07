@@ -1,95 +1,124 @@
+import 'package:egywander/widgets/systembars.dart';
 import 'package:flutter/material.dart';
-import '../widgets/systembars.dart';
 
 class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Text("Welcome to EgyWanders"),
-        centerTitle: false,
+        backgroundColor: Colors.grey[100],
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       bottomNavigationBar: bottomNavigationBar(context),
       body: Container(
-        color: Colors.grey[200],
+        color: Colors.grey[100],
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Row with CircleAvatar and Hello, Jana Hani text
+            // CircleAvatar with Name and Email
+            CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.orange,
+              child: Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Jana Hani",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              "janahani.nbis@gmail.com",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[700],
+              ),
+            ),
+            SizedBox(height: 20),
+            // Buttons with rounded edges and gray background
+            _buildMenuButton(
+              context,
+              icon: Icons.person_add,
+              text: "Register",
+              onTap: () {
+                // Add functionality here
+              },
+            ),
+            SizedBox(height: 10),
+            _buildMenuButton(
+              context,
+              icon: Icons.settings,
+              text: "Account Settings",
+              onTap: () {
+                // Add functionality here
+              },
+            ),
+            SizedBox(height: 10),
+            _buildMenuButton(
+              context,
+              icon: Icons.info,
+              text: "About Us",
+              onTap: () {
+                // Add functionality here
+              },
+            ),
+            SizedBox(height: 10),
+            _buildMenuButton(
+              context,
+              icon: Icons.logout,
+              text: "Logout",
+              onTap: () {
+                // Add functionality here
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper function to build buttons
+  Widget _buildMenuButton(BuildContext context,
+      {required IconData icon, required String text, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.grey[300], // Light gray background
+          borderRadius: BorderRadius.circular(12), // Rounded edges
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.black,
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
+                Icon(icon, color: Colors.black),
                 SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hello, Jana Hani",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    SizedBox(height: 5), // Space between Hello and Egypt
-                    Text(
-                      "Egypt",
-                      style: TextStyle(
-                        fontSize: 14, // Smaller font size
-                        color: Colors.black, // Black color for Egypt
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ],
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 20), // Adds spacing between the top section and list items
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.person_add),
-              title: Text("Register"),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                // Add navigation or functionality here
-              },
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Account Settings"),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                // Add navigation or functionality here
-              },
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text("About Us"),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                // Add navigation or functionality here
-              },
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                // Add navigation or functionality here
-              },
-            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.black),
           ],
         ),
       ),
