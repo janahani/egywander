@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:egywander/widgets/activityWidgets.dart'; // Import the updated widgets
 import '../widgets/systembars.dart';
+import './addActivityScreen.dart'; // Import the AddActivityScreen
 
 class ActivityScreen extends StatelessWidget {
   final String imageUrl;
@@ -16,6 +17,23 @@ class ActivityScreen extends StatelessWidget {
     required this.price,
     required this.rating,
   });
+
+  void _openAddActivityDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AddActivityScreen(activityTitle: title);
+    },
+  ).then((result) {
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Activity added: ${result['title']}")),
+      );
+    }
+  });
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +68,7 @@ class ActivityScreen extends StatelessWidget {
                   DescriptionSection(),
                   SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => _openAddActivityDialog(context), // Open the AddActivity pop-up
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                           Color.fromARGB(255, 242, 227, 194)),
