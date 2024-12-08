@@ -5,7 +5,7 @@ enum Gender { male, female }
 enum UserType { admin, owner, wanderer }
 
 class User {
-  final String id; // Unique identifier for the user
+  final String id;
   final String firstname;
   final String lastname;
   final String email;
@@ -56,5 +56,13 @@ class User {
       password: map['password'],
       usertype: UserType.values.firstWhere((e) => e.toString().split('.').last == map['usertype']),
     );
+  }
+
+  // String representation of the User object
+  @override
+  String toString() {
+    return 'User(id: $id, firstname: $firstname, lastname: $lastname, email: $email, '
+           'age: $age, gender: ${gender.toString().split('.').last}, '
+           'username: $username, usertype: ${usertype.toString().split('.').last})';
   }
 }
