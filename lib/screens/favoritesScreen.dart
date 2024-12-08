@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '/widgets/favoritescard.dart';
 import '../widgets/systembars.dart';
+import 'activityScreen.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({Key? key}) : super(key: key);
@@ -43,6 +44,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
+  void _navigateToActivityScreen(Map<String, dynamic> favorite) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ActivityScreen(
+          imageUrl: favorite['imageUrl']!,
+          title: favorite['name']!,
+          location: favorite['location']!,
+          price: '\$1200',
+          rating: favorite['rating']!,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -61,12 +77,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               final favorite = favorites[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: FavoritesCard(
-                  name: favorite['name']!,
-                  location: favorite['location']!,
-                  rating: favorite['rating']!,
-                  imageUrl: favorite['imageUrl']!,
-                  Remove: () => removeFromFavorites(index),
+                child: GestureDetector(
+                  onTap: () => _navigateToActivityScreen(favorite),
+                  child: FavoritesCard(
+                    name: favorite['name']!,
+                    location: favorite['location']!,
+                    rating: favorite['rating']!,
+                    imageUrl: favorite['imageUrl']!,
+                    Remove: () => removeFromFavorites(index),
+                  ),
                 ),
               );
             },
