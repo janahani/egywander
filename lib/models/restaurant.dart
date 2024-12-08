@@ -8,13 +8,16 @@ class Restaurant {
   final String contactNumber; 
   final String address;
   final CuisineType cuisineType;
+  final bool isFavorite; // New field to track if the restaurant is a favorite
 
+  // Constructor
   Restaurant({
     required this.ownerId,
     required this.name,
     required this.contactNumber,
     required this.address,
     required this.cuisineType,
+    this.isFavorite = false, // Default to false if not provided
   });
 
   // Method to convert CuisineType to string
@@ -29,10 +32,11 @@ class Restaurant {
            'Owner ID: $ownerId\n'
            'Contact: $contactNumber\n'
            'Address: $address\n'
-           'Cuisine Type: ${cuisineTypeAsString}';
+           'Cuisine Type: ${cuisineTypeAsString}\n'
+           'Favorite: $isFavorite'; // Include isFavorite in toString
   }
 
-    // Convert Restaurant object to Map<String, dynamic>
+  // Convert Restaurant object to Map<String, dynamic> (for saving in Firebase)
   Map<String, dynamic> toMap() {
     return {
       'ownerId': ownerId,
@@ -40,10 +44,11 @@ class Restaurant {
       'contactNumber': contactNumber,
       'address': address,
       'cuisineType': cuisineType.toString().split('.').last, // Store as a string
+      'isFavorite': isFavorite, // Add isFavorite to the map
     };
   }
 
-  // Create a Restaurant object from Map<String, dynamic>
+  // Create a Restaurant object from Map<String, dynamic> (when fetching from Firebase)
   factory Restaurant.fromMap(Map<String, dynamic> map) {
     return Restaurant(
       ownerId: map['ownerId'] ?? '',
@@ -52,8 +57,10 @@ class Restaurant {
       address: map['address'] ?? '',
       cuisineType: CuisineType.values.firstWhere(
         (type) => type.toString().split('.').last == map['cuisineType'],
-        orElse: () => CuisineType.Other, // Default value
+        orElse: () => CuisineType.Other, // Default value if not found
       ),
+      isFavorite: map['isFavorite'] ?? false, // Default to false if not found
     );
   }
 }
+
