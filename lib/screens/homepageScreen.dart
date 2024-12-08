@@ -100,12 +100,14 @@ class HomeScreen extends StatelessWidget {
                     title: 'Aswan Temple',
                     location: 'Aswan, Egypt',
                     people: '+15',
+                    rating: 5
                   ),
                   TravelCard(
                     image: 'assets/images/pyramids.jpg',
                     title: 'Pyramids of Giza',
                     location: 'Giza, Egypt',
                     people: '+20',
+                    rating: 4
                   ),
                 ],
               ),
