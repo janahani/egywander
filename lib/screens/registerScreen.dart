@@ -3,6 +3,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'loginScreen.dart';
 import '../widgets/systembars.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -138,9 +140,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? password;
 
-  Future<void> _registerUser() async {
+String _hashPassword(String password) {
+  final bytes = utf8.encode(password); // Convert password to bytes
+  final hashed = sha256.convert(bytes); // Generate SHA-256 hash
+  return hashed.toString(); // Return the hash as a string
+}
+
+
+Future<void> _registerUser() async {
   if (_formKey.currentState!.validate()) {
-    // Form is valid, proceed with submission
+
+    final hashedPassword = _hashPassword(passwordController.text);
+
     final userData = {
       'firstname': firstNameController.text,
       'lastname': lastNameController.text,
@@ -148,22 +159,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'age': ageController.text,
       'gender': selectedGender,
       'username': usernameController.text,
-      'password': passwordController.text,
+      'password': hashedPassword,
       'usertype': isOwner ? "Owner" : "Wanderer",
       if (isOwner) ...{
         'restaurantName': restaurantNameController.text,
-        'restaurantAddress': restaurantLocationController.text,
+        'restaurantLocation': restaurantLocationController.text,
         'cuisineType': selectedCuisine,
         'restaurantPhoneNumber': restaurantPhoneController.text,
       }
     };
 
-    print('User Data: $userData');  // Debugging output
+    print('User Data: $userData');
 
     try {
       // Attempt to add the user data to Firestore
       await FirebaseFirestore.instance.collection('users').add(userData);
-      
+
       // Navigate to Login screen after successful registration
       Navigator.pushReplacement(
         context,
@@ -178,6 +189,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 }
+
+
 
 
   @override
