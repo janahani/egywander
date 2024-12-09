@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:egywander/widgets/activityWidgets.dart'; // Import the updated widgets
 import '../widgets/systembars.dart';
 import './addActivityScreen.dart'; // Import the AddActivityScreen
+import '../widgets/customBtn.dart'; // Import the CustomButton widget
 
 class ActivityScreen extends StatelessWidget {
   final String imageUrl;
@@ -19,21 +20,19 @@ class ActivityScreen extends StatelessWidget {
   });
 
   void _openAddActivityDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AddActivityScreen(activityTitle: title);
-    },
-  ).then((result) {
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Activity added: ${result['title']}")),
-      );
-    }
-  });
-}
-
-
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddActivityScreen(activityTitle: title);
+      },
+    ).then((result) {
+      if (result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Activity added: ${result['title']}")),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,31 +63,17 @@ class ActivityScreen extends StatelessWidget {
                   PriceAndRatingSection(price: price, rating: rating),
                   SizedBox(height: 16),
                   _InfoTilesRow(),
-                  SizedBox(height: 16),
+                  SizedBox(height: 25),
                   DescriptionSection(),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => _openAddActivityDialog(context), // Open the AddActivity pop-up
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Color.fromARGB(255, 242, 227, 194)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                      ),
-                      elevation: MaterialStateProperty.all(0),
-                    ),
-                    child: const SizedBox(
-                      height: 50,
-                      child: Center(
-                        child: Text(
-                          "Add Activity",
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  SizedBox(height: 30),
+                  Center(
+                    child: Container(
+                      width: 180, // Adjust the width as needed
+                      child: CustomButton(
+                        text: "Reserve Now",
+                        onPressed: () {
+                          _openAddActivityDialog(context);
+                        },
                       ),
                     ),
                   ),

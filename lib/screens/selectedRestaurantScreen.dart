@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/reservationPage.dart';
-import '../widgets/customBtn.dart'; // Make sure this import is correct
+import '../widgets/customBtn.dart'; 
 import 'package:egywander/widgets/systembars.dart';
 
 class RestaurantDetailsPage extends StatelessWidget {
@@ -158,16 +158,16 @@ class RestaurantDetailsPage extends StatelessWidget {
                           style: TextStyle(color: Colors.grey, fontSize: 16)),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
 
                   // Reserve Button using CustomButton
                   Center(
                     child: Container(
-                      width: 200, // Adjust the width as needed
+                      width: 180, // Adjust the width as needed
                       child: CustomButton(
                         text: "Reserve Now",
+                        
                         onPressed: () {
-                          // Navigate to the reservation page or other desired action
                           Navigator.push(
                             context,
                             MaterialPageRoute(

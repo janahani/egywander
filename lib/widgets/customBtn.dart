@@ -16,19 +16,20 @@ class CustomButton extends StatelessWidget {
               Color.fromARGB(255, 242, 227, 194)),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
           elevation: WidgetStateProperty.all(0),
         ),
         child: SizedBox(
-          height: 50,
+          height: 40,
           child: Center(
             child: Text(
               text, // Display the text passed to the widget
               style: TextStyle(
                 color: Colors.orange,
                 fontWeight: FontWeight.bold,
+                fontSize: 18, // Set the font size
               ),
             ),
           ),
