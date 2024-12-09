@@ -3,6 +3,8 @@ import 'screens/welcomeScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'screens/reservationPage.dart';
+import 'screens/selectedRestaurantScreen.dart';
+
 
 
 Future<void> main() async {
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ReservationPage(),
+      home: RestaurantDetailsPage(),
     );
   }
 }
