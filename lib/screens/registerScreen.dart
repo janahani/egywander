@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'loginScreen.dart';
 import '../widgets/systembars.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -14,6 +17,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isOwner = false;
   String? selectedGender;
   String? selectedCuisine;
+
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final TextEditingController restaurantNameController =
+      TextEditingController();
+  final TextEditingController restaurantLocationController =
+      TextEditingController();
+  final TextEditingController restaurantPhoneController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -95,11 +113,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  Widget _buildTextField(String labelText,
+  Widget _buildTextField(String labelText, TextEditingController controller,
       {bool obscureText = false,
       TextInputType keyboardType = TextInputType.text,
       String? Function(String?)? validator}) {
     return TextFormField(
+      controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: (value) =>
@@ -121,12 +140,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? password;
 
-  // form submission
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // Form is valid, proceed with submission
+String _hashPassword(String password) {
+  final bytes = utf8.encode(password); // Convert password to bytes
+  final hashed = sha256.convert(bytes); // Generate SHA-256 hash
+  return hashed.toString(); // Return the hash as a string
+}
+
+
+Future<void> _registerUser() async {
+  if (_formKey.currentState!.validate()) {
+
+    final hashedPassword = _hashPassword(passwordController.text);
+
+    final userData = {
+      'firstname': firstNameController.text,
+      'lastname': lastNameController.text,
+      'email': emailController.text,
+      'age': ageController.text,
+      'gender': selectedGender,
+      'username': usernameController.text,
+      'password': hashedPassword,
+      'usertype': isOwner ? "Owner" : "Wanderer",
+      if (isOwner) ...{
+        'restaurantName': restaurantNameController.text,
+        'restaurantLocation': restaurantLocationController.text,
+        'cuisineType': selectedCuisine,
+        'restaurantPhoneNumber': restaurantPhoneController.text,
+      }
+    };
+
+    print('User Data: $userData');
+
+    try {
+      // Attempt to add the user data to Firestore
+      await FirebaseFirestore.instance.collection('users').add(userData);
+
+      // Navigate to Login screen after successful registration
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } catch (e) {
+      // Handle the error
+      print('Error: $e'); // Debugging error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration failed: $e')),
+      );
     }
   }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -236,25 +301,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1200),
-                          child: _buildTextField("First Name",
+                          child: _buildTextField(
+                              "First Name", firstNameController,
                               validator: validateName),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1300),
-                          child: _buildTextField("Last Name",
+                          child: _buildTextField(
+                              "Last Name", lastNameController,
                               validator: validateName),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1400),
-                          child: _buildTextField("Email",
+                          child: _buildTextField("Email", emailController,
                               validator: validateEmail),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1500),
-                          child: _buildTextField("Age",
+                          child: _buildTextField("Age", ageController,
                               validator: validateAge,
                               keyboardType: TextInputType.number),
                         ),
@@ -282,23 +349,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
+                             validator: (value) {
+                               if (value == null || value.isEmpty) {
+                                 return 'Please select your gender';
+                               }
+                               return null;
+                             },
                           ),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1700),
-                          child: _buildTextField("Username"),
+                          child:
+                              _buildTextField("Username", usernameController),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1800),
-                          child: _buildTextField("Password",
+                          child: _buildTextField("Password", passwordController,
                               obscureText: true, validator: validatePassword),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1900),
-                          child: _buildTextField("Confirm Password",
+                          child: _buildTextField(
+                              "Confirm Password", confirmPasswordController,
                               obscureText: true,
                               validator: (value) =>
                                   validateConfirmPassword(value, password)),
@@ -308,12 +383,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (isOwner) ...[
                           FadeInUp(
                             duration: const Duration(milliseconds: 2000),
-                            child: _buildTextField("Restaurant Name"),
+                            child: _buildTextField(
+                              "Restaurant Name",
+                              restaurantNameController,
+                            ),
                           ),
                           const SizedBox(height: 20),
                           FadeInUp(
                             duration: const Duration(milliseconds: 2100),
-                            child: _buildTextField("Restaurant Address"),
+                            child: _buildTextField(
+                              "Restaurant Location",
+                              restaurantLocationController,
+                            ),
                           ),
                           const SizedBox(height: 20),
                           FadeInUp(
@@ -339,12 +420,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 filled: true,
                                 fillColor: Colors.white,
                               ),
+                               validator: (value) {
+                               if (value == null || value.isEmpty) {
+                                 return 'Please select a cuisine type';
+                               }
+                               return null;
+                             },
                             ),
                           ),
                           const SizedBox(height: 20),
                           FadeInUp(
                             duration: const Duration(milliseconds: 2300),
                             child: _buildTextField("Restaurant Phone Number",
+                                restaurantPhoneController,
                                 validator: validateRestaurantPhoneNumber),
                           ),
                         ],
@@ -353,7 +441,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         FadeInUp(
                           duration: const Duration(milliseconds: 2400),
                           child: ElevatedButton(
-                            onPressed: _submitForm,
+                            onPressed: _registerUser,
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   const Color.fromARGB(255, 242, 227, 194)),
