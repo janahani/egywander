@@ -6,9 +6,15 @@ class RestaurantDetailsPage extends StatelessWidget {
   final String location = "Maadi, Cairo";
   final double rating = 4.8;
   final String cuisineType = "Italian, International";
-  final List<String> features = ["Wi-Fi", "AC", "Parking", "Outdoor Seating", "Live Music"];
-  final String imagePath = "assets/images/sizzlereg.jpeg"; 
-  final String desc = "";
+  final List<String> features = [
+    "Wi-Fi",
+    "AC",
+    "Parking",
+    "Outdoor Seating",
+    "Live Music"
+  ];
+  final String imagePath = "assets/images/sizzlereg.jpeg";
+  final String workingHours = "10:00 AM - 11:00 PM";
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +86,8 @@ class RestaurantDetailsPage extends StatelessWidget {
                     children: [
                       const Icon(Icons.location_on, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text(location, style: const TextStyle(color: Colors.grey)),
+                      Text(location,
+                          style: const TextStyle(color: Colors.grey)),
                       const Spacer(),
                       const Icon(Icons.star, color: Colors.orange),
                       const SizedBox(width: 4),
@@ -93,8 +100,19 @@ class RestaurantDetailsPage extends StatelessWidget {
                   // Cuisine Type
                   Text(
                     "Cuisine: $cuisineType",
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w500),
                   ),
+                  const SizedBox(height: 16),
+
+                  Icon(Icons.access_time, color: Colors.grey, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    "$workingHours",
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+
                   const SizedBox(height: 16),
 
                   // Features
@@ -109,7 +127,8 @@ class RestaurantDetailsPage extends StatelessWidget {
                     children: features.map((feature) {
                       return Chip(
                         label: Text(feature),
-                        backgroundColor: const Color.fromARGB(255, 253, 177, 63).withOpacity(0.2),
+                        backgroundColor: const Color.fromARGB(255, 253, 177, 63)
+                            .withOpacity(0.2),
                       );
                     }).toList(),
                   ),
@@ -142,8 +161,8 @@ class RestaurantDetailsPage extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
