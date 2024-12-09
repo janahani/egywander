@@ -29,9 +29,9 @@ class _ReservationPageState extends State<ReservationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Reservation"),
-        backgroundColor: const Color.fromARGB(255, 253, 177, 63), 
+        backgroundColor: const Color.fromARGB(255, 253, 177, 63), // Gradient theme matching
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Allow scrolling
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,10 +185,7 @@ class _ReservationPageState extends State<ReservationPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle reservation logic here
-                  if (selectedDate != null &&
-                      selectedTimeSlot != null &&
-                      selectedTable != null) {
+                  if (selectedDate != null && selectedTimeSlot != null && selectedTable != null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -201,9 +198,7 @@ class _ReservationPageState extends State<ReservationPage> {
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Please complete all fields."),
-                      ),
+                      const SnackBar(content: Text("Please complete all fields.")),
                     );
                   }
                 },
