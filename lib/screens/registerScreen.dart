@@ -153,19 +153,19 @@ Future<void> _registerUser() async {
     final hashedPassword = _hashPassword(passwordController.text);
 
     final userData = {
-      'firstname': firstNameController.text,
-      'lastname': lastNameController.text,
-      'email': emailController.text,
-      'age': ageController.text,
+      'firstname': firstNameController.text.trim(),
+      'lastname': lastNameController.text.trim(),
+      'email': emailController.text.trim().toLowerCase(),
+      'age': ageController.text.trim(),
       'gender': selectedGender,
-      'username': usernameController.text,
+      'username': usernameController.text.trim(),
       'password': hashedPassword,
       'usertype': isOwner ? "Owner" : "Wanderer",
       if (isOwner) ...{
-        'restaurantName': restaurantNameController.text,
-        'restaurantLocation': restaurantLocationController.text,
+        'restaurantName': restaurantNameController.text.trim(),
+        'restaurantLocation': restaurantLocationController.text.trim(),
         'cuisineType': selectedCuisine,
-        'restaurantPhoneNumber': restaurantPhoneController.text,
+        'restaurantPhoneNumber': restaurantPhoneController.text.trim(),
       }
     };
 
