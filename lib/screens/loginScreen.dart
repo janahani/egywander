@@ -1,3 +1,4 @@
+import 'package:egywander/screens/accountScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
@@ -67,14 +68,19 @@ class _LoginScreenState extends State<LoginScreen> {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         final userDoc = snapshot.docs.first;
         userProvider.login(
-          userDoc['firstname'],
-          userDoc['lastname'],
-          userDoc['email'],
-          userDoc['age'],
-          userDoc['gender'],
-          userDoc['username'],
-          userDoc['password'],
-          userDoc['usertype']
+            userDoc['firstname'],
+            userDoc['lastname'],
+            userDoc['email'],
+            userDoc['age'],
+            userDoc['gender'],
+            userDoc['username'],
+            userDoc['password'],
+            userDoc['usertype']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AccountScreen(),
+          ),
         );
       } else {
         _showMessage("Invalid username/email or password.", Colors.red);
