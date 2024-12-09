@@ -6,7 +6,7 @@ class Restaurant {
   final String ownerId; 
   final String name; 
   final String contactNumber; 
-  final String address;
+  final String location;
   final CuisineType cuisineType;
   final bool isFavorite; // New field to track if the restaurant is a favorite
 
@@ -15,7 +15,7 @@ class Restaurant {
     required this.ownerId,
     required this.name,
     required this.contactNumber,
-    required this.address,
+    required this.location,
     required this.cuisineType,
     this.isFavorite = false, // Default to false if not provided
   });
@@ -31,7 +31,7 @@ class Restaurant {
     return 'Restaurant Name: $name\n'
            'Owner ID: $ownerId\n'
            'Contact: $contactNumber\n'
-           'Address: $address\n'
+           'Address: $location\n'
            'Cuisine Type: ${cuisineTypeAsString}\n'
            'Favorite: $isFavorite'; // Include isFavorite in toString
   }
@@ -42,7 +42,7 @@ class Restaurant {
       'ownerId': ownerId,
       'name': name,
       'contactNumber': contactNumber,
-      'address': address,
+      'address': location,
       'cuisineType': cuisineType.toString().split('.').last, // Store as a string
       'isFavorite': isFavorite, // Add isFavorite to the map
     };
@@ -54,7 +54,7 @@ class Restaurant {
       ownerId: map['ownerId'] ?? '',
       name: map['name'] ?? '',
       contactNumber: map['contactNumber'] ?? '',
-      address: map['address'] ?? '',
+      location: map['location'] ?? '',
       cuisineType: CuisineType.values.firstWhere(
         (type) => type.toString().split('.').last == map['cuisineType'],
         orElse: () => CuisineType.Other, // Default value if not found
