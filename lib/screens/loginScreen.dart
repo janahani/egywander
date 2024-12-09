@@ -5,6 +5,8 @@ import 'package:animate_do/animate_do.dart';
 import 'dart:convert';
 import 'registerScreen.dart';
 import '../widgets/systembars.dart';
+import 'package:provider/provider.dart';
+import 'package:egywander/providers/userProvider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,7 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (loginInput.contains('@')) {
         snapshot = await FirebaseFirestore.instance
             .collection('users')
-            .where('email', isEqualTo: loginInput.toLowerCase()) // Case-insensitive email
+            .where('email',
+                isEqualTo: loginInput.toLowerCase()) // Case-insensitive email
             .where('password', isEqualTo: enteredPasswordHash)
             .get();
       } else {
@@ -61,6 +64,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (snapshot.docs.isNotEmpty) {
         _showMessage("Login Successful!", Colors.green);
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final userDoc = snapshot.docs.first;
+        userProvider.login(
+          userDoc['firstname'],
+          userDoc['lastname'],
+          userDoc['email'],
+        );
       } else {
         _showMessage("Invalid username/email or password.", Colors.red);
       }
