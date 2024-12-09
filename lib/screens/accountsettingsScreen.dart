@@ -31,10 +31,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   final List<String> genders = ["Male", "Female"];
   final List<String> cuisines = ["Egyptian", "Italian", "Chinese", "Other"];
 
-  // General required field validation
-  String? validateRequired(String? value) {
+// General required field validation with field name
+  String? validateRequired(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return 'This field is required';
+      return '$fieldName is required';
     }
     return null;
   }
@@ -214,19 +214,26 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 2000),
-                          child: _buildTextField("Restaurant Name",
-                              initialValue: restaurantName,
-                              onChanged: (value) => restaurantName = value,
-                              validator: validateRequired),
+                          child: _buildTextField(
+                            "Restaurant Name",
+                            initialValue: restaurantName,
+                            onChanged: (value) => restaurantName = value,
+                            validator: (value) =>
+                                validateRequired(value, "Restaurant Name"),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 2100),
-                          child: _buildTextField("Restaurant Address",
-                              initialValue: restaurantAddress,
-                              onChanged: (value) => restaurantAddress = value,
-                              validator: validateRequired),
+                          child: _buildTextField(
+                            "Restaurant Address",
+                            initialValue: restaurantAddress,
+                            onChanged: (value) => restaurantAddress = value,
+                            validator: (value) =>
+                                validateRequired(value, "Restaurant Address"),
+                          ),
                         ),
+
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 2200),
@@ -251,8 +258,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
+                            validator: (value) =>
+                                validateRequired(value, "Cuisine Type"),
                           ),
                         ),
+
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 2300),
