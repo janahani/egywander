@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
           userDoc['gender'],
           userDoc['username'],
           userDoc['password'],
-          userDoc['userType']
+          userDoc['usertype']
         );
       } else {
         _showMessage("Invalid username/email or password.", Colors.red);
