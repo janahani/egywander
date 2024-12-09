@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import '../widgets/systembars.dart';
-import 'editplanScreen.dart'; // Importimport 'package:flutter/material.dart';
-
+import 'editplanScreen.dart'; // Import if you need to use it in this screen
+import '../widgets/customBtn.dart';
 class ReservationPage extends StatefulWidget {
   const ReservationPage({Key? key}) : super(key: key);
 
@@ -198,41 +198,32 @@ class _ReservationPageState extends State<ReservationPage> {
             ),
             const SizedBox(height: 30),
 
-            // Confirm Button
             Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  if (selectedDate != null &&
-                      selectedTimeSlot != null &&
-                      selectedTable != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Reservation confirmed for $numberOfPeople people on "
-                          "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} "
-                          "at $selectedTimeSlot, ${isIndoorSeating ? "Indoor" : "Outdoor"}, "
-                          "Table: $selectedTable.",
+              child: Container(
+                width: 200,
+                child: CustomButton(
+                  text: "Confirm Reservation",
+                  onPressed: () {
+                    if (selectedDate != null &&
+                        selectedTimeSlot != null &&
+                        selectedTable != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Reservation confirmed for $numberOfPeople people on "
+                            "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} "
+                            "at $selectedTimeSlot, ${isIndoorSeating ? "Indoor" : "Outdoor"}, "
+                            "Table: $selectedTable.",
+                          ),
                         ),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Please complete all fields.")),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  backgroundColor: const Color.fromARGB(255, 34, 34, 34),
-                ),
-                child: const Text(
-                  "Confirm Reservation",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Please complete all fields.")),
+                      );
+                    }
+                  },
                 ),
               ),
             ),
