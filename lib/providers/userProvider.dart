@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-enum Gender { male, female }
-enum UserType { admin, owner, wanderer }
+
 
 class UserProvider extends ChangeNotifier {
   String? firstName;
   String? lastName;
   String? email;
-  int? age;
-  Gender? gender;
+  String? age;
+  String? gender;
   String? username;
   String? password;
-  UserType? userType;
+  String? userType;
 
   bool get isLoggedIn => email != null;
 
-  void login(String firstName, String lastName, String email, int age, Gender gender, String username,
-   String password, UserType userType) {
+  void login(String firstName, String lastName, String email, String age, String gender, String username,
+   String password, String userType) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
