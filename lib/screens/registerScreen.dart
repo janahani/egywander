@@ -336,6 +336,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
+                             validator: (value) {
+                               if (value == null || value.isEmpty) {
+                                 return 'Please select your gender';
+                               }
+                               return null;
+                             },
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -401,6 +407,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 filled: true,
                                 fillColor: Colors.white,
                               ),
+                               validator: (value) {
+                               if (value == null || value.isEmpty) {
+                                 return 'Please select a cuisine type';
+                               }
+                               return null;
+                             },
                             ),
                           ),
                           const SizedBox(height: 20),
