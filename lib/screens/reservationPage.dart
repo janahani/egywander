@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import '../widgets/systembars.dart';
@@ -26,20 +25,28 @@ class _ReservationPageState extends State<ReservationPage> {
     '8:00 PM - 9:00 PM',
   ];
 
-  final List<String> tables = ['Table 1', 'Table 2', 'Table 3', 'Table 4', 'Table 5'];
+  final List<String> tables = [
+    'Table 1',
+    'Table 2',
+    'Table 3',
+    'Table 4',
+    'Table 5'
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
-      body: SingleChildScrollView( 
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Date Picker
-            const Text("Select Date:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text("Select Date:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             GestureDetector(
               onTap: () async {
@@ -72,12 +79,15 @@ class _ReservationPageState extends State<ReservationPage> {
             const SizedBox(height: 20),
 
             // Time Slot Dropdown
-            const Text("Select Time Slot:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text("Select Time Slot:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               ),
               value: selectedTimeSlot,
               items: timeSlots.map((time) {
@@ -96,7 +106,8 @@ class _ReservationPageState extends State<ReservationPage> {
             const SizedBox(height: 20),
 
             // Number of People
-            const Text("Number of People:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text("Number of People:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -127,7 +138,8 @@ class _ReservationPageState extends State<ReservationPage> {
             const SizedBox(height: 20),
 
             // Seating Preference
-            const Text("Seating Preference:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text("Seating Preference:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -160,12 +172,15 @@ class _ReservationPageState extends State<ReservationPage> {
             const SizedBox(height: 20),
 
             // Table Selection
-            const Text("Select Table:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text("Select Table:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               ),
               value: selectedTable,
               items: tables.map((table) {
@@ -187,7 +202,9 @@ class _ReservationPageState extends State<ReservationPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  if (selectedDate != null && selectedTimeSlot != null && selectedTable != null) {
+                  if (selectedDate != null &&
+                      selectedTimeSlot != null &&
+                      selectedTable != null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -200,16 +217,18 @@ class _ReservationPageState extends State<ReservationPage> {
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please complete all fields.")),
+                      const SnackBar(
+                          content: Text("Please complete all fields.")),
                     );
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  backgroundColor: const Color.fromARGB(255, 253, 177, 63),
+                  backgroundColor: const Color.fromARGB(255, 34, 34, 34),
                 ),
                 child: const Text(
                   "Confirm Reservation",

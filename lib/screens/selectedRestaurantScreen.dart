@@ -20,12 +20,13 @@ class RestaurantDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Restaurant Image with back button
+            // Restaurant Image with back navi button
             Stack(
               children: [
                 Container(
@@ -59,6 +60,7 @@ class RestaurantDetailsPage extends StatelessWidget {
 
             // Restaurant details
             Container(
+              
               transform: Matrix4.translationValues(0, -30, 0),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: const BoxDecoration(
