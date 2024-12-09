@@ -55,8 +55,8 @@ return AppBar(
 BottomNavigationBar bottomNavigationBar(BuildContext context) {
   return BottomNavigationBar(
     backgroundColor: const Color.fromARGB(255, 242, 227, 194),
-    selectedItemColor: Colors.orange,
-    unselectedItemColor: const Color.fromARGB(255, 255, 189, 83),
+    selectedItemColor: const Color.fromARGB(255, 61, 61, 61),
+    unselectedItemColor:Colors.grey[600],
     onTap: (index) {
       // Handling tap for different indexes
       if (index == 0) { // Account tab index
