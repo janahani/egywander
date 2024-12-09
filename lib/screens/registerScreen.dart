@@ -26,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
   final TextEditingController restaurantNameController =
       TextEditingController();
-  final TextEditingController restaurantAddressController =
+  final TextEditingController restaurantLocationController =
       TextEditingController();
   final TextEditingController restaurantPhoneController =
       TextEditingController();
@@ -152,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'usertype': isOwner ? "Owner" : "Wanderer",
       if (isOwner) ...{
         'restaurantName': restaurantNameController.text,
-        'restaurantAddress': restaurantAddressController.text,
+        'restaurantAddress': restaurantLocationController.text,
         'cuisineType': selectedCuisine,
         'restaurantPhoneNumber': restaurantPhoneController.text,
       }
@@ -373,8 +373,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           FadeInUp(
                             duration: const Duration(milliseconds: 2100),
                             child: _buildTextField(
-                              "Restaurant Address",
-                              restaurantAddressController,
+                              "Restaurant Location",
+                              restaurantLocationController,
                             ),
                           ),
                           const SizedBox(height: 20),
