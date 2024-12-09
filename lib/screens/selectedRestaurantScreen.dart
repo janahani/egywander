@@ -1,3 +1,4 @@
+import 'package:egywander/widgets/systembars.dart';
 import 'package:flutter/material.dart';
 import '../screens/reservationPage.dart';
 
@@ -19,6 +20,8 @@ class RestaurantDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBar(context),
+      bottomNavigationBar: bottomNavigationBar(context),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -105,12 +108,18 @@ class RestaurantDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  Icon(Icons.access_time, color: Colors.grey, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    "$workingHours",
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w500),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time,
+                          color: const Color.fromARGB(255, 85, 85, 85),
+                          size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        "$workingHours",
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 16),
@@ -166,7 +175,7 @@ class RestaurantDetailsPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        backgroundColor: const Color.fromARGB(255, 34, 34, 34),
                       ),
                       child: const Text(
                         "Reserve Now",

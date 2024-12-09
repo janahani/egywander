@@ -50,7 +50,7 @@ AppBar appBar(context) {
 
 BottomNavigationBar bottomNavigationBar(BuildContext context) {
   return BottomNavigationBar(
-    backgroundColor: Colors.orange,
+    backgroundColor: const Color.fromARGB(255, 34, 34, 34),
     selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
     unselectedItemColor: const Color.fromARGB(255, 231, 231, 231),
     onTap: (index) {
