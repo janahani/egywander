@@ -10,16 +10,16 @@ Future<void> main() async {
   // Initialize Firebase with provided options
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey:
-          "AIzaSyCBFe108R8zD3K_h1fm2t4e_FErWkJR2yA", // Your Firebase API Key
+      apiKey: "AIzaSyB-dtf3e62C_qwVC9h0hhd6Vam0vigJVDk", // From "api_key"
       authDomain:
-          "lab7-b626d.firebaseapp.com", // Typically "project-id.firebaseapp.com"
+          "egywanders.firebaseapp.com", // Usually "project_id.firebaseapp.com"
       databaseURL:
-          "https://lab7-b626d-default-rtdb.firebaseio.com", // Your Firebase Realtime Database URL
-      projectId: "lab7-b626d", // Project ID
-      storageBucket: "lab7-b626d.appspot.com", // Firebase Storage Bucket
-      messagingSenderId: "861898509176", // Your Messaging Sender ID
-      appId: "1:861898509176:android:bf1b15f27d94e8d5ea568d", // Your App ID
+          "https://egywanders-default-rtdb.firebaseio.com", // Constructed URL
+      projectId: "egywanders", // From "project_id"
+      storageBucket: "egywanders.firebasestorage.app", // From "storage_bucket"
+      messagingSenderId: "94969573446", // From "project_number"
+      appId:
+          "1:94969573446:android:61bb2362cc3ada8e3b9a47", // From "mobilesdk_app_id"
     ),
   );
 
