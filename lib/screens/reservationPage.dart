@@ -1,4 +1,8 @@
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // For date formatting
+import '../widgets/systembars.dart';
+import 'editplanScreen.dart'; // Importimport 'package:flutter/material.dart';
 
 class ReservationPage extends StatefulWidget {
   const ReservationPage({Key? key}) : super(key: key);
@@ -27,11 +31,9 @@ class _ReservationPageState extends State<ReservationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Reservation"),
-        backgroundColor: const Color.fromARGB(255, 253, 177, 63), // Gradient theme matching
-      ),
-      body: SingleChildScrollView( // Allow scrolling
+      appBar: appBar(context),
+      bottomNavigationBar: bottomNavigationBar(context),
+      body: SingleChildScrollView( 
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
