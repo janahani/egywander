@@ -26,11 +26,12 @@ environment:
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
+# versions available, run `flutter pub outdated`.flutter pub upgrade
+
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.0
+  intl: ^0.20.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -50,7 +51,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,6 +66,7 @@ flutter:
     - assets/images/welcomescreen3.jpg
     - assets/images/welcomescreen4.jpg
     - assets/images/pyramids.jpg
+    - assets/images/sizzlereg.jpeg
 
 
   #   - images/a_dot_ham.jpeg
