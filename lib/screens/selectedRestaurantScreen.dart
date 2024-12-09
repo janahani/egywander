@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import '../widgets/systembars.dart';
-import 'editplanScreen.dart'; // Importimport 'package:flutter/material.dart';
 import '../screens/reservationPage.dart';
 
 class RestaurantDetailsPage extends StatelessWidget {
-  final String restaurantName = "Sizzler Restaurant";
+  final String restaurantName = "Sizzler Stakehouse";
   final String location = "Maadi, Cairo";
   final double rating = 4.8;
   final String cuisineType = "Italian, International";
   final List<String> features = ["Wi-Fi", "AC", "Parking", "Outdoor Seating", "Live Music"];
+  final String imagePath = "assets/images/sizzlereg.jpeg"; 
+  final String desc = "";
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +23,7 @@ class RestaurantDetailsPage extends StatelessWidget {
                   height: 300,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(imageUrl), // Replace with restaurant image
+                      image: AssetImage(imagePath), // Use the asset image
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -150,10 +147,10 @@ class RestaurantDetailsPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        backgroundColor: const Color.fromARGB(255, 253, 177, 63),
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                       ),
                       child: const Text(
-                        "Reserve",
+                        "Reserve Now",
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
