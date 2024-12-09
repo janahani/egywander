@@ -1,6 +1,7 @@
-import 'package:egywander/widgets/systembars.dart';
 import 'package:flutter/material.dart';
 import '../screens/reservationPage.dart';
+import '../widgets/customBtn.dart'; // Make sure this import is correct
+import 'package:egywander/widgets/systembars.dart';
 
 class RestaurantDetailsPage extends StatelessWidget {
   final String restaurantName = "Sizzler Stakehouse";
@@ -20,13 +21,13 @@ class RestaurantDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Restaurant Image with back navi button
+            // Restaurant Image with back navigation button
             Stack(
               children: [
                 Container(
@@ -60,7 +61,6 @@ class RestaurantDetailsPage extends StatelessWidget {
 
             // Restaurant details
             Container(
-              
               transform: Matrix4.translationValues(0, -30, 0),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: const BoxDecoration(
@@ -160,28 +160,20 @@ class RestaurantDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Reserve Button
+                  // Reserve Button using CustomButton
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ReservationPage(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        backgroundColor: const Color.fromARGB(255, 34, 34, 34),
-                      ),
-                      child: const Text(
-                        "Reserve Now",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: Container(
+                      width: 200, // Adjust the width as needed
+                      child: CustomButton(
+                        text: "Reserve Now",
+                        onPressed: () {
+                          // Navigate to the reservation page or other desired action
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ReservationPage()),
+                          );
+                        },
                       ),
                     ),
                   ),

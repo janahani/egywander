@@ -6,14 +6,18 @@ import 'package:flutter/material.dart';
 import '../screens/notificationsScreen.dart';
 
 AppBar appBar(context) {
-  return AppBar(
-    elevation: 0,
-    backgroundColor: Colors.transparent,
-    title: const Text(
-      "EgyWanders",
-      style: TextStyle(
-          color: Colors.orange, fontSize: 20, fontWeight: FontWeight.bold),
+return AppBar(
+  elevation: 0,
+  backgroundColor: Colors.transparent,
+  title: const Text(
+    "EGYWANDERS",
+    style: TextStyle(
+      color: Colors.orange,
+      fontSize: 17,
+      letterSpacing: 4.0, 
+      fontFamily: 'Segoe UI', 
     ),
+  ),
     centerTitle: true,
     actions: [
       Stack(
