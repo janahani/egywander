@@ -1,10 +1,16 @@
+import 'package:egywander/screens/accountScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:animate_do/animate_do.dart';
+import 'dart:convert';
 import 'registerScreen.dart';
 import '../widgets/systembars.dart';
+import 'package:provider/provider.dart';
+import 'package:egywander/providers/userProvider.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -15,6 +21,75 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  /// Hash the password using SHA-256
+  String hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    return sha256.convert(bytes).toString();
+  }
+
+  /// Show a SnackBar message
+  void _showMessage(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  /// Handle login logic
+  Future<void> _loginUser() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final loginInput = _usernameController.text.trim();
+    final enteredPasswordHash = hashPassword(_passwordController.text.trim());
+
+    try {
+      QuerySnapshot snapshot;
+
+      if (loginInput.contains('@')) {
+        snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email',
+                isEqualTo: loginInput.toLowerCase()) // Case-insensitive email
+            .where('password', isEqualTo: enteredPasswordHash)
+            .get();
+      } else {
+        snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('username', isEqualTo: loginInput)
+            .where('password', isEqualTo: enteredPasswordHash)
+            .get();
+      }
+
+      if (snapshot.docs.isNotEmpty) {
+        _showMessage("Login Successful!", Colors.green);
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final userDoc = snapshot.docs.first;
+        userProvider.login(
+            userDoc['firstname'],
+            userDoc['lastname'],
+            userDoc['email'],
+            userDoc['age'],
+            userDoc['gender'],
+            userDoc['username'],
+            userDoc['password'],
+            userDoc['usertype']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AccountScreen(),
+          ),
+        );
+      } else {
+        _showMessage("Invalid username/email or password.", Colors.red);
+      }
+    } catch (e) {
+      _showMessage("Error: $e", Colors.red);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
       bottomNavigationBar: bottomNavigationBar(context),
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: const BoxDecoration(color: Colors.white),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -56,70 +131,67 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 40),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1400),
-                          child: Column(
-                            children: [
-                              // Username TextFormField with validation
-                              TextFormField(
-                                controller: _usernameController,
-                                decoration: InputDecoration(
-                                  labelText: "Username/Email",
-                                  labelStyle: const TextStyle(
-                                      color: Colors.grey, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    borderSide: const BorderSide(
-                                      color: Colors.orange,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Username is required';
-                                  }
-                                  return null;
-                                },
+                          child: TextFormField(
+                            controller: _usernameController,
+                            decoration: InputDecoration(
+                              labelText: "Username/Email",
+                              labelStyle: const TextStyle(
+                                  color: Colors.grey, fontSize: 14),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
                               ),
-                              const SizedBox(height: 20),
-                              // Password TextFormField with validation
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  labelText: "Password",
-                                  labelStyle: const TextStyle(
-                                      color: Colors.grey, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    borderSide: const BorderSide(
-                                      color: Colors.orange,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: const BorderSide(
+                                  color: Colors.orange,
+                                  width: 2,
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Password is required';
-                                  }
-                                  return null;
-                                },
                               ),
-                            ],
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Username/Email is required';
+                              }
+                              return null;
+                            },
                           ),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1500),
+                          child: TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: "Password",
+                              labelStyle: const TextStyle(
+                                  color: Colors.grey, fontSize: 14),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: const BorderSide(
+                                  color: Colors.orange,
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Password is required';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        FadeInUp(
+                          duration: const Duration(milliseconds: 1600),
                           child: const Text(
                             "Forgot Password?",
                             style: TextStyle(color: Colors.grey),
@@ -127,17 +199,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
-                          duration: const Duration(milliseconds: 1600),
+                          duration: const Duration(milliseconds: 1700),
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                // Proceed with login logic
-                                // Example: Navigate to another screen or perform login
-                              }
-                            },
+                            onPressed: _loginUser,
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
-                                  Color.fromARGB(255, 242, 227, 194)),
+                                  const Color.fromARGB(255, 242, 227, 194)),
                               shape: MaterialStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
@@ -162,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
-                          duration: const Duration(milliseconds: 1700),
+                          duration: const Duration(milliseconds: 1800),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -179,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            RegisterScreen()),
+                                            const RegisterScreen()),
                                   );
                                 },
                                 style: ButtonStyle(
