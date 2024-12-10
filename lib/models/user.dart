@@ -11,7 +11,6 @@ class User {
   final String email;
   final int age;
   final Gender gender; // Enum for gender
-  final String username;
   final String password;
   final UserType usertype; // Enum for user type
 
@@ -23,7 +22,6 @@ class User {
     required this.email,
     required this.age,
     required this.gender,
-    required this.username,
     required this.password,
     required this.usertype,
   }) : id = id ?? const Uuid().v4(); // Auto-generate UUID if not provided
@@ -37,7 +35,6 @@ class User {
       'email': email,
       'age': age,
       'gender': gender.toString().split('.').last, // Convert enum to string
-      'username': username,
       'password': password,
       'usertype': usertype.toString().split('.').last, // Convert enum to string
     };
@@ -52,7 +49,6 @@ class User {
       email: map['email'],
       age: map['age'],
       gender: Gender.values.firstWhere((e) => e.toString().split('.').last == map['gender']),
-      username: map['username'],
       password: map['password'],
       usertype: UserType.values.firstWhere((e) => e.toString().split('.').last == map['usertype']),
     );
@@ -64,6 +60,6 @@ class User {
   String toString() {
     return 'User(id: $id, firstname: $firstname, lastname: $lastname, email: $email, '
            'age: $age, gender: ${gender.toString().split('.').last}, '
-           'username: $username, usertype: ${usertype.toString().split('.').last})';
+           ' usertype: ${usertype.toString().split('.').last})';
   }
 }
