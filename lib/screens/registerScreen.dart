@@ -152,7 +152,7 @@ Future<void> _registerUser() async {
 
     final hashedPassword = _hashPassword(passwordController.text);
 
-    final userData = {
+ final userData = {
       'firstname': firstNameController.text.trim(),
       'lastname': lastNameController.text.trim(),
       'email': emailController.text.trim().toLowerCase(),
@@ -161,19 +161,29 @@ Future<void> _registerUser() async {
       'username': usernameController.text.trim(),
       'password': hashedPassword,
       'usertype': isOwner ? "Owner" : "Wanderer",
-      if (isOwner) ...{
-        'restaurantName': restaurantNameController.text.trim(),
-        'restaurantLocation': restaurantLocationController.text.trim(),
-        'cuisineType': selectedCuisine,
-        'restaurantPhoneNumber': restaurantPhoneController.text.trim(),
-      }
     };
 
     print('User Data: $userData');
 
     try {
       // Attempt to add the user data to Firestore
-      await FirebaseFirestore.instance.collection('users').add(userData);
+    DocumentReference docRef = await FirebaseFirestore.instance
+        .collection('users')
+        .add(userData);
+
+    // Retrieve the auto-generated document ID
+    String userId = docRef.id;
+      if(isOwner)
+      {
+        final restaurantData = {
+        'ownerId': userId,
+        'restaurantName': restaurantNameController.text.trim(),
+        'restaurantLocation': restaurantLocationController.text.trim(),
+        'cuisineType': selectedCuisine,
+        'restaurantPhoneNumber': restaurantPhoneController.text.trim(),
+      };
+        await FirebaseFirestore.instance.collection('restaurants').add(restaurantData);
+      }
 
       // Navigate to Login screen after successful registration
       Navigator.pushReplacement(
