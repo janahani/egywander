@@ -30,7 +30,7 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(30.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -49,37 +49,40 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
                   child: _buildTableInfoSection(),
                 ),
               ),
-              
               const SizedBox(height: 10),
-              Center(
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly, // Adjust alignment as needed
+                children: [
+                  Center(
                     child: Container(
                       width: 180, // Adjust the width as needed
                       child: CustomButton(
                         text: "Add Table",
                         onPressed: _addTable,
-
                       ),
                     ),
                   ),
-              const SizedBox(height: 20),
-              Center(
-                child: Container(
-                  width: 180, // Adjust the width as needed
-                  child: CustomButton(
-                    text: "Submit Form",
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        // Form submission logic here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(
-                                  'Reservation information submitted successfully')),
-                        );
-                      }
-                    },
+                  Center(
+                    child: Container(
+                      width: 180, // Adjust the width as needed
+                      child: CustomButton(
+                        text: "Submit Form",
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            // Form submission logic here
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Reservation information submitted successfully')),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                ],
+              )
             ],
           ),
         ),
@@ -116,8 +119,8 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
                           children: [
                             Text(
                               "Seats: ",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.black54),
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.black54),
                             ),
                             Container(
                               width: 40,
