@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:egywander/screens/accountsettingsScreen.dart';
 import 'package:egywander/widgets/systembars.dart';
 import '/widgets/accountmenubtns.dart';
@@ -10,113 +11,143 @@ class AdminDashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // CircleAvatar with Name and Email
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: Colors.orange,
-              child: Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 40,
+      body: Stack(
+        children: [
+          // Gradient Circle Background
+          Positioned(
+            top: -250,
+            left: 0,
+            right: 0,
+            child: Container(
+              width: 500, // Adjust size for the circle
+              height: 500,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Colors.orange, Colors.orange.withOpacity(0.8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
             ),
-            SizedBox(height: 10),
-            Text(
-              "Fatimah Hatem",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              "fatimah@gmail.com",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
-            ),
-            SizedBox(height: 20),
+          ),
 
-            // Buttons for different admin tasks
-            SizedBox(height: 10),
-            buildMenuButton(
-              context,
-              icon: Icons.supervised_user_circle,
-              text: "View Customers",
-              onTap: () {
-                // Navigate to Customers page
-              },
+          // Main Content
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+
+                    // User Greeting
+                    Text(
+                      "Hello, Fatimah",
+                      style: GoogleFonts.lato(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "fatimah@gmail.com",
+                      style: GoogleFonts.lato(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Profile Avatar
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundColor: const Color.fromARGB(255, 255, 237, 209),
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.orange,
+                        size: 60,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Menu Buttons
+                    const SizedBox(height: 10),
+                    buildMenuButton(
+                      context,
+                      icon: Icons.supervised_user_circle,
+                      text: "Add a User",
+                      onTap: () {
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    buildMenuButton(
+                      context,
+                      icon: Icons.restaurant,
+                      text: "Accept/Reject Restaurant Requests",
+                      onTap: () {
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    buildMenuButton(
+                      context,
+                      icon: Icons.group_add,
+                      text: "View Users",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UsersManagementScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    buildMenuButton(
+                      context,
+                      icon: Icons.settings,
+                      text: "Account Settings",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AccountSettingsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    buildMenuButton(
+                      context,
+                      icon: Icons.info,
+                      text: "About Us",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AboutUsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    buildMenuButton(
+                      context,
+                      icon: Icons.logout,
+                      text: "Logout",
+                      onTap: () {
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-            SizedBox(height: 10),
-            buildMenuButton(
-              context,
-              icon: Icons.restaurant,
-              text: "Accept/Reject Restaurant Requests",
-              onTap: () {
-                // Navigate to Restaurant Owner Requests page
-              },
-            ),
-            SizedBox(height: 10),
-            buildMenuButton(
-              context,
-              icon: Icons.group_add,
-              text: "Add Users",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UsersManagementScreen(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            buildMenuButton(
-              context,
-              icon: Icons.settings,
-              text: "Account Settings",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AccountSettingsScreen(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            buildMenuButton(
-              context,
-              icon: Icons.info,
-              text: "About Us",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AboutUsScreen(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            buildMenuButton(
-              context,
-              icon: Icons.logout,
-              text: "Logout",
-              onTap: () {
-                // Add functionality for logout
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

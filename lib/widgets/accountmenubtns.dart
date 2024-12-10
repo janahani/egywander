@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
  Widget buildMenuButton(BuildContext context,
       {required IconData icon,
@@ -15,24 +16,19 @@ import 'package:flutter/material.dart';
           decoration: BoxDecoration(
             color: Colors.white, // Default button background
             borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
+            
+            
           ),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               children: [
-                Icon(icon, color: Colors.black), // Icons remain black
+                Icon(icon, color: Colors.orange), // Icons remain black
                 SizedBox(width: 20),
                 Text(
                   text,
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
                     color: Colors.black,
                     fontWeight: FontWeight.w500,
                   ),

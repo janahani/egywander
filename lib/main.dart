@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/welcomeScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+
 import 'package:provider/provider.dart';
 import 'providers/userProvider.dart';
 
@@ -25,7 +26,7 @@ Future<void> main() async {
           "1:94969573446:android:61bb2362cc3ada8e3b9a47", // From "mobilesdk_app_id"
     ),
   );
-  
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => UserProvider(),
