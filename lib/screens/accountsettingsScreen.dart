@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import '../widgets/systembars.dart';
+import 'package:provider/provider.dart';
+import 'package:egywander/providers/userProvider.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -116,6 +118,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    
     return Scaffold(
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
