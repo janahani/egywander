@@ -69,5 +69,14 @@ class Restaurant {
       isAccepted: map['isAccepted'] ?? false, // Default to false if not found
     );
   }
+
+    // Method to determine status based on isAccepted
+  String get status {
+    if (isAccepted) {
+      return "Accepted";
+    } else {
+      return "Pending";
+    }
+  }
 }
 
