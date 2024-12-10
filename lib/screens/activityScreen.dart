@@ -66,6 +66,23 @@ class ActivityScreen extends StatelessWidget {
                   SizedBox(height: 25),
                   DescriptionSection(),
                   SizedBox(height: 30),
+                  
+                  // Map Placeholder
+                  Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Center(
+                      child: Text("Map Placeholder",
+                          style: TextStyle(color: Colors.grey, fontSize: 16)),
+                    ),
+                  ),
+
+                  SizedBox(height: 30),
+
                   Center(
                     child: Container(
                       width: 180, // Adjust the width as needed
@@ -90,9 +107,9 @@ class ActivityScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        InfoTile(icon: Icons.directions_walk, text: 'N/A'),
-        InfoTile(icon: Icons.calendar_today, text: 'N/A'),
-        InfoTile(icon: Icons.wb_sunny, text: 'N/A'),
+        InfoTile(icon: Icons.directions_walk, text: '45 mins'),
+        InfoTile(icon: Icons.calendar_today, text: '10/12/2024'),
+        InfoTile(icon: Icons.wb_sunny, text: '35°C'),
       ],
     );
   }
