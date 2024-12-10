@@ -3,6 +3,7 @@ import 'package:intl/intl.dart'; // For date formatting
 import '../widgets/systembars.dart';
 import 'editplanScreen.dart'; // Import if you need to use it in this screen
 import '../widgets/customBtn.dart';
+
 class ReservationPage extends StatefulWidget {
   const ReservationPage({Key? key}) : super(key: key);
 
@@ -12,26 +13,57 @@ class ReservationPage extends StatefulWidget {
 
 class _ReservationPageState extends State<ReservationPage> {
   DateTime? selectedDate;
-  String? selectedTimeSlot;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
   int numberOfPeople = 1;
   bool isIndoorSeating = true;
   String? selectedTable;
-
-  final List<String> timeSlots = [
-    '12:00 PM - 1:00 PM',
-    '1:00 PM - 2:00 PM',
-    '6:00 PM - 7:00 PM',
-    '7:00 PM - 8:00 PM',
-    '8:00 PM - 9:00 PM',
-  ];
 
   final List<String> tables = [
     'Table 1',
     'Table 2',
     'Table 3',
     'Table 4',
-    'Table 5'
+    'Table 5',
   ];
+
+  // temp dummy restaurant working hours
+  final TimeOfDay openingTime = TimeOfDay(hour: 10, minute: 0); // 10:00 AM
+  final TimeOfDay closingTime = TimeOfDay(hour: 22, minute: 0); // 10:00 PM
+
+  Future<void> _pickTime(
+      {required BuildContext context,
+      required String title,
+      required TimeOfDay startLimit,
+      required TimeOfDay endLimit,
+      required Function(TimeOfDay) onTimePicked}) async {
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: startLimit,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedTime != null &&
+        (pickedTime.hour > startLimit.hour ||
+            (pickedTime.hour == startLimit.hour &&
+                pickedTime.minute >= startLimit.minute)) &&
+        (pickedTime.hour <= endLimit.hour ||
+            (pickedTime.hour == endLimit.hour &&
+                pickedTime.minute <= endLimit.minute))) {
+      onTimePicked(pickedTime);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Reservation time must not exceed 2 hours."),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,64 +110,62 @@ class _ReservationPageState extends State<ReservationPage> {
             ),
             const SizedBox(height: 20),
 
-            // Time Slot Dropdown
-            const Text("Select Time Slot:",
+            // Start Time Picker
+            const Text("Select Start Time:",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            GestureDetector(
+              onTap: () => _pickTime(
+                context: context,
+                title: "Select Start Time",
+                startLimit: openingTime,
+                endLimit: closingTime,
+                onTimePicked: (picked) => setState(() => startTime = picked),
               ),
-              value: selectedTimeSlot,
-              items: timeSlots.map((time) {
-                return DropdownMenuItem(
-                  value: time,
-                  child: Text(time),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedTimeSlot = value;
-                });
-              },
-              hint: const Text("Select a time slot"),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  startTime != null
+                      ? startTime!.format(context)
+                      : "Tap to select start time",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
 
-            // Seating Preference
-            const Text("Seating Preference:",
+            // End Time Picker
+            const Text("Select End Time:",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text("Indoor"),
-                    value: true,
-                    groupValue: isIndoorSeating,
-                    onChanged: (value) {
-                      setState(() {
-                        isIndoorSeating = value!;
-                      });
-                    },
-                  ),
+            GestureDetector(
+              onTap: () => _pickTime(
+                context: context,
+                title: "Select End Time",
+                startLimit: startTime ?? openingTime,
+                endLimit: TimeOfDay(
+                  hour: (startTime?.hour ?? openingTime.hour) + 2,
+                  minute: startTime?.minute ?? openingTime.minute,
                 ),
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text("Outdoor"),
-                    value: false,
-                    groupValue: isIndoorSeating,
-                    onChanged: (value) {
-                      setState(() {
-                        isIndoorSeating = value!;
-                      });
-                    },
-                  ),
+                onTimePicked: (picked) => setState(() => endTime = picked),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
+                child: Text(
+                  endTime != null
+                      ? endTime!.format(context)
+                      : "Tap to select end time",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -173,14 +203,16 @@ class _ReservationPageState extends State<ReservationPage> {
                   text: "Confirm Reservation",
                   onPressed: () {
                     if (selectedDate != null &&
-                        selectedTimeSlot != null &&
+                        startTime != null &&
+                        endTime != null &&
                         selectedTable != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             "Reservation confirmed for $numberOfPeople people on "
                             "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} "
-                            "at $selectedTimeSlot, ${isIndoorSeating ? "Indoor" : "Outdoor"}, "
+                            "from ${startTime!.format(context)} to ${endTime!.format(context)}, "
+                            "${isIndoorSeating ? "Indoor" : "Outdoor"}, "
                             "Table: $selectedTable.",
                           ),
                         ),
