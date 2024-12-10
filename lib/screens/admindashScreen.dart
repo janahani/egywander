@@ -9,6 +9,13 @@ import 'aboutusScreen.dart';
 class AdminDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+
+    var screenHeight = MediaQuery.of(context).size.height;
+
+    double fontSize(double size) => size * screenWidth / 400;
+    double spacing(double size) => size * screenHeight / 800;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       bottomNavigationBar: bottomNavigationBar(context),
@@ -16,12 +23,12 @@ class AdminDashboardScreen extends StatelessWidget {
         children: [
           // Gradient Circle Background
           Positioned(
-            top: -250,
+            top: spacing(-250),
             left: 0,
             right: 0,
             child: Container(
-              width: 500, // Adjust size for the circle
-              height: 500,
+              width: spacing(500), // Adjust size for the circle
+              height: spacing(500),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
@@ -37,22 +44,23 @@ class AdminDashboardScreen extends StatelessWidget {
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding:
+                     EdgeInsets.symmetric(horizontal: spacing(16), vertical: spacing(20)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 40),
+                     SizedBox(height: spacing(40)),
 
                     // User Greeting
                     Text(
                       "Hello, Fatimah",
                       style: GoogleFonts.lato(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: fontSize(28),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                     SizedBox(height: spacing(5)),
                     Text(
                       "fatimah@gmail.com",
                       style: GoogleFonts.lato(
@@ -60,7 +68,7 @@ class AdminDashboardScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 30),
+                     SizedBox(height: spacing(30)),
 
                     // Profile Avatar
                     CircleAvatar(
@@ -81,16 +89,14 @@ class AdminDashboardScreen extends StatelessWidget {
                       context,
                       icon: Icons.supervised_user_circle,
                       text: "Add a User",
-                      onTap: () {
-                      },
+                      onTap: () {},
                     ),
                     const SizedBox(height: 10),
                     buildMenuButton(
                       context,
                       icon: Icons.restaurant,
                       text: "Accept/Reject Restaurant Requests",
-                      onTap: () {
-                      },
+                      onTap: () {},
                     ),
                     const SizedBox(height: 10),
                     buildMenuButton(
@@ -139,8 +145,7 @@ class AdminDashboardScreen extends StatelessWidget {
                       context,
                       icon: Icons.logout,
                       text: "Logout",
-                      onTap: () {
-                      },
+                      onTap: () {},
                     ),
                   ],
                 ),

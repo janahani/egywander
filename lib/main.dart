@@ -5,6 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 
 import 'package:provider/provider.dart';
 import 'providers/userProvider.dart';
+import 'screens/UserManagementScreen.dart';
+import 'screens/admindashScreen.dart';
 
 
 Future<void> main() async {
@@ -42,7 +44,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
+      home: AdminDashboardScreen(),
     );
   }
 }

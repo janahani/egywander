@@ -9,6 +9,7 @@ class UsersManagementScreen extends StatefulWidget {
 }
 
 class _UsersManagementScreenState extends State<UsersManagementScreen> {
+  
   TextEditingController _searchController = TextEditingController();
 
   // Sample data for each category
@@ -47,6 +48,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -67,7 +69,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
               IconButton(
                 icon: const Icon(
                   Icons.notifications,
-                  color: Colors.orange,
+                  color: Color.fromARGB(255, 0, 0, 0),
                   size: 30,
                 ),
                 onPressed: () {},
@@ -155,7 +157,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                     child: Text("Admins"),
                   ),
                   Tab(
-                    child: Text("Restaurant Owners"),
+                    child: Text("Restaurant\nOwners"),
                   ),
                 ],
               ),
