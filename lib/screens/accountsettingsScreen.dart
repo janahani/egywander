@@ -55,12 +55,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       });
 
       // Fetch restaurant details if user is an owner
-      if (userProvider.userType == 'owner') {
+      if (userProvider.userType == 'Owner') {
         final restaurantDoc = await FirebaseFirestore.instance
             .collection('restaurants')
             .where('userId', isEqualTo: userProvider.id)
             .get();
 
+        print('Restaurant Data: ${restaurantDoc.docs.first.data()}');
         if (restaurantDoc.docs.isNotEmpty) {
           final restaurantData = restaurantDoc.docs.first.data();
           setState(() {

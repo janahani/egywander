@@ -181,6 +181,7 @@ Future<void> _registerUser() async {
         'restaurantLocation': restaurantLocationController.text.trim(),
         'cuisineType': selectedCuisine,
         'restaurantPhoneNumber': restaurantPhoneController.text.trim(),
+        'isAccepted' : false,
       };
         await FirebaseFirestore.instance.collection('restaurants').add(restaurantData);
       }
