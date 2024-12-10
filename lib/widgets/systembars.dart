@@ -13,9 +13,9 @@ return AppBar(
     "EGYWANDERS",
     style: TextStyle(
       color: Colors.orange,
-      fontSize: 17,
-      letterSpacing: 4.0, 
-      fontFamily: 'Segoe UI', 
+      fontSize: 20,
+      letterSpacing: 2.0, 
+      fontFamily: 'egy', 
     ),
   ),
     centerTitle: true,

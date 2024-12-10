@@ -33,6 +33,10 @@ flutter:
     - family: egy
       fonts:
         - asset: assets/fonts/Azonix.otf
+    - family: Historic
+      fonts:
+        - asset: assets/fonts/Historic.otf
+
   assets:
     - assets/images/welcomescreen.jpg
     - assets/images/welcomescreen1.jpg
