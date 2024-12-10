@@ -105,38 +105,6 @@ class _ReservationPageState extends State<ReservationPage> {
             ),
             const SizedBox(height: 20),
 
-            // Number of People
-            const Text("Number of People:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    if (numberOfPeople > 1) {
-                      setState(() {
-                        numberOfPeople--;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.remove_circle_outline),
-                ),
-                Text(
-                  numberOfPeople.toString(),
-                  style: const TextStyle(fontSize: 18),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      numberOfPeople++;
-                    });
-                  },
-                  icon: const Icon(Icons.add_circle_outline),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
             // Seating Preference
             const Text("Seating Preference:",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
