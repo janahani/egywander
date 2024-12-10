@@ -156,7 +156,7 @@ Future<void> _registerUser() async {
       'firstname': firstNameController.text.trim(),
       'lastname': lastNameController.text.trim(),
       'email': emailController.text.trim().toLowerCase(),
-      'age': ageController.text.trim(),
+      'age': int.parse(ageController.text.trim()),
       'gender': selectedGender,
       'username': usernameController.text.trim(),
       'password': hashedPassword,
