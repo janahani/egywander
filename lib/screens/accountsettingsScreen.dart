@@ -22,7 +22,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   String lastName = '';
   String gender = '';
   String age = '';
-  String username = '';
   String email = '';
   String password = '';
   String confirmPassword = '';
@@ -51,7 +50,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         lastName = userProvider.lastName ?? '';
         gender = userProvider.gender ?? '';
         age = userProvider.age?.toString() ?? '';
-        username = userProvider.username ?? '';
         email = userProvider.email ?? '';
       });
 
@@ -99,7 +97,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           'lastname': lastName,
           'gender': gender,
           'age': int.tryParse(age) ?? 0,
-          'username': username,
           'email': email,
         };
 
@@ -152,7 +149,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           // Update the user provider with the new user data
           userProvider.update(
             userDoc['email'],
-            userDoc['username'],
             userDoc['password'],
             userDoc.data()!,
           );
@@ -279,11 +275,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   onChanged: null,
                   keyboardType: TextInputType.number,
                   readOnly: true),
-              const SizedBox(height: 20),
-              _buildTextField("Username",
-                  initialValue: username,
-                  onChanged: (value) => username = value,
-                  validator: (value) => validateRequired(value, "Username")),
               const SizedBox(height: 20),
               _buildTextField("Email",
                   initialValue: email,
