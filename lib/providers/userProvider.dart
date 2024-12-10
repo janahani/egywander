@@ -28,6 +28,13 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void update(String email, String username,String password, userDoc) {
+    this.email = email;
+    this.username = username;
+    this.password = password;
+    notifyListeners();
+  }
+
   void logout() {
     id = null;
     firstName = null;
