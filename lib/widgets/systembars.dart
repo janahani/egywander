@@ -54,9 +54,9 @@ return AppBar(
 
 BottomNavigationBar bottomNavigationBar(BuildContext context) {
   return BottomNavigationBar(
-    backgroundColor: const Color.fromARGB(255, 242, 227, 194),
-    selectedItemColor: const Color.fromARGB(255, 61, 61, 61),
-    unselectedItemColor:Colors.grey[600],
+    backgroundColor:  Colors.black,
+    selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+    unselectedItemColor:const Color.fromARGB(255, 189, 189, 189),
     onTap: (index) {
       // Handling tap for different indexes
       if (index == 0) { // Account tab index
@@ -65,19 +65,19 @@ BottomNavigationBar bottomNavigationBar(BuildContext context) {
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       } 
-      else if (index == 1) { // Account tab index
+      else if (index == 1) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => FavoritesScreen()),
         );
       } 
-      else if (index == 2) { // Account tab index
+      else if (index == 2) { 
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ScheduleScreen()),
         );
       } 
-      else if (index == 3) { // Account tab index
+      else if (index == 3) { 
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => AccountScreen()),

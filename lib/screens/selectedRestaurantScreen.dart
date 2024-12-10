@@ -137,9 +137,10 @@ class RestaurantDetailsPage extends StatelessWidget {
                     runSpacing: 8,
                     children: features.map((feature) {
                       return Chip(
-                        label: Text(feature),
+                        label: Text(feature, style: TextStyle(color:  Color.fromARGB(255, 255, 152, 0), fontWeight: FontWeight.bold),),
                         backgroundColor: const Color.fromARGB(255, 253, 177, 63)
                             .withOpacity(0.2),
+                        side: BorderSide.none,
                       );
                     }).toList(),
                   ),
@@ -166,7 +167,6 @@ class RestaurantDetailsPage extends StatelessWidget {
                       width: 180, // Adjust the width as needed
                       child: CustomButton(
                         text: "Reserve Now",
-                        
                         onPressed: () {
                           Navigator.push(
                             context,

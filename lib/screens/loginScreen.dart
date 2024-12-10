@@ -98,6 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
+      backgroundColor: Colors.white,
       bottomNavigationBar: bottomNavigationBar(context),
       body: Container(
         width: double.infinity,
@@ -105,19 +106,21 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 60),
+              const SizedBox(height: 150),
               FadeInUp(
                 duration: const Duration(milliseconds: 1000),
-                child: const Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.orange,
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: const Text(
+                    "Welcome back! Glad to see you again.",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
               Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
@@ -127,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.symmetric(horizontal:  30),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -223,6 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   "Login",
                                   style: TextStyle(
+                                    fontSize: 20,
                                     color: Colors.orange,
                                     fontWeight: FontWeight.bold,
                                   ),
