@@ -63,11 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
             .get();
       }
 
+
       if (snapshot.docs.isNotEmpty) {
         _showMessage("Login Successful!", Colors.green);
         final userProvider = Provider.of<UserProvider>(context, listen: false);
-        final userDoc = snapshot.docs.first;
+        final userDoc = snapshot.docs.first; 
+        print(userDoc['age']);
         userProvider.login(
+            userDoc.id,
             userDoc['firstname'],
             userDoc['lastname'],
             userDoc['email'],
@@ -75,7 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
             userDoc['gender'],
             userDoc['username'],
             userDoc['password'],
-            userDoc['usertype']);
+            userDoc['usertype'],
+            userDoc);
         Navigator.push(
           context,
           MaterialPageRoute(
