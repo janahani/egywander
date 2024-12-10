@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 
 class UserProvider extends ChangeNotifier {
+  String? id;
   String? firstName;
   String? lastName;
   String? email;
-  String? age;
+  int? age;
   String? gender;
   String? username;
   String? password;
@@ -13,8 +14,9 @@ class UserProvider extends ChangeNotifier {
 
   bool get isLoggedIn => email != null;
 
-  void login(String firstName, String lastName, String email, String age, String gender, String username,
-   String password, String userType) {
+  void login(String id,String firstName, String lastName, String email, int age, String gender, String username,
+   String password, String userType, userDoc) {
+    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -27,6 +29,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void logout() {
+    id = null;
     firstName = null;
     lastName = null;
     email = null;
