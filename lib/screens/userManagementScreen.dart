@@ -1,7 +1,8 @@
 import 'package:egywander/screens/admindashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'admindashScreen.dart';
+import 'userDetailsScreen.dart';
+import '../widgets/systembars.dart';
 
 class UsersManagementScreen extends StatefulWidget {
   @override
@@ -9,7 +10,6 @@ class UsersManagementScreen extends StatefulWidget {
 }
 
 class _UsersManagementScreenState extends State<UsersManagementScreen> {
-  
   TextEditingController _searchController = TextEditingController();
 
   // Sample data for each category
@@ -48,48 +48,9 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.orange),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
-            );
-          },
-        ),
-        elevation: 0,
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  size: 30,
-                ),
-                onPressed: () {},
-              ),
-              const Positioned(
-                right: 10,
-                top: 10,
-                child: CircleAvatar(
-                  radius: 8,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    '2',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                  ),
-                ),
-              )
-            ],
-          )
-        ],
-      ),
+      appBar: adminAppbar(context),
       body: Container(
         child: DefaultTabController(
           length: 3,
@@ -185,7 +146,6 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
     );
   }
 
-  // Helper widget to build user list
   Widget _buildUserList(List<Map<String, String>> users, String emptyMessage) {
     if (users.isEmpty) {
       return Center(
@@ -225,13 +185,52 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                   IconButton(
                     icon: Icon(Icons.edit, color: Colors.orange),
                     onPressed: () {
-                      // Edit action
+                      // Navigate to UserDetailScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserDetailScreen(user: user),
+                        ),
+                      );
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
-                      // Delete action
+                      // Show confirmation dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Delete User'),
+                            content: Text(
+                                'Are you sure you want to delete ${user["name"]}?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Close the dialog
+                                },
+                                child: Text(
+                                  'No',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    users.removeAt(index); // Delete the user
+                                  });
+                                  Navigator.pop(context); // Close the dialog
+                                },
+                                child: Text(
+                                  'Yes',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
