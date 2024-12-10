@@ -22,7 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
@@ -38,16 +37,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final List<String> genders = ["Male", "Female"];
   final List<String> cuisines = ["Egyptian", "Italian", "Chinese", "Other"];
 
+
   // Email Validation
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email is required';
-    }
-    if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
-      return 'Please enter a valid email address';
-    }
-    return null;
+String? validateEmail(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Email is required';
   }
+  if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+    return 'Please enter a valid email address';
+  }
+  return null; // Synchronous checks only
+}
+Future<bool> isEmailRegistered(String email) async {
+  final querySnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .where('email', isEqualTo: email.toLowerCase())
+      .get();
+
+  return querySnapshot.docs.isNotEmpty;
+}
+Future<void> checkEmailExists(String email) async {
+  bool emailExists = await isEmailRegistered(email);
+  if (emailExists) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('This email is already registered')),
+    );
+  }
+}
+
+
 
   // Name Validation (only letters)
   String? validateName(String? value) {
@@ -113,30 +131,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  Widget _buildTextField(String labelText, TextEditingController controller,
-      {bool obscureText = false,
-      TextInputType keyboardType = TextInputType.text,
-      String? Function(String?)? validator}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: (value) =>
-          validateRequired(value, labelText), // Pass field name here
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.orange, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.white,
+Widget _buildTextField(String labelText, TextEditingController controller,
+    {bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+    void Function(String)? onFieldSubmitted}) {
+  return TextFormField(
+    controller: controller,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+    validator: validator,
+    onFieldSubmitted: onFieldSubmitted, // Callback for Firestore validation
+    decoration: InputDecoration(
+      labelText: labelText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
       ),
-    );
-  }
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(color: Colors.orange, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+    ),
+  );
+}
+
 
   String? password;
 
@@ -149,6 +169,15 @@ String _hashPassword(String password) {
 
 Future<void> _registerUser() async {
   if (_formKey.currentState!.validate()) {
+    // Perform asynchronous email validation
+    bool emailExists = await isEmailRegistered(emailController.text);
+  if (emailExists) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('This email is already registered')),
+    );
+  
+      return;
+    }
 
     final hashedPassword = _hashPassword(passwordController.text);
 
@@ -158,7 +187,6 @@ Future<void> _registerUser() async {
       'email': emailController.text.trim().toLowerCase(),
       'age': int.parse(ageController.text.trim()),
       'gender': selectedGender,
-      'username': usernameController.text.trim(),
       'password': hashedPassword,
       'usertype': isOwner ? "Owner" : "Wanderer",
     };
@@ -327,7 +355,11 @@ Future<void> _registerUser() async {
                         FadeInUp(
                           duration: const Duration(milliseconds: 1400),
                           child: _buildTextField("Email", emailController,
-                              validator: validateEmail),
+                              validator: validateEmail,
+                              onFieldSubmitted: (value) async {
+                               await checkEmailExists(value);
+                              },
+                          ),
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
@@ -370,12 +402,6 @@ Future<void> _registerUser() async {
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
-                          duration: const Duration(milliseconds: 1700),
-                          child:
-                              _buildTextField("Username", usernameController),
-                        ),
-                        const SizedBox(height: 20),
-                        FadeInUp(
                           duration: const Duration(milliseconds: 1800),
                           child: _buildTextField("Password", passwordController,
                               obscureText: true, validator: validatePassword),
@@ -387,7 +413,7 @@ Future<void> _registerUser() async {
                               "Confirm Password", confirmPasswordController,
                               obscureText: true,
                               validator: (value) =>
-                                  validateConfirmPassword(value, password)),
+                                  validateConfirmPassword(value, passwordController.text)),
                         ),
                         const SizedBox(height: 20),
                         // Additional Fields for Owner

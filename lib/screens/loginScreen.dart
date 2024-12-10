@@ -18,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   /// Hash the password using SHA-256
@@ -42,27 +42,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginUser() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final loginInput = _usernameController.text.trim();
+    final loginInput = _emailController.text.trim();
     final enteredPasswordHash = hashPassword(_passwordController.text.trim());
 
     try {
       QuerySnapshot snapshot;
-
-      if (loginInput.contains('@')) {
         snapshot = await FirebaseFirestore.instance
             .collection('users')
             .where('email',
                 isEqualTo: loginInput.toLowerCase()) // Case-insensitive email
             .where('password', isEqualTo: enteredPasswordHash)
             .get();
-      } else {
-        snapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('username', isEqualTo: loginInput)
-            .where('password', isEqualTo: enteredPasswordHash)
-            .get();
-      }
-
 
       if (snapshot.docs.isNotEmpty) {
         _showMessage("Login Successful!", Colors.green);
@@ -76,7 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
             userDoc['email'],
             userDoc['age'],
             userDoc['gender'],
-            userDoc['username'],
             userDoc['password'],
             userDoc['usertype'],
             userDoc);
@@ -87,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       } else {
-        _showMessage("Invalid username/email or password.", Colors.red);
+        _showMessage("Invalid email or password.", Colors.red);
       }
     } catch (e) {
       _showMessage("Error: $e", Colors.red);
@@ -106,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 150),
+              const SizedBox(height: 130),
               FadeInUp(
                 duration: const Duration(milliseconds: 1000),
                 child: Padding(
@@ -139,9 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         FadeInUp(
                           duration: const Duration(milliseconds: 1400),
                           child: TextFormField(
-                            controller: _usernameController,
+                            controller: _emailController,
                             decoration: InputDecoration(
-                              labelText: "Username/Email",
+                              labelText: "Email",
                               labelStyle: const TextStyle(
                                   color: Colors.grey, fontSize: 14),
                               border: OutlineInputBorder(
@@ -159,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Username/Email is required';
+                                return 'Email is required';
                               }
                               return null;
                             },

@@ -8,13 +8,12 @@ class UserProvider extends ChangeNotifier {
   String? email;
   int? age;
   String? gender;
-  String? username;
   String? password;
   String? userType;
 
   bool get isLoggedIn => email != null;
 
-  void login(String id,String firstName, String lastName, String email, int age, String gender, String username,
+  void login(String id,String firstName, String lastName, String email, int age, String gender, 
    String password, String userType, userDoc) {
     this.id = id;
     this.firstName = firstName;
@@ -22,15 +21,13 @@ class UserProvider extends ChangeNotifier {
     this.email = email;
     this.age = age;
     this.gender = gender;
-    this.username = username;
     this.password = password;
     this.userType = userType;
     notifyListeners();
   }
 
-  void update(String email, String username,String password, userDoc) {
+  void update(String email, String password, userDoc) {
     this.email = email;
-    this.username = username;
     this.password = password;
     notifyListeners();
   }
@@ -42,7 +39,6 @@ class UserProvider extends ChangeNotifier {
     email = null;
     age = null;
     gender = null;
-    username = null;
     password = null;
     userType = null;
     notifyListeners();
