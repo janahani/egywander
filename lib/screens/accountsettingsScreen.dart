@@ -1,3 +1,4 @@
+import 'package:egywander/screens/accountScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -25,10 +26,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   String email = '';
   String password = '';
   String confirmPassword = '';
-  String name = '';
-  String location = '';
+  String restaurantName = '';
+  String restaurantLocation = '';
   String cuisineType = '';
-  String contactNumber = '';
+  String restaurantPhoneNumber = '';
   bool isAccepted = false;
 
   final List<String> genders = ["Male", "Female"];
@@ -58,7 +59,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       if (userProvider.userType == 'Owner') {
         final restaurantDoc = await FirebaseFirestore.instance
             .collection('restaurants')
-            .where('userId', isEqualTo: userProvider.id)
+            .where('ownerId', isEqualTo: userProvider.id)
             .get();
 
         print('Restaurant Data: ${restaurantDoc.docs.first.data()}');
@@ -67,10 +68,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           setState(() {
             isAccepted = restaurantData['isAccepted'] ?? false;
             if (isAccepted) {
-              name = restaurantData['name'] ?? '';
-              location = restaurantData['location'] ?? '';
+              restaurantName = restaurantData['restaurantName'] ?? '';
+              restaurantLocation = restaurantData['restaurantLocation'] ?? '';
               cuisineType = restaurantData['cuisineType'] ?? '';
-              contactNumber = restaurantData['contactNumber'] ?? '';
+              restaurantPhoneNumber =
+                  restaurantData['restaurantPhoneNumber'] ?? '';
             }
           });
         }
@@ -112,30 +114,62 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             .doc(userProvider.id)
             .update(updateData);
 
-        // Update restaurant information if user is an owner and restaurant is accepted
-        if (userProvider.userType == 'owner' && isAccepted) {
+        if (userProvider.userType == 'Owner' && isAccepted) {
           final restaurantDoc = await FirebaseFirestore.instance
               .collection('restaurants')
-              .where('userId', isEqualTo: userProvider.id)
+              .where('ownerId', isEqualTo: userProvider.id)
               .get();
 
           if (restaurantDoc.docs.isNotEmpty) {
-            await FirebaseFirestore.instance
-                .collection('restaurants')
-                .doc(restaurantDoc.docs.first.id)
-                .update({
-              'name': name,
-              'location': location,
-              'cuisineType': cuisineType,
-              'restaurantPhoneNumber': contactNumber,
-            });
+            final docId = restaurantDoc.docs.first.id;
+            print('Updating restaurant with ID: $docId');
+            try {
+              await FirebaseFirestore.instance
+                  .collection('restaurants')
+                  .doc(docId)
+                  .update({
+                'restaurantName': restaurantName,
+                'restaurantLocation': restaurantLocation,
+                'cuisineType': cuisineType,
+                'restaurantPhoneNumber': restaurantPhoneNumber,
+              });
+              print('Update successful!');
+            } catch (e) {
+              print('Error updating restaurant: $e');
+            }
+          } else {
+            print('No restaurant document found for update.');
           }
         }
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Changes saved successfully!')),
-        );
+        // Fetch the updated user data directly by document ID
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userProvider.id)
+            .get();
+
+        if (userDoc.exists) {
+          // Update the user provider with the new user data
+          userProvider.update(
+            userDoc['email'],
+            userDoc['username'],
+            userDoc['password'],
+            userDoc.data()!,
+          );
+
+          // Navigate to the AccountScreen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AccountScreen()),
+          );
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Changes saved successfully!')),
+          );
+        } else {
+          throw Exception('User document not found.');
+        }
       } catch (e) {
         debugPrint("Error saving changes: $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -266,27 +300,54 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   onChanged: (value) => confirmPassword = value,
                   validator: validateConfirmPassword),
               const SizedBox(height: 20),
-              if (userProvider.userType == 'owner' && isAccepted) ...[
+              if (userProvider.userType == 'Owner' && isAccepted) ...[
                 _buildTextField("Restaurant Name",
-                    initialValue: name,
-                    onChanged: (value) => name = value,
+                    initialValue: restaurantName,
+                    onChanged: (value) => restaurantName = value,
                     validator: (value) =>
                         validateRequired(value, "Restaurant Name")),
                 const SizedBox(height: 20),
                 _buildTextField("Restaurant Location",
-                    initialValue: location,
-                    onChanged: (value) => location = value,
+                    initialValue: restaurantLocation,
+                    onChanged: (value) => restaurantLocation = value,
                     validator: (value) =>
                         validateRequired(value, "Restaurant Location")),
                 const SizedBox(height: 20),
-                _buildTextField("Cuisine Type",
-                    initialValue: cuisineType,
-                    onChanged: (value) => cuisineType = value),
+                DropdownButtonFormField<String>(
+                  value: cuisineType.isNotEmpty
+                      ? cuisineType
+                      : null, // Current value or null
+                  decoration: InputDecoration(
+                    labelText: "Cuisine Type",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  items: cuisines.map((String cuisine) {
+                    return DropdownMenuItem<String>(
+                      value: cuisine,
+                      child: Text(cuisine),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      cuisineType = newValue ?? ''; // Update the state
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Cuisine Type is required";
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 20),
                 _buildTextField("Restaurant Phone Number",
-                    initialValue: contactNumber,
+                    initialValue: restaurantPhoneNumber,
                     keyboardType: TextInputType.phone,
-                    onChanged: (value) => contactNumber = value,
+                    onChanged: (value) => restaurantPhoneNumber = value,
                     validator: validatePhoneNumber),
               ],
               const SizedBox(height: 20),
