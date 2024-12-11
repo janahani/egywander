@@ -111,10 +111,7 @@ AppBar adminAppbar(context) {
     leading: IconButton(
       icon: Icon(Icons.arrow_back, color: Colors.orange),
       onPressed: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
-        );
+        Navigator.pop(context);
       },
     ),
     elevation: 0,

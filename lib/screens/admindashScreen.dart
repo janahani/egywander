@@ -5,6 +5,7 @@ import 'package:egywander/widgets/systembars.dart';
 import '/widgets/accountmenubtns.dart';
 import 'userManagementScreen.dart';
 import 'aboutusScreen.dart';
+import 'restaurantManagementScreen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   @override
@@ -96,7 +97,11 @@ class AdminDashboardScreen extends StatelessWidget {
                       context,
                       icon: Icons.restaurant,
                       text: "Accept/Reject Restaurant Requests",
-                      onTap: () {},
+                      onTap: () {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RestaurantManagementScreen(),
+                          ),);},
                     ),
                     const SizedBox(height: 10),
                     buildMenuButton(
