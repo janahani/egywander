@@ -1,5 +1,5 @@
-import 'package:egywander/screens/admindashScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'userDetailsScreen.dart';
 import '../widgets/systembars.dart';
@@ -11,32 +11,36 @@ class UsersManagementScreen extends StatefulWidget {
 
 class _UsersManagementScreenState extends State<UsersManagementScreen> {
   TextEditingController _searchController = TextEditingController();
-
-  // Sample data for each category
-  List<Map<String, String>> customers = List.generate(
-    10,
-    (index) =>
-        {"name": "Customer $index", "email": "customer$index@example.com"},
-  );
-  List<Map<String, String>> admins = List.generate(
-    5,
-    (index) => {"name": "Admin $index", "email": "admin$index@example.com"},
-  );
-  List<Map<String, String>> restaurantOwners = List.generate(
-    7,
-    (index) =>
-        {"name": "Restaurant Owner $index", "email": "owner$index@example.com"},
-  );
-
   String _searchQuery = "";
 
-  List<Map<String, String>> _filterUsers(
-      List<Map<String, String>> users, String query) {
+  // Query Firestore for users based on type
+  Future<List<Map<String, dynamic>>> _fetchUsersByType(String userType) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('usertype', isEqualTo: userType)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return {
+          "id": doc.id,
+          ...doc.data(),
+        } as Map<String, dynamic>;
+      }).toList();
+    } catch (e) {
+      print('Error fetching users: $e');
+      throw e;
+    }
+  }
+
+  // Filter users locally by search query
+  List<Map<String, dynamic>> _filterUsers(
+      List<Map<String, dynamic>> users, String query) {
     if (query.isEmpty) return users;
     return users
         .where((user) =>
-            user["name"]!.toLowerCase().contains(query.toLowerCase()) ||
-            user["email"]!.toLowerCase().contains(query.toLowerCase()))
+            user["firstname"].toLowerCase().contains(query.toLowerCase()) ||
+            user["email"].toLowerCase().contains(query.toLowerCase()))
         .toList();
   }
 
@@ -56,9 +60,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
           length: 3,
           child: Column(
             children: [
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               // Search bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -70,72 +72,94 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                     });
                   },
                   decoration: InputDecoration(
-                    hoverColor: Colors.orange,
                     hintText: "Search by name or email...",
                     prefixIcon: Icon(Icons.search, color: Colors.orange),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(
-                          color: Colors.orange), // Default border color
+                      borderSide: BorderSide(color: Colors.orange),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 0.8), // Border color when not focused
+                      borderSide: BorderSide(color: Colors.grey, width: 0.8),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(
-                          color: Colors.orange,
-                          width: 1.0), // Border color when focused
+                      borderSide: BorderSide(color: Colors.orange, width: 1.0),
                     ),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               // TabBar
               TabBar(
                 labelColor: Colors.orange,
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: Colors.orange,
-                indicatorPadding: EdgeInsets.symmetric(
-                  horizontal: 1.0,
-                ),
                 labelStyle: GoogleFonts.lato(
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                 ),
-                labelPadding:
-                    EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
                 tabs: [
-                  Tab(
-                    child: Text("Customers"),
-                  ),
-                  Tab(
-                    child: Text("Admins"),
-                  ),
-                  Tab(
-                    child: Text("Restaurant\nOwners"),
-                  ),
+                  Tab(child: Text("Customers")),
+                  Tab(child: Text("Admins")),
+                  Tab(child: Text("Restaurant\nOwners")),
                 ],
               ),
-
-              // TabBarView
               Expanded(
                 child: TabBarView(
                   children: [
                     // Customers List
-                    _buildUserList(_filterUsers(customers, _searchQuery),
-                        "No customers found"),
+                    FutureBuilder(
+                      future: _fetchUsersByType("Customer"),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error fetching data.'));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text('No customers found.'));
+                        } else {
+                          List<Map<String, dynamic>> users =
+                              snapshot.data as List<Map<String, dynamic>>;
+                          return _buildUserList(users);
+                        }
+                      },
+                    ),
                     // Admins List
-                    _buildUserList(
-                        _filterUsers(admins, _searchQuery), "No admins found"),
+                    FutureBuilder(
+                      future: _fetchUsersByType("Admin"),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error fetching data.'));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text('No admins found.'));
+                        } else {
+                          List<Map<String, dynamic>> users =
+                              snapshot.data as List<Map<String, dynamic>>;
+                          return _buildUserList(users);
+                        }
+                      },
+                    ),
                     // Restaurant Owners List
-                    _buildUserList(_filterUsers(restaurantOwners, _searchQuery),
-                        "No restaurant owners found"),
+                    FutureBuilder(
+                      future: _fetchUsersByType("Owner"),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error fetching data.'));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(
+                              child: Text('No restaurant owners found.'));
+                        } else {
+                          List<Map<String, dynamic>> users =
+                              snapshot.data as List<Map<String, dynamic>>;
+                          return _buildUserList(users);
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -146,95 +170,48 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
     );
   }
 
-  Widget _buildUserList(List<Map<String, String>> users, String emptyMessage) {
+  Widget _buildUserList(List<Map<String, dynamic>> users) {
     if (users.isEmpty) {
       return Center(
         child: Text(
-          emptyMessage,
+          "No users found.",
           style: GoogleFonts.lato(fontSize: 16, color: Colors.grey),
         ),
       );
     }
+
     return ListView.builder(
       itemCount: users.length,
       itemBuilder: (context, index) {
         final user = users[index];
-        return Center(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16.0),
-              tileColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(color: Colors.grey.shade300),
-              ),
-              title: Text(
-                user["name"]!,
-                style:
-                    GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                user["email"]!,
-                style: GoogleFonts.lato(fontSize: 14, color: Colors.grey),
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit, color: Colors.orange),
-                    onPressed: () {
-                      // Navigate to UserDetailScreen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserDetailScreen(user: user),
-                        ),
-                      );
-                    },
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16.0),
+            tileColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: BorderSide(color: Colors.grey.shade300),
+            ),
+            title: Text(
+              "${user["firstname"]} ${user["lastname"]}",
+              style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              user["email"],
+              style: GoogleFonts.lato(fontSize: 14, color: Colors.grey),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.edit, color: Colors.orange),
+              onPressed: () {
+                // Navigate to UserDetailScreen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserDetailScreen(user: user),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      // Show confirmation dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('Delete User'),
-                            content: Text(
-                                'Are you sure you want to delete ${user["name"]}?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close the dialog
-                                },
-                                child: Text(
-                                  'No',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    users.removeAt(index); // Delete the user
-                                  });
-                                  Navigator.pop(context); // Close the dialog
-                                },
-                                child: Text(
-                                  'Yes',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         );

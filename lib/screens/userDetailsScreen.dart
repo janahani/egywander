@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/systembars.dart';
 
 class UserDetailScreen extends StatefulWidget {
-  final Map<String, String> user;
+  final Map<String, dynamic> user;
 
   UserDetailScreen({required this.user});
 
@@ -12,30 +13,65 @@ class UserDetailScreen extends StatefulWidget {
 }
 
 class _UserDetailScreenState extends State<UserDetailScreen> {
-  late TextEditingController _nameController;
+  late TextEditingController _firstnameController;
+  late TextEditingController _lastnameController;
   late TextEditingController _emailController;
   late TextEditingController _ageController;
-  late TextEditingController _addressController;
   late TextEditingController _genderController;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.user["name"]);
+    _firstnameController =
+        TextEditingController(text: widget.user["firstname"]);
+    _lastnameController = TextEditingController(text: widget.user["lastname"]);
     _emailController = TextEditingController(text: widget.user["email"]);
-    _ageController = TextEditingController(text: widget.user["age"]);
-    _addressController = TextEditingController(text: widget.user["address"]);
+    _ageController = TextEditingController(text: widget.user["age"].toString());
     _genderController = TextEditingController(text: widget.user["gender"]);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
     _emailController.dispose();
     _ageController.dispose();
-    _addressController.dispose();
     _genderController.dispose();
     super.dispose();
+  }
+
+  Future<void> _updateUserDetails() async {
+    try {
+      // Update user in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.user["id"]) // Use the user's document ID
+          .update({
+        "firstname": _firstnameController.text,
+        "lastname": _lastnameController.text,
+        "email": _emailController.text,
+        "age": int.parse(_ageController.text), // Ensure age is an integer
+        "gender": _genderController.text,
+      });
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('User updated successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update user: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _showUpdateConfirmationDialog() {
@@ -45,7 +81,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
         return AlertDialog(
           title: Text('Update User'),
           content:
-              Text('Are you sure you want to update ${widget.user["name"]}?'),
+              Text('Are you sure you want to update ${widget.user["firstname"]}?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -58,16 +94,8 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             ),
             TextButton(
               onPressed: () {
-                // Perform update logic here
-
                 Navigator.pop(context); // Close the dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('User updated successfully!'),
-                    backgroundColor: Colors.black,
-                  ),
-                );
-                Navigator.pop(context); // Go back to the previous screen
+                _updateUserDetails(); // Call the update function
               },
               child: Text(
                 'Yes',
@@ -96,8 +124,13 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             ),
             SizedBox(height: 20),
             TextField(
-              controller: _nameController,
-              decoration: customInputDecoration('Name'),
+              controller: _firstnameController,
+              decoration: customInputDecoration('First Name'),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _lastnameController,
+              decoration: customInputDecoration('Last Name'),
             ),
             SizedBox(height: 20),
             TextField(
@@ -108,6 +141,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             TextField(
               controller: _ageController,
               decoration: customInputDecoration('Age'),
+              keyboardType: TextInputType.number,
             ),
             SizedBox(height: 20),
             TextField(
