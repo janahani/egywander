@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/systembars.dart';
-import '../widgets/customBtn.dart';
 
 class UserDetailScreen extends StatefulWidget {
   final Map<String, String> user;
@@ -33,6 +32,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _ageController.dispose();
+    _addressController.dispose();
+    _genderController.dispose();
     super.dispose();
   }
 
@@ -56,14 +58,13 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             ),
             TextButton(
               onPressed: () {
-                // Perform the update logic here
-                // For example, save the updated data to a database or state management solution
+                // Perform update logic here
 
                 Navigator.pop(context); // Close the dialog
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('User updated successfully!'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.black,
                   ),
                 );
                 Navigator.pop(context); // Go back to the previous screen
@@ -95,22 +96,22 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             SizedBox(height: 20),
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+              decoration: customInputDecoration('Name'),
             ),
             SizedBox(height: 20),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+              decoration: customInputDecoration('Email'),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _ageController,
+              decoration: customInputDecoration('Age'),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _genderController,
+              decoration: customInputDecoration('Gender'),
             ),
             SizedBox(height: 30),
             Center(
@@ -134,4 +135,26 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
       ),
     );
   }
+}
+
+InputDecoration customInputDecoration(String labelText) {
+  return InputDecoration(
+    labelText: labelText,
+    labelStyle: GoogleFonts.lato(
+      color: Colors.grey,
+      fontSize: 14,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: const BorderSide(
+        color: Colors.orange,
+        width: 2,
+      ),
+    ),
+    filled: true,
+    fillColor: Colors.white,
+  );
 }
