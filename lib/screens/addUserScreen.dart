@@ -53,11 +53,15 @@ class _AddUserScreenState extends State<AddUserScreen> {
         'password': hashedPassword,
         'usertype': _selectedUserType,
       };
+      DocumentReference docRef =
+          await FirebaseFirestore.instance.collection('users').add(userData);
 
-      await FirebaseFirestore.instance.collection('users').add(userData);
+      // Retrieve the auto-generated document ID
+      String userId = docRef.id;
 
       if (_selectedUserType == 'Owner') {
         final restaurantData = {
+          'ownerId': userId,
           'restaurantName': _restaurantNameController.text.trim(),
           'restaurantLocation': _restaurantLocationController.text.trim(),
           'cuisineType': _selectedCuisine,

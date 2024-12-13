@@ -104,7 +104,7 @@ class AdminDashboardScreen extends StatelessWidget {
                     buildMenuButton(
                       context,
                       icon: Icons.restaurant,
-                      text: "Accept/Reject Restaurant Requests",
+                      text: "Restaurant Management",
                       onTap: () {Navigator.push(
                           context,
                           MaterialPageRoute(

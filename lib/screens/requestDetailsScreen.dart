@@ -1,10 +1,63 @@
 import 'package:flutter/material.dart';
 import '../widgets/systembars.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RequestDetailsScreen extends StatelessWidget {
-  final Map<String, String> restaurant;
+  final Map<String, dynamic> restaurant;
 
   RequestDetailsScreen({required this.restaurant});
+
+  // Accept request function
+  Future<void> _acceptRequest(BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(restaurant["id"])
+          .update({"isAccepted": true});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Request has been accepted!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to accept request: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  // Reject request function
+  Future<void> _rejectRequest(BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(restaurant["id"])
+          .update({"isAccepted": false});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Request has been rejected!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to reject request: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +67,6 @@ class RequestDetailsScreen extends StatelessWidget {
         child: Column(
           children: [
             // Restaurant Image
-
             Container(
               height: 300,
               decoration: BoxDecoration(
@@ -39,79 +91,56 @@ class RequestDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name and Rating
+                  // Restaurant Name
                   Text(
-                    restaurant["Restaurant"]!,
+                    restaurant["restaurantName"] ?? 'Unknown Restaurant',
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
+
+                  // Owner Info
                   Row(
                     children: [
                       const Icon(Icons.person, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text("Owner: ${restaurant["Owner"]}"),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Icon(Icons.email, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Text("Email: ${restaurant["Email"]}"),
+                      Text("Owner ID: ${restaurant["ownerId"] ?? 'N/A'}"),
                     ],
                   ),
                   const SizedBox(height: 16),
 
-                  // Additional Details Section
-                  const Text(
-                    "Additional Details",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  // Phone Number
+                  Row(
+                    children: [
+                      const Icon(Icons.phone, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text("Phone: ${restaurant["restaurantPhoneNumber"] ?? 'N/A'}"),
+                    ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
+
+                  // Cuisine Type
                   Text(
-                    "Cuisine Type: Italian, International",
+                    "Cuisine Type: ${restaurant["cuisineType"] ?? 'N/A'}",
                     style: const TextStyle(fontSize: 15),
                   ),
                   const SizedBox(height: 16),
+
+                  // Location
                   Text(
-                    "Location: Maadi, Cairo",
+                    "Location: ${restaurant["restaurantLocation"] ?? 'N/A'}",
                     style: const TextStyle(fontSize: 15),
                   ),
                   const SizedBox(height: 16),
+
+                  // Working Hours
                   Text(
                     "Working Hours: 10:00 AM - 11:00 PM",
                     style: const TextStyle(fontSize: 15),
                   ),
                   const SizedBox(height: 16),
-
-                  // Features Section
-                  const Text(
-                    "Features",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      Chip(
-                        label: Text("Wi-Fi"),
-                        backgroundColor: Colors.grey[200],
-                      ),
-                      Chip(
-                        label: Text("Outdoor Seating"),
-                        backgroundColor: Colors.grey[200],
-                      ),
-                      Chip(
-                        label: Text("Live Music"),
-                        backgroundColor: Colors.grey[200],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
 
                   // Accept/Reject Buttons
                   Row(
@@ -119,38 +148,7 @@ class RequestDetailsScreen extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // Show confirmation dialog for Accept
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text('Accept Request'),
-                                content: Text(
-                                    "Are you sure you want to accept ${restaurant["Restaurant"]}'s request?"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      'No',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      // Perform Accept Logic
-                                    },
-                                    child: Text(
-                                      'Yes',
-                                      style: TextStyle(color: Colors.green),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          _acceptRequest(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -162,38 +160,7 @@ class RequestDetailsScreen extends StatelessWidget {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          // Show confirmation dialog for Reject
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text('Reject Request'),
-                                content: Text(
-                                    "Are you sure you want to reject ${restaurant["Restaurant"]}'s request?"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      'No',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      // Perform Reject Logic
-                                    },
-                                    child: Text(
-                                      'Yes',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          _rejectRequest(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,

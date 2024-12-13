@@ -129,7 +129,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       future: _fetchUsersByType(userType),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator(color: Colors.orange,));
         } else if (snapshot.hasError) {
           return Center(child: Text('Error fetching data.'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
