@@ -90,4 +90,48 @@ class RestaurantProvider extends ChangeNotifier {
       return null;  // Return null on error
     }
   }
+
+Future<Restaurant?> fetchRestaurantDetailsByOwnerId(String ownerId) async {
+  try {
+    var doc = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .where('ownerId', isEqualTo: ownerId)
+        .limit(1)
+        .get();
+
+    if (doc.docs.isNotEmpty) {
+      return Restaurant.fromMap(doc.docs.first.data());
+    } else {
+      return null; // No restaurant found
+    }
+  } catch (e) {
+    print('Error fetching restaurant details: $e');
+    return null;
+  }
+}
+
+
+
+ Future<Restaurant?> fetchRestaurantDetailsById(String restaurantId) async {
+  try {
+    // Fetch restaurant document by its ID
+    var doc = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(restaurantId) // Use `doc` instead of `where` to search by ID
+        .get();
+
+    if (doc.exists) {
+      // Ensure all fields are included in the Restaurant object
+      return Restaurant.fromMap(doc.data()!); // Convert the document data to Restaurant object
+    } else {
+      return null;  // Return null if the restaurant does not exist
+    }
+  } catch (e) {
+    print('Error fetching restaurant: $e');
+    return null;
+  }
+}
+
+
+
 }

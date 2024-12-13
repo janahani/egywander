@@ -6,12 +6,12 @@ enum CuisineType { Egyptian, Italian, Chinese, Other }
 // Restaurant model class
 class Restaurant {
   final String id;
-  final String ownerId; 
-  final String name; 
-  final String contactNumber; 
+  final String ownerId;
+  final String name;
+  final String contactNumber;
   final String location;
   final CuisineType cuisineType;
-  final bool isAccepted; // New field to track if the restaurant is a favorite
+  final bool isAccepted; // Track if the restaurant request is accepted
   final bool isReservationAvailable;
 
   // Constructor
@@ -22,25 +22,13 @@ class Restaurant {
     required this.contactNumber,
     required this.location,
     required this.cuisineType,
-    this.isAccepted = false, // Default to false if not provided
+    this.isAccepted = false,
     this.isReservationAvailable = false,
   }) : id = id ?? const Uuid().v4();
 
-  // Method to convert CuisineType to string
+  // Convert CuisineType to string
   String get cuisineTypeAsString {
     return cuisineType.toString().split('.').last;
-  }
-
-  // Method to display restaurant details
-  @override
-  String toString() {
-    return 'id: $id\n'
-          'Restaurant Name: $name\n'
-           'Owner ID: $ownerId\n'
-           'Contact: $contactNumber\n'
-           'Address: $location\n'
-           'Cuisine Type: ${cuisineTypeAsString}\n'
-           'Accepted: $isAccepted'; // Include isFavorite in toString
   }
 
   // Convert Restaurant object to Map<String, dynamic> (for saving in Firebase)
@@ -50,9 +38,9 @@ class Restaurant {
       'ownerId': ownerId,
       'name': name,
       'contactNumber': contactNumber,
-      'address': location,
+      'location': location,
       'cuisineType': cuisineType.toString().split('.').last, // Store as a string
-      'isAccepted': isAccepted, // Add isFavorite to the map
+      'isAccepted': isAccepted,
       'isReservationAvailable': isReservationAvailable,
     };
   }
@@ -62,20 +50,19 @@ class Restaurant {
     return Restaurant(
       id: map['id'] ?? '',
       ownerId: map['ownerId'] ?? '',
-      name: map['name'] ?? '',
-      contactNumber: map['contactNumber'] ?? '',
-      location: map['location'] ?? '',
+      name: map['restaurantName'] ?? '',  
+      contactNumber: map['restaurantPhoneNumber'] ?? '',  
+      location: map['restaurantLocation'] ?? '',  
       cuisineType: CuisineType.values.firstWhere(
         (type) => type.toString().split('.').last == map['cuisineType'],
-        orElse: () => CuisineType.Other, // Default value if not found
+        orElse: () => CuisineType.Other,
       ),
-      isAccepted: map['isAccepted'] ?? false, // Default to false if not found
-      isReservationAvailable: map['isReservationAvailable'] ?? false, // Default to false if not found
-
+      isAccepted: map['isAccepted'] ?? false,
+      isReservationAvailable: map['isReservationAvailable'] ?? false,
     );
   }
 
-    // Method to determine status based on isAccepted
+  // Method to get the status of the request
   String get status {
     if (isAccepted) {
       return "Accepted";
@@ -84,4 +71,3 @@ class Restaurant {
     }
   }
 }
-
