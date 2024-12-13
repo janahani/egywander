@@ -100,7 +100,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                   fontWeight: FontWeight.w500,
                 ),
                 tabs: [
-                  Tab(child: Text("Customers")),
+                  Tab(child: Text("Wanderers")),
                   Tab(child: Text("Admins")),
                   Tab(child: Text("Restaurant\nOwners")),
                 ],
@@ -110,7 +110,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                   children: [
                     // Customers List
                     FutureBuilder(
-                      future: _fetchUsersByType("Customer"),
+                      future: _fetchUsersByType("Wanderer"),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());

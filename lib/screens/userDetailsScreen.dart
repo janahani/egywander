@@ -18,6 +18,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   late TextEditingController _emailController;
   late TextEditingController _ageController;
   late TextEditingController _genderController;
+  final List<String> genders = ["Male", "Female"];
 
   @override
   void initState() {

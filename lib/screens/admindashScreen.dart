@@ -6,6 +6,7 @@ import '/widgets/accountmenubtns.dart';
 import 'userManagementScreen.dart';
 import 'aboutusScreen.dart';
 import 'restaurantManagementScreen.dart';
+import 'addUserScreen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   @override
@@ -90,7 +91,14 @@ class AdminDashboardScreen extends StatelessWidget {
                       context,
                       icon: Icons.supervised_user_circle,
                       text: "Add a User",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddUserScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                     buildMenuButton(
