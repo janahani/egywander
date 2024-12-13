@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/restaurant.dart';
 import '../models/tableinfo.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];
@@ -56,8 +58,6 @@ class RestaurantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   // Add table info related to a specific restaurant
   void addTableInfo(String restaurantId, TableInfo tableInfo) {
     if (_restaurantTables.containsKey(restaurantId)) {
@@ -69,5 +69,25 @@ class RestaurantProvider extends ChangeNotifier {
   // Get table info for a specific restaurant
   List<TableInfo>? getTableInfo(String restaurantId) {
     return _restaurantTables[restaurantId];
+  }
+
+  // Assuming you have some Firebase Firestore logic to fetch the restaurantId
+  Future<String?> fetchRestaurantIdByOwnerId(String ownerId) async {
+    try {
+      var doc = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .where('ownerId', isEqualTo: ownerId)
+          .limit(1)
+          .get();
+
+      if (doc.docs.isNotEmpty) {
+        return doc.docs.first.id;  // Return the restaurant ID if found
+      } else {
+        return null;  // Return null if no restaurant found
+      }
+    } catch (e) {
+      print('Error fetching restaurant: $e');
+      return null;  // Return null on error
+    }
   }
 }
