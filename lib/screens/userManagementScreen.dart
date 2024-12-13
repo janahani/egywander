@@ -102,7 +102,10 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                 tabs: [
                   Tab(child: Text("Wanderers")),
                   Tab(child: Text("Admins")),
-                  Tab(child: Text("Restaurant\nOwners")),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Tab(child: Text("Restaurant\nOwners")),
+                  ),
                 ],
               ),
               Expanded(
