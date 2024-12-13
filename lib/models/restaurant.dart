@@ -12,6 +12,7 @@ class Restaurant {
   final String location;
   final CuisineType cuisineType;
   final bool isAccepted; // New field to track if the restaurant is a favorite
+  final bool isReservationAvailable;
 
   // Constructor
   Restaurant({
@@ -22,6 +23,7 @@ class Restaurant {
     required this.location,
     required this.cuisineType,
     this.isAccepted = false, // Default to false if not provided
+    this.isReservationAvailable = false,
   }) : id = id ?? const Uuid().v4();
 
   // Method to convert CuisineType to string
@@ -51,6 +53,7 @@ class Restaurant {
       'address': location,
       'cuisineType': cuisineType.toString().split('.').last, // Store as a string
       'isAccepted': isAccepted, // Add isFavorite to the map
+      'isReservationAvailable': isReservationAvailable,
     };
   }
 
@@ -67,6 +70,8 @@ class Restaurant {
         orElse: () => CuisineType.Other, // Default value if not found
       ),
       isAccepted: map['isAccepted'] ?? false, // Default to false if not found
+      isReservationAvailable: map['isReservationAvailable'] ?? false, // Default to false if not found
+
     );
   }
 
