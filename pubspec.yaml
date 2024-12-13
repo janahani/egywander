@@ -32,7 +32,7 @@ flutter:
   fonts:
     - family: egy
       fonts:
-        - asset: assets/fonts/Azonix.otf
+        - asset: assets/fonts/Kiona.ttf
     - family: Historic
       fonts:
         - asset: assets/fonts/Historic.otf
