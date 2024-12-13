@@ -111,58 +111,9 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    // Customers List
-                    FutureBuilder(
-                      future: _fetchUsersByType("Wanderer"),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Error fetching data.'));
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(child: Text('No customers found.'));
-                        } else {
-                          List<Map<String, dynamic>> users =
-                              snapshot.data as List<Map<String, dynamic>>;
-                          return _buildUserList(users);
-                        }
-                      },
-                    ),
-                    // Admins List
-                    FutureBuilder(
-                      future: _fetchUsersByType("Admin"),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Error fetching data.'));
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(child: Text('No admins found.'));
-                        } else {
-                          List<Map<String, dynamic>> users =
-                              snapshot.data as List<Map<String, dynamic>>;
-                          return _buildUserList(users);
-                        }
-                      },
-                    ),
-                    // Restaurant Owners List
-                    FutureBuilder(
-                      future: _fetchUsersByType("Owner"),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Error fetching data.'));
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(
-                              child: Text('No restaurant owners found.'));
-                        } else {
-                          List<Map<String, dynamic>> users =
-                              snapshot.data as List<Map<String, dynamic>>;
-                          return _buildUserList(users);
-                        }
-                      },
-                    ),
+                    _buildUserListFuture("Wanderer"),
+                    _buildUserListFuture("Admin"),
+                    _buildUserListFuture("Owner"),
                   ],
                 ),
               ),
@@ -170,6 +121,25 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUserListFuture(String userType) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _fetchUsersByType(userType),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error fetching data.'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No users found.'));
+        } else {
+          List<Map<String, dynamic>> filteredUsers =
+              _filterUsers(snapshot.data!, _searchQuery);
+          return _buildUserList(filteredUsers);
+        }
+      },
     );
   }
 
