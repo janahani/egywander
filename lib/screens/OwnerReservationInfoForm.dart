@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:egywander/providers/userProvider.dart';
-import 'loginScreen.dart';
-import 'accountsettingsScreen.dart';
-import 'aboutusScreen.dart';
-import '../widgets/systembars.dart';
-import 'package:egywander/widgets/accountmenubtns.dart';
-import 'OwnerReservationInfoForm.dart';
-import 'viewReservationScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/tableinfo.dart';
 import '../widgets/customBtn.dart';
+import '../providers/restaurantProvider.dart';
+import '../widgets/systembars.dart';
 
 class OwnerReservationInfoForm extends StatefulWidget {
   @override
@@ -20,28 +15,60 @@ class OwnerReservationInfoForm extends StatefulWidget {
 class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
   final _formKey = GlobalKey<FormState>();
   List<TableInfo> tables = [
-    TableInfo(tableNumber: 1, seatCount: 4), // Initialize with a default table
+    TableInfo(tableNumber: 1, seatCount: 4),
   ];
+
+  Future<void> saveTableInfo(String restaurantId) async {
+    try {
+      final batch = FirebaseFirestore.instance.batch();
+      final tablesCollection = FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(restaurantId)
+          .collection('tables');
+
+      for (var table in tables) {
+        batch.set(
+          tablesCollection.doc(table.id),
+          {
+            'tableNumber': table.tableNumber,
+            'seatCount': table.seatCount,
+          },
+        );
+      }
+      await batch.commit();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Reservation information saved successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save table information: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final restaurantProvider = Provider.of<RestaurantProvider>(context);
+    final restaurantId = "npCY93t3cIMc7N4whoKo";
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(18.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Add Your Restaurant's Reservation Information",
+                "Add Reservation Information",
                 style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -51,38 +78,30 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
               ),
               const SizedBox(height: 10),
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceEvenly, // Adjust alignment as needed
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 180, // Adjust the width as needed
-                      child: CustomButton(
-                        text: "Add Table",
-                        onPressed: _addTable,
-                      ),
-                    ),
+                  CustomButton(
+                    text: "Add Table",
+                    onPressed: _addTable,
                   ),
-                  Center(
-                    child: Container(
-                      width: 180, // Adjust the width as needed
-                      child: CustomButton(
-                        text: "Submit Form",
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            // Form submission logic here
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'Reservation information submitted successfully')),
-                            );
-                          }
-                        },
-                      ),
-                    ),
+                  CustomButton(
+                    text: "Submit Form",
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        if (restaurantId != null) {
+                          await saveTableInfo(restaurantId);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Invalid Restaurant ID'),
+                            ),
+                          );
+                        }
+                      }
+                    },
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -93,7 +112,7 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
   void _addTable() {
     setState(() {
       tables.add(
-        TableInfo(tableNumber: tables.length + 1, seatCount: 4),
+        TableInfo(tableNumber: 0, seatCount: 0), // Default values
       );
     });
   }
@@ -101,60 +120,111 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
   Widget _buildTableInfoSection() {
     return Column(
       children: tables
-          .map((table) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Card(
-                  elevation: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Table ${table.tableNumber}",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        Row(
+          .asMap()
+          .entries
+          .map(
+            (entry) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5.0),
+              child: Card(
+                elevation: 2, //drop shadow effect
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Table Number Input
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Seats: ",
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.black54),
-                            ),
-                            Container(
-                              width: 40,
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              height: 40,
                               child: TextFormField(
-                                initialValue: table.seatCount.toString(),
+                                initialValue: entry.value.tableNumber == 0
+                                    ? ''
+                                    : entry.value.tableNumber.toString(),
                                 decoration: InputDecoration(
-                                  hintText: '4',
                                   border: OutlineInputBorder(),
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 8),
+                                  labelText: "Table Number",
                                 ),
                                 keyboardType: TextInputType.number,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter seat count';
+                                    return 'Enter table number';
+                                  }
+                                  if (tables.any((table) =>
+                                      table.tableNumber ==
+                                          int.tryParse(value) &&
+                                      table != entry.value)) {
+                                    return 'Duplicate table number';
                                   }
                                   return null;
                                 },
                                 onChanged: (value) {
                                   setState(() {
-                                    table.seatCount =
-                                        int.tryParse(value) ?? table.seatCount;
+                                    entry.value.tableNumber =
+                                        int.tryParse(value) ?? 0;
                                   });
                                 },
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 16), // Space between inputs
+                      // Seat Count Input
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              height: 40,
+                              child: TextFormField(
+                                initialValue: entry.value.seatCount == 0
+                                    ? ''
+                                    : entry.value.seatCount.toString(),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: "Seats Count",
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Enter seat count';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    entry.value.seatCount =
+                                        int.tryParse(value) ?? 0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _removeTable(entry.key),
+                      ),
+                    ],
                   ),
                 ),
-              ))
+              ),
+            ),
+          )
           .toList(),
     );
+  }
+
+  void _removeTable(int index) {
+    setState(() {
+      tables.removeAt(index);
+    });
   }
 }

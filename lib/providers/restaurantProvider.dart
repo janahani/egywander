@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import '../models/restaurant.dart';
+import '../models/tableinfo.dart';
+
+class RestaurantProvider extends ChangeNotifier {
+  List<Restaurant> _restaurants = [];
+  Map<String, List<TableInfo>> _restaurantTables = {};
+
+  List<Restaurant> get restaurants => _restaurants;
+
+  String? _restaurantId;
+  String? _ownerId;
+  String? _name;
+  String? _contactNumber;
+  String? _location;
+
+  // Getters
+  String? get restaurantId => _restaurantId;
+  String? get ownerId => _ownerId;
+  String? get name => _name;
+  String? get contactNumber => _contactNumber;
+  String? get location => _location;
+
+  // Setters with notifyListeners to rebuild UI
+  void setRestaurantId(String restaurantId) {
+    _restaurantId = restaurantId;
+    notifyListeners();
+  }
+
+  void setOwnerId(String ownerId) {
+    _ownerId = ownerId;
+    notifyListeners();
+  }
+
+  void setRestaurantData({
+    required String restaurantId,
+    required String ownerId,
+    required String name,
+    required String contactNumber,
+    required String location,
+  }) {
+    _restaurantId = restaurantId;
+    _ownerId = ownerId;
+    _name = name;
+    _contactNumber = contactNumber;
+    _location = location;
+    notifyListeners();
+  }
+
+  void clearRestaurantData() {
+    _restaurantId = null;
+    _ownerId = null;
+    _name = null;
+    _contactNumber = null;
+    _location = null;
+    notifyListeners();
+  }
+
+
+
+  // Add table info related to a specific restaurant
+  void addTableInfo(String restaurantId, TableInfo tableInfo) {
+    if (_restaurantTables.containsKey(restaurantId)) {
+      _restaurantTables[restaurantId]?.add(tableInfo);
+      notifyListeners();
+    }
+  }
+
+  // Get table info for a specific restaurant
+  List<TableInfo>? getTableInfo(String restaurantId) {
+    return _restaurantTables[restaurantId];
+  }
+}

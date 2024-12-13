@@ -12,7 +12,7 @@ class RegisterScreen extends StatefulWidget {
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
-
+ 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool isOwner = false;
   String? selectedGender;
@@ -55,6 +55,7 @@ Future<bool> isEmailRegistered(String email) async {
       .get();
 
   return querySnapshot.docs.isNotEmpty;
+  
 }
 Future<void> checkEmailExists(String email) async {
   bool emailExists = await isEmailRegistered(email);

@@ -1,3 +1,4 @@
+import 'package:egywander/screens/homepageScreen.dart';
 import 'package:flutter/material.dart';
 import 'screens/welcomeScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,7 +8,8 @@ import 'package:provider/provider.dart';
 import 'providers/userProvider.dart';
 import 'screens/UserManagementScreen.dart';
 import 'screens/admindashScreen.dart';
-
+import 'providers/restaurantProvider.dart';
+import 'screens/OwnerReservationInfoForm.dart';
 
 Future<void> main() async {
   // Ensure Flutter bindings are initialized
@@ -30,8 +32,11 @@ Future<void> main() async {
   );
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => UserProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => RestaurantProvider()),
+      ],
       child: MyApp(),
     ),
   );
@@ -44,7 +49,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: UsersManagementScreen(),
+      home: HomeScreen(),
     );
   }
 }
