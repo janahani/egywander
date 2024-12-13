@@ -39,7 +39,7 @@ class RequestDetailsScreen extends StatelessWidget {
       await FirebaseFirestore.instance
           .collection('restaurants')
           .doc(restaurant["id"])
-          .update({"isAccepted": false});
+          .delete();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -116,7 +116,8 @@ class RequestDetailsScreen extends StatelessWidget {
                     children: [
                       const Icon(Icons.phone, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text("Phone: ${restaurant["restaurantPhoneNumber"] ?? 'N/A'}"),
+                      Text(
+                          "Phone: ${restaurant["restaurantPhoneNumber"] ?? 'N/A'}"),
                     ],
                   ),
                   const SizedBox(height: 16),
