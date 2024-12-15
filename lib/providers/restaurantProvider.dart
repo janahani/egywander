@@ -71,7 +71,6 @@ class RestaurantProvider extends ChangeNotifier {
     return _restaurantTables[restaurantId];
   }
 
-  // Assuming you have some Firebase Firestore logic to fetch the restaurantId
   Future<String?> fetchRestaurantIdByOwnerId(String ownerId) async {
     try {
       var doc = await FirebaseFirestore.instance
