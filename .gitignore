@@ -44,3 +44,5 @@ app.*.map.json
 
 .fake
 *.cmake
+android/app/src/main/AndroidManifest.xml
+android/app/src/main/AndroidManifest.xml

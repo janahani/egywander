@@ -7,7 +7,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  late GoogleMapController _controller;
+  late GoogleMapController googleMapController;
 
   static const LatLng _initialPosition = LatLng(37.77483, -122.41942); // Example coordinates
 
@@ -16,8 +16,8 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Google Maps")),
       body: GoogleMap(
-        onMapCreated: (controller) {
-          _controller = controller;
+        onMapCreated: (googleMapsController) {
+          googleMapController = googleMapsController;
         },
         initialCameraPosition: CameraPosition(
           target: _initialPosition,
