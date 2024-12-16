@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import '../models/restaurant.dart';
 import '../models/tableinfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];
+
   Map<String, List<TableInfo>> _restaurantTables = {};
+
+  //final String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+  Map<String, dynamic>? restaurantDetails;
 
   List<Restaurant> get restaurants => _restaurants;
 
@@ -80,57 +87,116 @@ class RestaurantProvider extends ChangeNotifier {
           .get();
 
       if (doc.docs.isNotEmpty) {
-        return doc.docs.first.id;  // Return the restaurant ID if found
+        return doc.docs.first.id; // Return the restaurant ID if found
       } else {
-        return null;  // Return null if no restaurant found
+        return null; // Return null if no restaurant found
       }
     } catch (e) {
       print('Error fetching restaurant: $e');
-      return null;  // Return null on error
+      return null; // Return null on error
     }
   }
 
-Future<Restaurant?> fetchRestaurantDetailsByOwnerId(String ownerId) async {
-  try {
-    var doc = await FirebaseFirestore.instance
-        .collection('restaurants')
-        .where('ownerId', isEqualTo: ownerId)
-        .limit(1)
-        .get();
+  Future<Restaurant?> fetchRestaurantDetailsByOwnerId(String ownerId) async {
+    try {
+      var doc = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .where('ownerId', isEqualTo: ownerId)
+          .limit(1)
+          .get();
 
-    if (doc.docs.isNotEmpty) {
-      return Restaurant.fromMap(doc.docs.first.data());
+      if (doc.docs.isNotEmpty) {
+        return Restaurant.fromMap(doc.docs.first.data());
+      } else {
+        return null; // No restaurant found
+      }
+    } catch (e) {
+      print('Error fetching restaurant details: $e');
+      return null;
+    }
+  }
+
+  Future<Restaurant?> fetchRestaurantDetailsById(String restaurantId) async {
+    try {
+      // Fetch restaurant document by its ID
+      var doc = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(restaurantId) // Use `doc` instead of `where` to search by ID
+          .get();
+
+      if (doc.exists) {
+        // Ensure all fields are included in the Restaurant object
+        return Restaurant.fromMap(
+            doc.data()!); // Convert the document data to Restaurant object
+      } else {
+        return null; // Return null if the restaurant does not exist
+      }
+    } catch (e) {
+      print('Error fetching restaurant: $e');
+      return null;
+    }
+  }
+
+  Future<void> fetchRestaurantDetails(String name) async {
+    final url = Uri.parse(
+        "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(name)}&key=$googleMapsapiKey&region=EG");
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['results'] != null && data['results'].isNotEmpty) {
+        restaurantDetails = data['results'][0];
+        notifyListeners();
+      } else {
+        restaurantDetails = null;
+        notifyListeners();
+      }
     } else {
-      return null; // No restaurant found
+      throw Exception("Failed to fetch restaurant details");
+    }
+  }
+
+  Future<void> fetchPlacesForCity(String city) async {
+  try {
+    final url = Uri.parse(
+    "https://maps.googleapis.com/maps/api/place/textsearch/json?query=top%20places%20in%20Cairo&key=AIzaSyBGTNjXs-0U_xdsKmzcl-IBEZFr4vbDDwk&region=EG");
+
+    final response = await http.get(url);
+
+    print('Response Status: ${response.statusCode}');
+    print('Response Body: ${response.body}'); // Log the raw response body
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Decoded Data: $data'); // Log the decoded data
+      
+      if (data['results'] != null && data['results'].isNotEmpty) {
+        print('Fetched places: ${data['results']}');
+        _restaurants = data['results']
+            .map<Restaurant>((place) => Restaurant.fromGooglePlace(place))
+            .toList();
+      } else {
+        print('No results found.');
+        _restaurants = [];
+      }
+    } else {
+      print('API call failed: ${response.statusCode} - ${response.body}');
+      throw Exception('API call failed with status: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error fetching restaurant details: $e');
-    return null;
+    print('Error: $e'); // Log the error
+    _restaurants = []; // Clear restaurants on failure
+    rethrow; // Pass the error up to notify the UI
+  } finally {
+    notifyListeners(); // Always update the UI
   }
-}
-
-
-
- Future<Restaurant?> fetchRestaurantDetailsById(String restaurantId) async {
-  try {
-    // Fetch restaurant document by its ID
-    var doc = await FirebaseFirestore.instance
-        .collection('restaurants')
-        .doc(restaurantId) // Use `doc` instead of `where` to search by ID
-        .get();
-
-    if (doc.exists) {
-      // Ensure all fields are included in the Restaurant object
-      return Restaurant.fromMap(doc.data()!); // Convert the document data to Restaurant object
-    } else {
-      return null;  // Return null if the restaurant does not exist
-    }
-  } catch (e) {
-    print('Error fetching restaurant: $e');
-    return null;
   }
-}
-
-
-
+  /* Future<void> cachePlacesInFirestore(
+      String city, List<Restaurant> places) async {
+    final collection = FirebaseFirestore.instance.collection('places');
+    await collection.doc(city).set({
+      'places': places.map((place) => place.toMap()).toList(),
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  } */
 }

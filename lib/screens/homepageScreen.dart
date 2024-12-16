@@ -2,8 +2,32 @@ import 'package:flutter/material.dart';
 import '../widgets/categorychip.dart';
 import '../widgets/travelcard.dart';
 import '../widgets/systembars.dart';
+import '../providers/restaurantProvider.dart';
+import 'package:provider/provider.dart';
+import '../models/restaurant.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomeScreen extends StatelessWidget {
+   // final String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+
+
+ void _fetchPlaces(BuildContext context, String city) async {
+  final provider = Provider.of<RestaurantProvider>(context, listen: false);
+  
+  try {
+    await provider.fetchPlacesForCity(city);
+    
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to fetch places for $city: $e')),
+      
+    );
+    
+  }
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +74,21 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _fetchPlaces(context, 'Cairo'),
+                  child: Text('Cairo'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () => _fetchPlaces(context, 'Luxor and Aswan'),
+                  child: Text('Luxor and Aswan'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -77,7 +116,10 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextButton(
-                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                    ),
                     onPressed: () {},
                     child: Text(
                       'View All',
@@ -92,24 +134,30 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  TravelCard(
-                    image: 'assets/images/welcomescreen.jpg',
-                    title: 'Aswan Temple',
-                    location: 'Aswan, Egypt',
-                    people: '+15',
-                    rating: 5
-                  ),
-                  TravelCard(
-                    image: 'assets/images/pyramids.jpg',
-                    title: 'Pyramids of Giza',
-                    location: 'Giza, Egypt',
-                    people: '+20',
-                    rating: 4
-                  ),
-                ],
+              child: Consumer<RestaurantProvider>(
+                builder: (context, provider, child) {
+                  return ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: provider.restaurants
+                        .map(
+                          (place) => TravelCard(
+                            image: place.imageUrl ??
+                                'https://via.placeholder.com/150', // Default image URL
+                            title: place.name.isNotEmpty
+                                ? place.name
+                                : 'Unknown Restaurant', // Default title
+                            location: place.location.isNotEmpty
+                                ? place.location
+                                : 'Unknown Location', // Default location
+                            people: place.userRatingsTotal != null
+                                ? '+${place.userRatingsTotal}'
+                                : '+0', // Default people count
+                            rating: place.rating ?? 0.0, // Default rating
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
               ),
             ),
           ],

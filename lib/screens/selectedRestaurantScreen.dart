@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../screens/reservationPage.dart';
 import '../widgets/customBtn.dart'; 
 import 'package:egywander/widgets/systembars.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class RestaurantDetailsPage extends StatelessWidget {
   final String restaurantName = "Sizzler Stakehouse";
