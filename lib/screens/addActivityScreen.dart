@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart'; 
+import '/models/schedule.dart'; 
+import '/providers/userProvider.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddActivityScreen extends StatefulWidget {
   final String activityTitle;
+  final String activityId;
 
-  const AddActivityScreen({required this.activityTitle});
+  const AddActivityScreen({required this.activityTitle, required this.activityId});
 
   @override
   _AddActivityScreenState createState() => _AddActivityScreenState();
@@ -63,19 +68,48 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     }
   }
 
-  void _addActivity() {
+   Future<void> _addActivityToSchedule() async {
     if (_formKey.currentState!.validate()) {
-      // Create the new activity
-      final newActivity = {
-        "title": _titleController.text,
-        "date": _dateController.text,
-        "startTime": _startTimeController.text,
-        "endTime": _endTimeController.text,
-      };
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final userId = userProvider.id!;
 
-      Navigator.pop(context, newActivity); // Pass the new activity back
+         try {
+      // Parsing the date with the format dd/MM/yyyy
+      final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
+
+      // Parsing the start and end times with the format HH:mm (24-hour format)
+      final parsedStartTime = DateFormat('HH:mm').parse(_startTimeController.text);
+      final parsedEndTime = DateFormat('HH:mm').parse(_endTimeController.text);
+
+      // Creating the new schedule object
+      final newSchedule = Schedule(
+        userId: userId,
+        placeId: widget.activityId,
+        date: parsedDate,
+        startingTime: DateTime(parsedDate.year, parsedDate.month, parsedDate.day, parsedStartTime.hour, parsedStartTime.minute),
+        endingTime: DateTime(parsedDate.year, parsedDate.month, parsedDate.day, parsedEndTime.hour, parsedEndTime.minute),
+      );
+
+      // Add the new schedule to Firestore
+      await FirebaseFirestore.instance
+          .collection('schedule')
+          .add(newSchedule.toMap());
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Activity added to schedule successfully!')),
+      );
+
+      // Close the dialog after adding
+      Navigator.pop(context); 
+    } catch (e) {
+      // Show an error message if something fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add activity: $e')),
+      );
     }
   }
+}
 
   InputDecoration _buildInputDecoration(String label, {Widget? suffixIcon}) {
     return InputDecoration(
@@ -168,7 +202,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                 ),
                 SizedBox(height: 40),
                 ElevatedButton(
-                  onPressed: _addActivity,
+                  onPressed: _addActivityToSchedule,
                   child: Text(
                     "Add Activity",
                     style: TextStyle(fontSize: 18, color: Colors.white),
