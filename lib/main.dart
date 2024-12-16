@@ -12,6 +12,7 @@ import 'screens/admindashScreen.dart';
 import 'providers/restaurantProvider.dart';
 import 'screens/OwnerReservationInfoForm.dart';
 import 'screens/selectedRestaurantScreen.dart';
+import 'providers/homepageactivityprovider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
@@ -39,7 +40,9 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => Homepageactivityprovider()),
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
+
       ],
       child: MyApp(),
     ),

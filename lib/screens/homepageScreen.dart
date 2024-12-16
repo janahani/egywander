@@ -5,16 +5,25 @@ import '../widgets/systembars.dart';
 import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
 import '../models/restaurant.dart';
+import '../providers/homepageactivityprovider.dart'; // This provider will handle activities
 
-class HomeScreen extends StatelessWidget {
-  void _fetchPlaces(BuildContext context, String city) async {
-    final provider = Provider.of<RestaurantProvider>(context, listen: false);
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String selectedCategory = 'Entertainment'; // Default category
+
+  void _fetchActivities(BuildContext context, String city) async {
+    final provider =
+        Provider.of<Homepageactivityprovider>(context, listen: false);
 
     try {
       await provider.fetchPlacesForCity(city);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch places for $city: $e')),
+        SnackBar(content: Text('Failed to fetch activities for $city: $e')),
       );
     }
   }
@@ -63,28 +72,65 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => _fetchPlaces(context, 'Cairo'),
+                    onPressed: () => _fetchActivities(context, 'Cairo'),
                     child: Text('Cairo'),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () => _fetchPlaces(context, 'Luxor and Aswan'),
+                    onPressed: () =>
+                        _fetchActivities(context, 'Luxor and Aswan'),
                     child: Text('Luxor and Aswan'),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CategoryChip(
-                      label: 'Entertainment',
-                      color: const Color.fromARGB(255, 255, 152, 0)),
+                    label: 'Entertainment',
+                    color: const Color.fromARGB(255, 158, 158, 158),
+                    isSelected: selectedCategory ==
+                        'Entertainment', // Check if this category is selected
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = 'Entertainment';
+                      });
+                    },
+                  ),
                   CategoryChip(
-                      label: 'Food',
-                      color: const Color.fromARGB(255, 158, 158, 158)),
-                  CategoryChip(label: 'Desert', color: Colors.grey),
-                  CategoryChip(label: 'Sea', color: Colors.grey),
+                    label: 'Food',
+                    color: const Color.fromARGB(255, 158, 158, 158),
+                    isSelected: selectedCategory ==
+                        'Food', // Check if this category is selected
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = 'Food';
+                      });
+                    },
+                  ),
+                  CategoryChip(
+                    label: 'Landmarks',
+                    color: Colors.grey,
+                    isSelected: selectedCategory ==
+                        'Landmarks', // Check if this category is selected
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = 'Landmarks';
+                      });
+                    },
+                  ),
+                  CategoryChip(
+                    label: 'Sea',
+                    color: Colors.grey,
+                    isSelected: selectedCategory ==
+                        'Sea', // Check if this category is selected
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = 'Sea';
+                      });
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 30),
@@ -120,29 +166,31 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 20),
               SizedBox(
                 height: 300,
-                child: Consumer<RestaurantProvider>(
+                child: Consumer<Homepageactivityprovider>(
                   builder: (context, provider, child) {
-                    final topPlaces = provider.restaurants
+                    final filteredActivities = provider.activities
+                        .where(
+                            (activity) => activity.category == selectedCategory)
                         .take(10)
-                        .toList(); 
+                        .toList();
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: topPlaces.length,
+                      itemCount: filteredActivities.length,
                       itemBuilder: (context, index) {
-                        final place = topPlaces[index];
+                        final activity = filteredActivities[index];
                         return TravelCard(
-                          image: place.imageUrl ??
+                          image: activity.imageUrl ??
                               'https://via.placeholder.com/150',
-                          title: place.name.isNotEmpty
-                              ? place.name
-                              : 'Unknown Restaurant',
-                          location: place.location.isNotEmpty
-                              ? place.location
+                          title: activity.name.isNotEmpty
+                              ? activity.name
+                              : 'Unknown Activity',
+                          location: activity.location.isNotEmpty
+                              ? activity.location
                               : 'Unknown Location',
-                          people: place.userRatingsTotal != null
-                              ? '+${place.userRatingsTotal}'
+                          people: activity.userRatingsTotal != null
+                              ? '+${activity.userRatingsTotal}'
                               : '+0',
-                          rating: place.rating ?? 0.0,
+                          rating: activity.rating ?? 0.0,
                         );
                       },
                     );
