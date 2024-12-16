@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart'; 
-import '/models/schedule.dart'; 
-import '/providers/userProvider.dart'; 
+import 'package:provider/provider.dart';
+import '/models/schedule.dart';
+import '/providers/userProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddActivityScreen extends StatefulWidget {
   final String activityTitle;
   final String activityId;
 
-  const AddActivityScreen({required this.activityTitle, required this.activityId});
+  const AddActivityScreen(
+      {required this.activityTitle, required this.activityId});
 
   @override
   _AddActivityScreenState createState() => _AddActivityScreenState();
@@ -21,6 +22,9 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   late TextEditingController _dateController;
   late TextEditingController _startTimeController;
   late TextEditingController _endTimeController;
+
+  String? _startTimeError;
+  String? _endTimeError;
 
   @override
   void initState() {
@@ -44,7 +48,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
 
@@ -55,73 +59,128 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
+      final formattedTime = DateFormat('HH:mm').format(
+        DateTime(0, 0, 0, picked.hour, picked.minute),
+      );
       setState(() {
-        controller.text = picked.format(context);
+        controller.text = formattedTime;
       });
     }
   }
 
-   Future<void> _addActivityToSchedule() async {
+  String? _validateStartTime() {
+    final currentDateTime = DateTime.now();
+    final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
+    final parsedStartTime =
+        DateFormat('HH:mm').parse(_startTimeController.text);
+    final selectedDateTimeStart = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedStartTime.hour,
+      parsedStartTime.minute,
+    );
+
+    if (selectedDateTimeStart.isBefore(currentDateTime)) {
+      return 'Start time must be in the future';
+    }
+
+    return null;
+  }
+
+ String? _validateEndTime() {
+  final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
+  final parsedStartTime = DateFormat('HH:mm').parse(_startTimeController.text);
+  final parsedEndTime = DateFormat('HH:mm').parse(_endTimeController.text);
+
+  final selectedDateTimeStart = DateTime(
+    parsedDate.year,
+    parsedDate.month,
+    parsedDate.day,
+    parsedStartTime.hour,
+    parsedStartTime.minute,
+  );
+
+  final selectedDateTimeEnd = DateTime(
+    parsedDate.year,
+    parsedDate.month,
+    parsedDate.day,
+    parsedEndTime.hour,
+    parsedEndTime.minute,
+  );
+
+  // If the end time is before the start time (and should be considered on the next day)
+  if (selectedDateTimeEnd.isBefore(selectedDateTimeStart)) {
+    // Add 1 day to the end time if it's before the start time
+    final adjustedEndTime = selectedDateTimeEnd.add(Duration(days: 1));
+    if (adjustedEndTime.isBefore(selectedDateTimeStart)) {
+      return 'End time must be after start time';
+    }
+  }
+
+  return null; // Valid end time
+}
+
+
+  Future<void> _addActivityToSchedule() async {
     if (_formKey.currentState!.validate()) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final userId = userProvider.id!;
 
-         try {
-      // Parsing the date with the format dd/MM/yyyy
-      final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
+      try {
+        // Parsing the date with the format dd/MM/yyyy
+        final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
 
-      // Parsing the start and end times with the format HH:mm (24-hour format)
-      final parsedStartTime = DateFormat('HH:mm').parse(_startTimeController.text);
-      final parsedEndTime = DateFormat('HH:mm').parse(_endTimeController.text);
+        // Parsing the start and end times with the format HH:mm (24-hour format)
+        final parsedStartTime =
+            DateFormat('HH:mm').parse(_startTimeController.text);
+        final parsedEndTime =
+            DateFormat('HH:mm').parse(_endTimeController.text);
 
-      // Creating the new schedule object
-      final newSchedule = Schedule(
-        userId: userId,
-        placeId: widget.activityId,
-        date: parsedDate,
-        startingTime: DateTime(parsedDate.year, parsedDate.month, parsedDate.day, parsedStartTime.hour, parsedStartTime.minute),
-        endingTime: DateTime(parsedDate.year, parsedDate.month, parsedDate.day, parsedEndTime.hour, parsedEndTime.minute),
-      );
+        // Creating the new schedule object
+        final newSchedule = Schedule(
+          userId: userId,
+          placeId: widget.activityId,
+          date: parsedDate,
+          startingTime: DateTime(parsedDate.year, parsedDate.month,
+              parsedDate.day, parsedStartTime.hour, parsedStartTime.minute),
+          endingTime: DateTime(parsedDate.year, parsedDate.month,
+              parsedDate.day, parsedEndTime.hour, parsedEndTime.minute),
+        );
 
-      // Add the new schedule to Firestore
-      await FirebaseFirestore.instance
-          .collection('schedule')
-          .add(newSchedule.toMap());
+        // Add the new schedule to Firestore
+        await FirebaseFirestore.instance
+            .collection('schedule')
+            .add(newSchedule.toMap());
 
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Activity added to schedule successfully!')),
-      );
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Activity added to schedule successfully!')),
+        );
 
-      // Close the dialog after adding
-      Navigator.pop(context); 
-    } catch (e) {
-      // Show an error message if something fails
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add activity: $e')),
-      );
+        // Close the dialog after adding
+        Navigator.pop(context);
+      } catch (e) {
+        // Show an error message if something fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add activity: $e')),
+        );
+      }
     }
-  }
-}
-
-  InputDecoration _buildInputDecoration(String label, {Widget? suffixIcon}) {
-    return InputDecoration(
-      labelText: label,
-      border: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.orange, width: 2),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.orange, width: 2),
-      ),
-      suffixIcon: suffixIcon,
-    );
   }
 
   @override
@@ -171,7 +230,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                     "Start Time",
                     suffixIcon: IconButton(
                       icon: Icon(Icons.access_time),
-                      onPressed: () => _selectTime(context, _startTimeController),
+                      onPressed: () =>
+                          _selectTime(context, _startTimeController),
                     ),
                   ),
                   readOnly: true,
@@ -179,9 +239,17 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                     if (value == null || value.isEmpty) {
                       return "Please select a start time";
                     }
-                    return null;
+                    _startTimeError = _validateStartTime();
+                    return _startTimeError;
                   },
                 ),
+                if (_startTimeError != null) ...[
+                  SizedBox(height: 8),
+                  Text(
+                    _startTimeError!,
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ],
                 SizedBox(height: 20),
                 TextFormField(
                   controller: _endTimeController,
@@ -197,22 +265,23 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                     if (value == null || value.isEmpty) {
                       return "Please select an end time";
                     }
-                    return null;
+                    _endTimeError = _validateEndTime();
+                    return _endTimeError;
                   },
                 ),
+                if (_endTimeError != null) ...[
+                  SizedBox(height: 8),
+                  Text(
+                    _endTimeError!,
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ],
                 SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: _addActivityToSchedule,
                   child: Text(
                     "Add Activity",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
               ],
@@ -220,6 +289,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration(String label, {Widget? suffixIcon}) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(),
+      suffixIcon: suffixIcon,
     );
   }
 }
