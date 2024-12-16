@@ -179,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final activity = filteredActivities[index];
                         return TravelCard(
+                          id: activity.id,
                           image: activity.imageUrl ??
                               'https://via.placeholder.com/150',
                           title: activity.name.isNotEmpty

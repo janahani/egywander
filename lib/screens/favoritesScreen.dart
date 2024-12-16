@@ -49,6 +49,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ActivityScreen(
+          id : favorite['id'],
           imageUrl: favorite['imageUrl']!,
           title: favorite['name']!,
           location: favorite['location']!,
