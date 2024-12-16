@@ -122,26 +122,29 @@ class HomeScreen extends StatelessWidget {
                 height: 300,
                 child: Consumer<RestaurantProvider>(
                   builder: (context, provider, child) {
-                    return ListView(
+                    final topPlaces = provider.restaurants
+                        .take(10)
+                        .toList(); 
+                    return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      children: provider.restaurants
-                          .map(
-                            (place) => TravelCard(
-                              image: place.imageUrl ??
-                                  'https://via.placeholder.com/150', // Default image URL
-                              title: place.name.isNotEmpty
-                                  ? place.name
-                                  : 'Unknown Restaurant', // Default title
-                              location: place.location.isNotEmpty
-                                  ? place.location
-                                  : 'Unknown Location', // Default location
-                              people: place.userRatingsTotal != null
-                                  ? '+${place.userRatingsTotal}'
-                                  : '+0', // Default people count
-                              rating: place.rating ?? 0.0, // Default rating
-                            ),
-                          )
-                          .toList(),
+                      itemCount: topPlaces.length,
+                      itemBuilder: (context, index) {
+                        final place = topPlaces[index];
+                        return TravelCard(
+                          image: place.imageUrl ??
+                              'https://via.placeholder.com/150',
+                          title: place.name.isNotEmpty
+                              ? place.name
+                              : 'Unknown Restaurant',
+                          location: place.location.isNotEmpty
+                              ? place.location
+                              : 'Unknown Location',
+                          people: place.userRatingsTotal != null
+                              ? '+${place.userRatingsTotal}'
+                              : '+0',
+                          rating: place.rating ?? 0.0,
+                        );
+                      },
                     );
                   },
                 ),
