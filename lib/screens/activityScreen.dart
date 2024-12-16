@@ -1,10 +1,14 @@
+import 'package:egywander/screens/loginScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import Provider
 import 'package:egywander/widgets/activityWidgets.dart'; // Import the updated widgets
 import '../widgets/systembars.dart';
 import './addActivityScreen.dart'; // Import the AddActivityScreen
 import '../widgets/customBtn.dart'; // Import the CustomButton widget
+import '../providers/userProvider.dart'; // Import UserProvider
 
 class ActivityScreen extends StatelessWidget {
+  final String id;
   final String imageUrl;
   final String title;
   final String location;
@@ -12,6 +16,7 @@ class ActivityScreen extends StatelessWidget {
   final double rating;
 
   const ActivityScreen({
+    required this.id,
     required this.imageUrl,
     required this.title,
     required this.location,
@@ -23,7 +28,7 @@ class ActivityScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddActivityScreen(activityTitle: title);
+        return AddActivityScreen(activityTitle: title, activityId: id);
       },
     ).then((result) {
       if (result != null) {
@@ -32,6 +37,25 @@ class ActivityScreen extends StatelessWidget {
         );
       }
     });
+  }
+
+  void _handleAddToSchedule(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (userProvider.isLoggedIn) {
+      // User is logged in
+      _openAddActivityDialog(context);
+    } else {
+      // User is not logged in
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("You have to register/log in first."),
+        ),
+      );
+      // Redirect to login screen
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
   }
 
   @override
@@ -59,14 +83,14 @@ class ActivityScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TitleAndLocation(title: title, location: location),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   PriceAndRatingSection(price: price, rating: rating),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   _InfoTilesRow(),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   DescriptionSection(),
-                  SizedBox(height: 30),
-                  
+                  const SizedBox(height: 30),
+
                   // Map Placeholder
                   Container(
                     height: 150,
@@ -81,15 +105,15 @@ class ActivityScreen extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   Center(
-                    child: Container(
+                    child: SizedBox(
                       width: 180, // Adjust the width as needed
                       child: CustomButton(
-                        text: "Reserve Now",
+                        text: "Add to Schedule",
                         onPressed: () {
-                          _openAddActivityDialog(context);
+                          _handleAddToSchedule(context);
                         },
                       ),
                     ),
