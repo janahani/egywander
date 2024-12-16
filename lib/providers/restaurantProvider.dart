@@ -10,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];
 
+
   Map<String, List<TableInfo>> _restaurantTables = {};
 
   //final String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
@@ -159,7 +160,7 @@ class RestaurantProvider extends ChangeNotifier {
   Future<void> fetchPlacesForCity(String city) async {
   try {
     final url = Uri.parse(
-    "https://maps.googleapis.com/maps/api/place/textsearch/json?query=top%20places%20in%20Cairo&key=AIzaSyBGTNjXs-0U_xdsKmzcl-IBEZFr4vbDDwk&region=EG");
+    "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('top places in $city')}&key=$googleMapsapiKey&region=EG");
 
     final response = await http.get(url);
 
