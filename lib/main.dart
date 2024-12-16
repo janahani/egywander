@@ -1,20 +1,20 @@
 import 'package:egywander/screens/homepageScreen.dart';
 import 'package:flutter/material.dart';
-import 'screens/welcomeScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+
 import 'providers/userProvider.dart';
+import 'screens/welcomeScreen.dart';
 import 'screens/UserManagementScreen.dart';
 import 'screens/admindashScreen.dart';
 import 'providers/restaurantProvider.dart';
 import 'screens/OwnerReservationInfoForm.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/selectedRestaurantScreen.dart';
 
-
 Future<void> main() async {
+  await dotenv.load(fileName: '.env');
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 

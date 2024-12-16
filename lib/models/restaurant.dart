@@ -1,7 +1,9 @@
 import 'package:uuid/uuid.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // Enum for cuisine types
 enum CuisineType { Egyptian, Italian, Chinese, Other }
+
 
 // Restaurant model class
 class Restaurant {
@@ -71,6 +73,7 @@ class Restaurant {
 
   // Create a Restaurant object from Google Places API response
   factory Restaurant.fromGooglePlace(Map<String, dynamic> place) {
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
     return Restaurant(
       id: place['place_id'] ?? const Uuid().v4(),
       ownerId: '', // Google Places does not have this
@@ -81,7 +84,7 @@ class Restaurant {
       isAccepted: true,
       isReservationAvailable: false,
       imageUrl: place['photos'] != null
-          ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=YOUR_API_KEY'
+          ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$apiKey'
           : null,
       rating: (place['rating'] as num?)?.toDouble(),
       userRatingsTotal: place['user_ratings_total'] as int?,
