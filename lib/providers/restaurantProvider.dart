@@ -6,10 +6,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];
-
 
   Map<String, List<TableInfo>> _restaurantTables = {};
 
@@ -122,7 +120,7 @@ class RestaurantProvider extends ChangeNotifier {
       // Fetch restaurant document by its ID
       var doc = await FirebaseFirestore.instance
           .collection('restaurants')
-          .doc(restaurantId) // Use `doc` instead of `where` to search by ID
+          .doc(restaurantId) // Use doc instead of where to search by ID
           .get();
 
       if (doc.exists) {
@@ -139,8 +137,9 @@ class RestaurantProvider extends ChangeNotifier {
   }
 
   Future<void> fetchRestaurantDetails(String name) async {
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
     final url = Uri.parse(
-        "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(name)}&key=$googleMapsapiKey&region=EG");
+        "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(name)}&key=$apiKey&region=EG");
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -158,39 +157,41 @@ class RestaurantProvider extends ChangeNotifier {
   }
 
   Future<void> fetchPlacesForCity(String city) async {
-  try {
-    final url = Uri.parse(
-    "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('top places in $city')}&key=$googleMapsapiKey&region=EG");
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
-    final response = await http.get(url);
+    try {
+      final url = Uri.parse(
+          "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('top places in $city')}&key=$apiKey&region=EG");
 
-    print('Response Status: ${response.statusCode}');
-    print('Response Body: ${response.body}'); // Log the raw response body
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      print('Decoded Data: $data'); // Log the decoded data
-      
-      if (data['results'] != null && data['results'].isNotEmpty) {
-        print('Fetched places: ${data['results']}');
-        _restaurants = data['results']
-            .map<Restaurant>((place) => Restaurant.fromGooglePlace(place))
-            .toList();
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}'); // Log the raw response body
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Decoded Data: $data'); // Log the decoded data
+
+        if (data['results'] != null && data['results'].isNotEmpty) {
+          print('Fetched places: ${data['results']}');
+          _restaurants = data['results']
+              .map<Restaurant>((place) => Restaurant.fromGooglePlace(place))
+              .toList();
+        } else {
+          print('No results found.');
+          _restaurants = [];
+        }
       } else {
-        print('No results found.');
-        _restaurants = [];
+        print('API call failed: ${response.statusCode} - ${response.body}');
+        throw Exception('API call failed with status: ${response.statusCode}');
       }
-    } else {
-      print('API call failed: ${response.statusCode} - ${response.body}');
-      throw Exception('API call failed with status: ${response.statusCode}');
+    } catch (e) {
+      print('Error: $e'); // Log the error
+      _restaurants = []; // Clear restaurants on failure
+      rethrow; // Pass the error up to notify the UI
+    } finally {
+      notifyListeners(); // Always update the UI
     }
-  } catch (e) {
-    print('Error: $e'); // Log the error
-    _restaurants = []; // Clear restaurants on failure
-    rethrow; // Pass the error up to notify the UI
-  } finally {
-    notifyListeners(); // Always update the UI
-  }
   }
   /* Future<void> cachePlacesInFirestore(
       String city, List<Restaurant> places) async {

@@ -5,18 +5,15 @@ import '../widgets/systembars.dart';
 import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
 import '../models/restaurant.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomeScreen extends StatelessWidget {
-   // final String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
-
-
+  
  void _fetchPlaces(BuildContext context, String city) async {
   final provider = Provider.of<RestaurantProvider>(context, listen: false);
   
   try {
     await provider.fetchPlacesForCity(city);
-    
+
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Failed to fetch places for $city: $e')),
@@ -25,8 +22,6 @@ class HomeScreen extends StatelessWidget {
     
   }
 }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +136,7 @@ class HomeScreen extends StatelessWidget {
                     children: provider.restaurants
                         .map(
                           (place) => TravelCard(
+                            
                             image: place.imageUrl ??
                                 'https://via.placeholder.com/150', // Default image URL
                             title: place.name.isNotEmpty
