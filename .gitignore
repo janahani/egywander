@@ -46,3 +46,5 @@ app.*.map.json
 *.cmake
 android/app/src/main/AndroidManifest.xml
 android/app/src/main/AndroidManifest.xml
+
+.env
