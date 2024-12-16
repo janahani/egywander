@@ -18,14 +18,7 @@ Future<void> main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  /* try {
-    await dotenv.load(fileName: ".env");
-    print('Google Maps API Key: ${dotenv.env['GOOGLE_MAPS_API_KEY']}');
 
-  } catch (e) {
-    print("Error loading .env file: $e");
-  }
-*/
   // Initialize Firebase with provided options
   await Firebase.initializeApp(
     options: const FirebaseOptions(

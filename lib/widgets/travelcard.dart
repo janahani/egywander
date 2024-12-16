@@ -35,36 +35,60 @@ class TravelCard extends StatelessWidget {
         );
       },
       child: Container(
-        margin: EdgeInsets.only(right: 16),
+        margin: const EdgeInsets.only(right: 16),
         width: 200,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network( // Use Image.network for the image URL
-                image, 
+              child: Container(
                 height: 120, 
-                fit: BoxFit.cover,
+                width: double.infinity, // to match parent width
+                color: Colors.grey[300], 
+                child: Image.network(
+                  image,
+                  fit: BoxFit.cover, // Ensures uniform scaling
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.broken_image,
+                    size: 50,
+                    color: Colors.grey,
+                  ), // Fallback for broken images
+                ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               title,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis, // Handles long titles
             ),
             Text(
               location,
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis, // Handles long locations
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               children: [
-                Icon(Icons.group, size: 16, color: Colors.black54),
-                SizedBox(width: 5),
-                Text(people, style: TextStyle(color: Colors.black54)),
+                const Icon(Icons.group, size: 16, color: Colors.black54),
+                const SizedBox(width: 5),
+                Text(people, style: const TextStyle(color: Colors.black54)),
               ],
-            )
+            ),
           ],
         ),
       ),

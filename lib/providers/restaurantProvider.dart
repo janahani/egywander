@@ -10,8 +10,6 @@ class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];
 
   Map<String, List<TableInfo>> _restaurantTables = {};
-
-  //final String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
   Map<String, dynamic>? restaurantDetails;
 
   List<Restaurant> get restaurants => _restaurants;
