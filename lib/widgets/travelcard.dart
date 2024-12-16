@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:egywander/screens/activityScreen.dart';
 
 class TravelCard extends StatelessWidget {
+  final String id;
   final String image;
   final String title;
   final String location;
@@ -9,6 +10,7 @@ class TravelCard extends StatelessWidget {
   final double rating;
 
   const TravelCard({
+    required this.id,
     required this.image,
     required this.title,
     required this.location,
@@ -25,6 +27,7 @@ class TravelCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => ActivityScreen(
+              id:id,
               title: title,
               location: location,
               imageUrl: image,
