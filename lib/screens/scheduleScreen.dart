@@ -1,412 +1,422 @@
+import 'package:egywander/screens/loginScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import '../widgets/systembars.dart';
-import 'editplanScreen.dart'; // Import EditPlanScreen for navigation
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '/providers/userProvider.dart'; // Replace with your UserProvider path
+import '/widgets/systembars.dart';
+import '/providers/scheduleProvider.dart';
 
 class ScheduleScreen extends StatefulWidget {
   @override
   _ScheduleScreenState createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> with SingleTickerProviderStateMixin {
+class _ScheduleScreenState extends State<ScheduleScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this); // Three tabs
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId;
+    if (userProvider.isLoggedIn) {
+      userId = userProvider.id!;
+    }
+
+    if (userId == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("You should log in/register")),
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      });
+      return Scaffold();
+    }
     return Scaffold(
-      appBar: appBar(context),
-      bottomNavigationBar: bottomNavigationBar(context),
+      appBar: appBar(context), // Custom AppBar
+      bottomNavigationBar:
+          bottomNavigationBar(context), // Bottom Navigation Bar
       body: Column(
         children: [
           // Custom Tabs
           Container(
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey[300]!, width: 1)),
+              border: Border(
+                  bottom: BorderSide(color: Colors.grey[300]!, width: 1)),
             ),
             child: TabBar(
               controller: _tabController,
               indicatorColor: Colors.orange,
               unselectedLabelColor: Colors.black,
               labelColor: Colors.orange,
-              labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Bigger font
-              tabs: [
-                Tab(text: "Upcoming"),
-                Tab(text: "Today"),
+              labelStyle: TextStyle(
+                  fontSize: 18, fontWeight: FontWeight.bold), // Bigger font
+              tabs: const [
                 Tab(text: "History"),
+                Tab(text: "Today"),
+                Tab(text: "Upcoming"),
               ],
             ),
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                UpcomingTab(),
-                TodayTab(),
-                HistoryTab(),
-              ],
+            child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('schedule').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text("No schedules found."));
+                }
+
+                final schedules = snapshot.data!.docs;
+                final now = DateTime.now();
+
+                // Organize schedules into categories
+                List<DocumentSnapshot> history = [];
+                List<DocumentSnapshot> today = [];
+                List<DocumentSnapshot> upcoming = [];
+
+                for (var doc in schedules) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  DateTime scheduleDate =
+                      DateFormat('dd/MM/yyyy').parse(data['date']);
+                  TimeOfDay endTime = _parseTimeOfDay(data['endingTime']);
+
+                  if (scheduleDate.isAfter(now)) {
+                    upcoming.add(doc);
+                  } else if (scheduleDate.isAtSameMomentAs(
+                      DateTime(now.year, now.month, now.day))) {
+                    if (endTime.hour > now.hour ||
+                        (endTime.hour == now.hour &&
+                            endTime.minute > now.minute)) {
+                      today.add(doc);
+                    } else {
+                      history.add(doc);
+                    }
+                  } else {
+                    history.add(doc);
+                  }
+                }
+
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    ScheduleTab(schedules: history, tabName: "History"),
+                    ScheduleTab(schedules: today, tabName: "Today"),
+                    ScheduleTab(schedules: upcoming, tabName: "Upcoming"),
+                  ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+
+  TimeOfDay _parseTimeOfDay(String time) {
+    final parts = time.split(":");
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+  }
 }
 
-// Upcoming Tab
-class UpcomingTab extends StatefulWidget {
+class ScheduleTab extends StatelessWidget {
+  final List<DocumentSnapshot> schedules;
+  final String tabName;
+
+  ScheduleTab({required this.schedules, required this.tabName});
+
   @override
-  _UpcomingTabState createState() => _UpcomingTabState();
-}
+  Widget build(BuildContext context) {
+    if (schedules.isEmpty) {
+      return Center(child: Text("No schedules in $tabName."));
+    }
 
-class _UpcomingTabState extends State<UpcomingTab> {
-  List<Map<String, dynamic>> upcomingPlans = [
-    {"date": "Friday, 8 Dec 2024", "plans": [{"place": "Meeting", "time": "10:00 - 12:00"}]},
-    {"date": "Saturday, 9 Dec 2024", "plans": [{"place": "Workshop", "time": "14:00 - 16:00"}]},
-  ];
+    return ListView.builder(
+      itemCount: schedules.length,
+      itemBuilder: (context, index) {
+        final data = schedules[index].data() as Map<String, dynamic>;
+        DateTime date = DateFormat('dd/MM/yyyy').parse(data['date']);
+        String formattedDate = DateFormat('EEEE, d MMM y').format(date);
 
-  void _deletePlan(int parentIndex, int planIndex) {
-    setState(() {
-      upcomingPlans[parentIndex]["plans"].removeAt(planIndex);
-      if (upcomingPlans[parentIndex]["plans"].isEmpty) {
-        upcomingPlans.removeAt(parentIndex); // Remove date section if no plans
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date Display
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                formattedDate,
+                style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            // Schedule Box
+            Card(
+              margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: ListTile(
+                contentPadding: EdgeInsets.all(12),
+                title: FutureBuilder<String?>(
+                  future: fetchPlaceName(data['placeId']),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text('Loading...');
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data == null) {
+                      return Text('Place name not found');
+                    } else {
+                      return Text(snapshot.data!);
+                    }
+                  },
+                ),
+                subtitle: Text(
+                  "${data['startingTime']} - ${data['endingTime']}",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () {
+                        _editSchedule(context, schedules[index]);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        _deleteSchedule(schedules[index]);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteSchedule(DocumentSnapshot schedule) {
+    FirebaseFirestore.instance.collection('schedule').doc(schedule.id).delete();
+  }
+
+  void _editSchedule(BuildContext context, DocumentSnapshot schedule) {
+    final data = schedule.data() as Map<String, dynamic>;
+
+    TextEditingController dateController =
+        TextEditingController(text: data['date']);
+    TextEditingController startTimeController =
+        TextEditingController(text: data['startingTime']);
+    TextEditingController endTimeController =
+        TextEditingController(text: data['endingTime']);
+
+    // Error states
+    String? dateError;
+    String? startTimeError;
+    String? endTimeError;
+
+    // Helper functions
+    TimeOfDay _parseTimeOfDay(String time) {
+      final parsed = DateFormat('HH:mm').parse(time);
+      return TimeOfDay(hour: parsed.hour, minute: parsed.minute);
+    }
+
+    String? _validateStartTime() {
+      final currentDateTime = DateTime.now();
+      final parsedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
+      final parsedStartTime =
+          DateFormat('HH:mm').parse(startTimeController.text);
+      final selectedDateTimeStart = DateTime(
+        parsedDate.year,
+        parsedDate.month,
+        parsedDate.day,
+        parsedStartTime.hour,
+        parsedStartTime.minute,
+      );
+
+      if (selectedDateTimeStart.isBefore(currentDateTime)) {
+        return 'Start time must be in the future';
       }
-    });
-  }
+      return null;
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: upcomingPlans.map((section) {
-          String date = section["date"];
-          List<Map<String, String>> plans = List<Map<String, String>>.from(section["plans"]);
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 16, top: 16), // Adjusted padding
-                child: Text(
-                  date,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
-                ),
-              ),
-              ...plans.asMap().entries.map((entry) {
-                int index = entry.key;
-                Map<String, String> plan = entry.value;
-                return upcomingPlanCard(plan["place"]!, plan["time"]!, () => _deletePlan(upcomingPlans.indexOf(section), index), () {
-                  _navigateToEditPlan(
-                    context,
-                    plan["place"]!,
-                    date,
-                    plan["time"]!.split(" - ")[0],
-                    plan["time"]!.split(" - ")[1],
-                  );
-                });
-              }).toList(),
-            ],
+    String? _validateEndTime() {
+      final parsedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
+      final parsedStartTime =
+          DateFormat('HH:mm').parse(startTimeController.text);
+      final parsedEndTime = DateFormat('HH:mm').parse(endTimeController.text);
+
+      final selectedDateTimeStart = DateTime(
+        parsedDate.year,
+        parsedDate.month,
+        parsedDate.day,
+        parsedStartTime.hour,
+        parsedStartTime.minute,
+      );
+
+      final selectedDateTimeEnd = DateTime(
+        parsedDate.year,
+        parsedDate.month,
+        parsedDate.day,
+        parsedEndTime.hour,
+        parsedEndTime.minute,
+      );
+
+      if (selectedDateTimeEnd.isBefore(selectedDateTimeStart)) {
+        return 'End time must be after start time';
+      }
+      return null;
+    }
+
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2101),
+      );
+      if (picked != null) {
+        dateController.text = DateFormat('dd/MM/yyyy').format(picked);
+      }
+    }
+
+    Future<void> _selectTime(
+        BuildContext context, TextEditingController controller) async {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
           );
-        }).toList(),
-      ),
-    );
-  }
+        },
+      );
 
-  Widget upcomingPlanCard(String place, String time, VoidCallback onDelete, VoidCallback onEdit) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 5,
-            spreadRadius: 2,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Place and Time
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  place,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  time,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-          // Edit and Delete Icons
-          Column(
-            children: [
-              IconButton(
-                icon: Icon(Icons.edit, color: Colors.orange),
-                onPressed: onEdit, // Navigate to EditPlanScreen
-              ),
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: onDelete,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _navigateToEditPlan(
-    BuildContext context,
-    String place,
-    String date,
-    String startTime,
-    String endTime,
-  ) async {
-    final updatedPlan = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditPlanScreen(
-          title: place,
-          date: DateFormat('dd/MM/yyyy').format(DateFormat('EEEE, d MMM yyyy').parse(date)),
-          startTime: startTime,
-          endTime: endTime,
-        ),
-      ),
-    );
-
-    if (updatedPlan != null) {
-      setState(() {
-        // Replace old plan with updated data
-        int parentIndex = upcomingPlans.indexWhere((section) => section["date"] == date);
-        if (parentIndex != -1) {
-          int planIndex = upcomingPlans[parentIndex]["plans"].indexWhere((plan) => plan["place"] == place);
-          if (planIndex != -1) {
-            upcomingPlans[parentIndex]["plans"][planIndex] = {
-              "place": updatedPlan["title"],
-              "time": "${updatedPlan["startTime"]} - ${updatedPlan["endTime"]}",
-            };
-          }
-        }
-      });
+      if (picked != null) {
+        final formattedTime = DateFormat('HH:mm').format(
+          DateTime(0, 0, 0, picked.hour, picked.minute),
+        );
+        controller.text = formattedTime;
+      }
     }
-  }
-}
 
-// Today Tab
-class TodayTab extends StatefulWidget {
-  @override
-  _TodayTabState createState() => _TodayTabState();
-}
-
-class _TodayTabState extends State<TodayTab> {
-  List<Map<String, String>> plans = [
-    {"place": "Fly in", "time": "16:30 - 19:15"},
-    {"place": "Dinner at Snack!", "time": "21:00 - 23:00"},
-    {"place": "Concert", "time": "00:00 - 04:00"},
-  ];
-
-  void _deletePlan(int index) {
-    setState(() {
-      plans.removeAt(index);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Get today's date in a format suitable for the EditPlanScreen
-    String todayDate = DateFormat('EEEE, d MMM yyyy').format(DateTime.now());
-
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: plans
-            .asMap()
-            .entries
-            .map((entry) => planCard(entry.value["place"]!, entry.value["time"]!, entry.key, todayDate))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget planCard(String place, String time, int index, String date) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 5,
-            spreadRadius: 2,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Place and Time
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  place,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text("Edit Schedule"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: dateController,
+                    decoration: InputDecoration(
+                      labelText: "Date (dd/MM/yyyy)",
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () => _selectDate(context),
+                      ),
+                      errorText: dateError,
+                    ),
+                  ),
+                  TextField(
+                    controller: startTimeController,
+                    decoration: InputDecoration(
+                      labelText: "Start Time (HH:mm)",
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.access_time),
+                        onPressed: () =>
+                            _selectTime(context, startTimeController),
+                      ),
+                      errorText: startTimeError,
+                    ),
+                  ),
+                  TextField(
+                    controller: endTimeController,
+                    decoration: InputDecoration(
+                      labelText: "End Time (HH:mm)",
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.access_time),
+                        onPressed: () =>
+                            _selectTime(context, endTimeController),
+                      ),
+                      errorText: endTimeError,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("Cancel"),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  time,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      // Reset error messages
+                      dateError = null;
+                      startTimeError = null;
+                      endTimeError = null;
+
+                      // Perform validations
+                      if (dateController.text.isEmpty ||
+                          startTimeController.text.isEmpty ||
+                          endTimeController.text.isEmpty) {
+                        dateError = 'All fields must be filled.';
+                        startTimeError = 'All fields must be filled.';
+                        endTimeError = 'All fields must be filled.';
+                        return;
+                      }
+
+                      startTimeError = _validateStartTime();
+                      endTimeError = _validateEndTime();
+
+                      if (startTimeError != null || endTimeError != null) {
+                        return; // Don't save if there are errors
+                      }
+                    });
+
+                    // Save data if valid
+                    if (startTimeError == null && endTimeError == null) {
+                      FirebaseFirestore.instance
+                          .collection('schedule')
+                          .doc(schedule.id)
+                          .update({
+                        'date': dateController.text,
+                        'startingTime': startTimeController.text,
+                        'endingTime': endTimeController.text,
+                      });
+
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text("Save"),
                 ),
               ],
-            ),
-          ),
-          // Edit and Delete Icons
-          Column(
-            children: [
-              IconButton(
-                icon: Icon(Icons.edit, color: Colors.orange),
-                onPressed: () {
-                  _navigateToEditPlan(
-                    context,
-                    place,
-                    date,  // Pass the actual date
-                    time.split(" - ")[0],
-                    time.split(" - ")[1],
-                  );
-                }, // Navigate to EditPlanScreen
-              ),
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () => _deletePlan(index),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _navigateToEditPlan(
-    BuildContext context,
-    String place,
-    String date,
-    String startTime,
-    String endTime,
-  ) async {
-    final updatedPlan = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditPlanScreen(
-          title: place,
-          date: DateFormat('dd/MM/yyyy').format(DateFormat('EEEE, d MMM yyyy').parse(date)),
-          startTime: startTime,
-          endTime: endTime,
-        ),
-      ),
-    );
-
-    if (updatedPlan != null) {
-      setState(() {
-        // Replace old plan with updated data
-        plans[plans.indexWhere((plan) => plan["place"] == place && plan["time"] == "$startTime - $endTime")] = {
-          "place": updatedPlan["title"],
-          "time": "${updatedPlan["startTime"]} - ${updatedPlan["endTime"]}",
-        };
-      });
-    }
-  }
-}
-
-// History Tab (unchanged)
-class HistoryTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
-          scheduleForDay("Tuesday, 24 Feb 2024", [
-            {"place": "Fly in", "time": "16:30 - 19:15"},
-            {"place": "Dinner at Snack!", "time": "21:00 - 23:00"},
-          ]),
-          scheduleForDay("Wednesday, 25 Feb 2024", [
-            {"place": "Concert", "time": "00:00 - 04:00"},
-          ]),
-        ],
-      ),
-    );
-  }
-
-  Widget scheduleForDay(String date, List<Map<String, String>> plans) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, bottom: 16, top: 16),
-          child: Text(
-            date,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
-          ),
-        ),
-        ...plans.map((plan) => planCard(plan["place"]!, plan["time"]!)).toList(),
-      ],
-    );
-  }
-
-  Widget planCard(String place, String time) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 5,
-            spreadRadius: 2,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  place,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  time,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }
