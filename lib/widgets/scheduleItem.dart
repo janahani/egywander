@@ -4,11 +4,11 @@ import 'package:intl/intl.dart';
 import '/providers/scheduleProvider.dart'; 
 import '/screens/scheduleScreen.dart';
 
-class ScheduleTab extends StatelessWidget {
+class ScheduleItem extends StatelessWidget {
   final List<DocumentSnapshot> schedules;
   final String tabName;
 
-  ScheduleTab({required this.schedules, required this.tabName});
+  ScheduleItem({required this.schedules, required this.tabName});
 
   @override
   Widget build(BuildContext context) {

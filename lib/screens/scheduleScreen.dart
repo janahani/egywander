@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '/providers/userProvider.dart'; 
 import '/widgets/systembars.dart';
-import '/widgets/scheduleTab.dart';
+import '/widgets/scheduleItem.dart';
 
 class ScheduleScreen extends StatefulWidget {
   @override
@@ -113,9 +113,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 return TabBarView(
                   controller: _tabController,
                   children: [
-                    ScheduleTab(schedules: history, tabName: "History"),
-                    ScheduleTab(schedules: today, tabName: "Today"),
-                    ScheduleTab(schedules: upcoming, tabName: "Upcoming"),
+                    ScheduleItem(schedules: history, tabName: "History"),
+                    ScheduleItem(schedules: today, tabName: "Today"),
+                    ScheduleItem(schedules: upcoming, tabName: "Upcoming"),
                   ],
                 );
               },
