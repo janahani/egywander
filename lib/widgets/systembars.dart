@@ -66,11 +66,11 @@ BottomNavigationBar bottomNavigationBar(BuildContext context) {
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
-      } else if (index == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => FavoritesScreen()),
-        );
+      // } else if (index == 1) {
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => FavoritesScreen()),
+      //   );
       } else if (index == 2) {
         Navigator.push(
           context,
