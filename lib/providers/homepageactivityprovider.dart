@@ -18,35 +18,32 @@ class Homepageactivityprovider with ChangeNotifier {
 
       final response = await http.get(url);
 
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}'); // Log the raw response body
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print('Decoded Data: $data'); // Log the decoded data
 
         if (data['results'] != null && data['results'].isNotEmpty) {
-          _activities =
-              await Future.wait(data['results'].map<Future<HomePageActivity>>(
-            (place) async {
-              final detailsUrl = Uri.parse(
-                  "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews&key=$apiKey");
-              final detailsResponse = await http.get(detailsUrl);
-
-              if (detailsResponse.statusCode == 200) {
-                final details = json.decode(detailsResponse.body)['result'];
-                return HomePageActivity.fromGooglePlace(details);
-              } else {
-                return HomePageActivity.fromGooglePlace(place);
-              }
-            },
-          ).toList());
+          print('Fetched places: ${data['results']}');
+          _activities = data['results']
+              .map<HomePageActivity>((place) => HomePageActivity.fromGooglePlace(place))
+              .toList();
         } else {
+          print('No results found.');
           _activities = [];
         }
       } else {
+        print('API call failed: ${response.statusCode} - ${response.body}');
         throw Exception('API call failed with status: ${response.statusCode}');
       }
-    } catch (e, stackTrace) {
-      _activities = [];
-      print('Error fetching places: $e\n$stackTrace');
-      rethrow;
+    } catch (e) {
+      print('Error: $e'); // Log the error
+      _activities = []; // Clear activities on failure
+      rethrow; // Pass the error up to notify the UI
+    } finally {
+      notifyListeners(); // Notify listeners after data is fetched
     }
   }
 }
