@@ -1,38 +1,23 @@
+import 'package:egywander/models/homepageActivities.dart';
 import 'package:flutter/material.dart';
 import 'package:egywander/screens/activityScreen.dart';
 
 class TravelCard extends StatelessWidget {
-  final String id;
-  final String image;
-  final String title;
-  final String location;
-  final String people;
-  final double rating;
+  final HomePageActivity homePageActivity;
 
   const TravelCard({
-    required this.id,
-    required this.image,
-    required this.title,
-    required this.location,
-    required this.people,
-    required this.rating,
+    required this.homePageActivity,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the ActivityScreen and pass all relevant data
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ActivityScreen(
-              id:id,
-              title: title,
-              location: location,
-              imageUrl: image,
-              price: '0',
-              rating: rating,
+              homePageActivity: homePageActivity,
             ),
           ),
         );
@@ -46,12 +31,12 @@ class TravelCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                height: 120, 
-                width: double.infinity, // to match parent width
-                color: Colors.grey[300], 
+                height: 120,
+                width: double.infinity,
+                color: Colors.grey[300],
                 child: Image.network(
-                  image,
-                  fit: BoxFit.cover, // Ensures uniform scaling
+                  homePageActivity.imageUrl,
+                  fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Center(
@@ -67,29 +52,30 @@ class TravelCard extends StatelessWidget {
                     Icons.broken_image,
                     size: 50,
                     color: Colors.grey,
-                  ), // Fallback for broken images
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              title,
+              homePageActivity.name,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               maxLines: 1,
-              overflow: TextOverflow.ellipsis, // Handles long titles
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
-              location,
+              homePageActivity.location,
               style: const TextStyle(fontSize: 14, color: Colors.black54),
               maxLines: 1,
-              overflow: TextOverflow.ellipsis, // Handles long locations
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 10),
             Row(
               children: [
                 const Icon(Icons.group, size: 16, color: Colors.black54),
                 const SizedBox(width: 5),
-                Text(people, style: const TextStyle(color: Colors.black54)),
+                Text(homePageActivity.userRatingsTotal.toString(),
+                    style: const TextStyle(color: Colors.black54)),
               ],
             ),
           ],
