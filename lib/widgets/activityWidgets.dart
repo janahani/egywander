@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // Widget for Top Image Section
 class TopImageSection extends StatelessWidget {
@@ -56,13 +57,13 @@ class TitleAndLocation extends StatelessWidget {
   }
 }
 
-// Widget for Price and Rating Section
-class PriceAndRatingSection extends StatelessWidget {
-  final String price;
+// Widget for Category and Rating Section
+class CategoryAndRatingSection extends StatelessWidget {
+  final String category;
   final double rating;
 
-  const PriceAndRatingSection({
-    required this.price,
+  const CategoryAndRatingSection({
+    required this.category,
     required this.rating,
   });
 
@@ -72,7 +73,7 @@ class PriceAndRatingSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          price,
+          category,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -116,16 +117,6 @@ class InfoTile extends StatelessWidget {
   }
 }
 
-// Widget for Description Section
-class DescriptionSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      'Description Unavailable', // Placeholder
-      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-    );
-  }
-}
 
 // Widget for Heart Icon with Snackbar
 class FavoriteIcon extends StatefulWidget {
@@ -166,26 +157,168 @@ class _FavoriteIconState extends State<FavoriteIcon> {
   }
 }
 
-// Widget for Book Now Button
-class BookNowButton extends StatelessWidget {
+class PlaceMap extends StatelessWidget {
+  final double latitude;
+  final double longitude;
+
+  PlaceMap({required this.latitude, required this.longitude});
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.orange,
-          minimumSize: Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+    return Container(
+      height: 150,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: LatLng(latitude, longitude),
+            zoom: 14.0,
           ),
-        ),
-        child: Text(
-          'Book Now',
-          style: TextStyle(fontSize: 16, color: Colors.white),
+          markers: {
+            Marker(
+              markerId: MarkerId("place_location"),
+              position: LatLng(latitude, longitude),
+            ),
+          },
+          mapType: MapType.normal,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
         ),
       ),
+    );
+  }
+}
+
+class Reviews extends StatefulWidget {
+  final List<Map<String, dynamic>> reviews;
+
+  Reviews({required this.reviews});
+
+  @override
+  _ReviewsState createState() => _ReviewsState();
+}
+
+class _ReviewsState extends State<Reviews> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Reviews",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                isExpanded ? Icons.expand_less : Icons.expand_more,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                setState(() {
+                  isExpanded = !isExpanded;
+                });
+              },
+            ),
+          ],
+        ),
+        if (isExpanded)
+          ...widget.reviews.map((review) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    review['author_name'] ?? 'Anonymous',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    review['text'] ?? 'No review text available',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+      ],
+    );
+  }
+
+}
+
+class OpeningHours extends StatefulWidget {
+  final List<String> openingHours;
+
+  OpeningHours({required this.openingHours});
+
+  @override
+  _OpeningHoursState createState() => _OpeningHoursState();
+}
+
+class _OpeningHoursState extends State<OpeningHours> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Opening Hours",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                isExpanded ? Icons.expand_less : Icons.expand_more,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                setState(() {
+                  isExpanded = !isExpanded;
+                });
+              },
+            ),
+          ],
+        ),
+        if (isExpanded)
+          ...widget.openingHours.map((hour) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                hour,
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              ),
+            );
+          }).toList(),
+      ],
     );
   }
 }
