@@ -264,8 +264,8 @@ class _ReviewsState extends State<Reviews> {
       ],
     );
   }
-
 }
+
 
 class OpeningHours extends StatefulWidget {
   final List<String> openingHours;
