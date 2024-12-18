@@ -5,60 +5,70 @@ class HomePageActivity {
   final String id;
   final String name;
   final String location;
-  final String? imageUrl;
+  final String imageUrl;
   final double? rating;
   final int? userRatingsTotal;
-  final String category; 
-  
+  final String category;
+  final List<String> openingHours;
+  final bool isOpened;
+  final List<Map<String, dynamic>> reviews;
+  final double latitude;
+  final double longitude;
 
   HomePageActivity({
     required this.id,
     required this.name,
     required this.location,
-    this.imageUrl,
+    required this.imageUrl,
     this.rating,
     this.userRatingsTotal,
-    required this.category, 
+    required this.category,
+    required this.openingHours,
+    required this.isOpened,
+    required this.reviews,
+    required this.latitude,
+    required this.longitude,
   });
 
-  factory HomePageActivity.fromJson(Map<String, dynamic> json) {
-    return HomePageActivity(
-      id: json['id'],
-      name: json['name'] ?? 'Unknown',
-      location: json['location'] ?? 'Unknown',
-      imageUrl: json['imageUrl'],
-      rating: json['rating']?.toDouble(),
-      userRatingsTotal: json['userRatingsTotal'],
-      category: json['category'] ?? 'Unknown', 
-    );
-  }
+  factory HomePageActivity.fromGooglePlace(Map<String, dynamic> place) {
+  final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+  String category = 'Other';
 
-   factory HomePageActivity.fromGooglePlace(Map<String, dynamic> place) {
-    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
-    String category = 'Other';
-    if (place['types'] != null) {
-      final types = List<String>.from(place['types']);
-      if (types.contains('restaurant') || types.contains('food')) {
-        category = 'Food';
-      } else if (types.contains('tourist_attraction') || types.contains('museum')) {
-        category = 'Landmarks';
-      } else if (types.contains('aquarium') || types.contains('spa') || types.contains('zoo') || types.contains('movie_theater')) {
-        category = 'Entertainment';
-      } else if (types.contains('beach') || types.contains('sea')) {
-        category = 'Sea';
-      }
+  if (place['types'] != null) {
+    final types = List<String>.from(place['types']);
+    if (types.contains('restaurant') || types.contains('food')) {
+      category = 'Food';
+    } else if (types.contains('tourist_attraction') || types.contains('museum')) {
+      category = 'Landmarks';
+    } else if (types.contains('aquarium') ||
+        types.contains('spa') ||
+        types.contains('zoo') ||
+        types.contains('movie_theater')) {
+      category = 'Entertainment';
+    } else if (types.contains('beach') || types.contains('sea')) {
+      category = 'Sea';
     }
-
-    return HomePageActivity(
-      id: place['place_id'] ?? const Uuid().v4(),
-      name: place['name'] ?? '',
-      location: place['formatted_address'] ?? '',
-      imageUrl: place['photos'] != null
-          ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$apiKey'
-          : null,
-      rating: (place['rating'] as num?)?.toDouble(),
-      userRatingsTotal: place['user_ratings_total'] as int?,
-      category: category, // Set inferred category
-    );
   }
+  return HomePageActivity(
+    id: place['place_id'] ?? const Uuid().v4(),
+    name: place['name'] ?? 'Unknown',
+    location: place['formatted_address'] ?? 'Unknown Location',
+    imageUrl: place['photos'] != null && place['photos'].isNotEmpty
+        ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$apiKey'
+        : 'https://via.placeholder.com/150',
+    rating: (place['rating'] as num?)?.toDouble() ?? 0.0,
+    userRatingsTotal: place['user_ratings_total'] as int? ?? 0,
+    category: category,
+    openingHours: List<String>.from(
+      place['opening_hours']?['weekday_text'] ?? [],
+    ),
+    isOpened: place['opening_hours']?['open_now'] ?? false,
+    reviews: List<Map<String, dynamic>>.from(
+      place['reviews'] ?? [],
+    ),
+    latitude: (place['geometry']['location']['lat'] as num?)?.toDouble() ?? 0.0,
+    longitude: (place['geometry']['location']['lng'] as num?)?.toDouble() ?? 0.0,
+  );
+}
+
 }

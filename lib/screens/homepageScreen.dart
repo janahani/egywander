@@ -5,7 +5,7 @@ import '../widgets/systembars.dart';
 import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
 import '../models/restaurant.dart';
-import '../providers/homepageactivityprovider.dart'; // This provider will handle activities
+import '../providers/homepageactivityprovider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -179,19 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final activity = filteredActivities[index];
                         return TravelCard(
-                          id: activity.id,
-                          image: activity.imageUrl ??
-                              'https://via.placeholder.com/150',
-                          title: activity.name.isNotEmpty
-                              ? activity.name
-                              : 'Unknown Activity',
-                          location: activity.location.isNotEmpty
-                              ? activity.location
-                              : 'Unknown Location',
-                          people: activity.userRatingsTotal != null
-                              ? '+${activity.userRatingsTotal}'
-                              : '+0',
-                          rating: activity.rating ?? 0.0,
+                          homePageActivity: activity,
                         );
                       },
                     );

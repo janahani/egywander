@@ -1,39 +1,35 @@
+import 'package:egywander/models/homepageActivities.dart';
 import 'package:egywander/screens/loginScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import Provider
-import 'package:egywander/widgets/activityWidgets.dart'; // Import the updated widgets
+import 'package:provider/provider.dart';
+import 'package:egywander/widgets/activityWidgets.dart';
 import '../widgets/systembars.dart';
-import './addActivityScreen.dart'; // Import the AddActivityScreen
-import '../widgets/customBtn.dart'; // Import the CustomButton widget
-import '../providers/userProvider.dart'; // Import UserProvider
+import './addActivityScreen.dart';
+import '../widgets/customBtn.dart';
+import '../providers/userProvider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ActivityScreen extends StatelessWidget {
-  final String id;
-  final String imageUrl;
-  final String title;
-  final String location;
-  final String price;
-  final double rating;
+  final HomePageActivity homePageActivity;
 
   const ActivityScreen({
-    required this.id,
-    required this.imageUrl,
-    required this.title,
-    required this.location,
-    required this.price,
-    required this.rating,
+    required this.homePageActivity,
   });
 
   void _openAddActivityDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddActivityScreen(activityTitle: title, activityId: id);
+        return AddActivityScreen(
+            activityTitle: homePageActivity.name,
+            activityId: homePageActivity.id);
       },
     ).then((result) {
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Activity added: ${result['title']}")),
+          SnackBar(
+              content:
+                  Text("Activity added: \${result['homePageActivity.name']}")),
         );
       }
     });
@@ -69,11 +65,11 @@ class ActivityScreen extends StatelessWidget {
           children: [
             Stack(
               children: [
-                TopImageSection(imageUrl: imageUrl),
+                TopImageSection(imageUrl: homePageActivity.imageUrl),
                 Positioned(
                   bottom: 16,
                   right: 16,
-                  child: FavoriteIcon(), // Use the reusable FavoriteIcon widget
+                  child: FavoriteIcon(),
                 ),
               ],
             ),
@@ -82,31 +78,63 @@ class ActivityScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TitleAndLocation(title: title, location: location),
+                  TitleAndLocation(
+                      title: homePageActivity.name,
+                      location: homePageActivity.location),
                   const SizedBox(height: 16),
-                  PriceAndRatingSection(price: price, rating: rating),
+                  CategoryAndRatingSection(
+                      category: homePageActivity.category,
+                      rating: homePageActivity.rating!.toDouble()),
                   const SizedBox(height: 16),
                   _InfoTilesRow(),
-                  const SizedBox(height: 25),
-                  DescriptionSection(),
                   const SizedBox(height: 30),
-
-                  // Map Placeholder
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
+                  if (homePageActivity.latitude != null &&
+                      homePageActivity.longitude != null)
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(
+                            homePageActivity.latitude!,
+                            homePageActivity.longitude!,
+                          ),
+                          zoom: 15,
+                        ),
+                        markers: {
+                          Marker(
+                            markerId: MarkerId(homePageActivity.id),
+                            position: LatLng(
+                              homePageActivity.latitude!,
+                              homePageActivity.longitude!,
+                            ),
+                            infoWindow: InfoWindow(
+                              title: homePageActivity.name,
+                              snippet: homePageActivity.location,
+                            ),
+                          ),
+                        },
+                      ),
+                    )
+                  else
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: Text(
+                          "Location not available",
+                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                        ),
+                      ),
                     ),
-                    child: const Center(
-                      child: Text("Map Placeholder",
-                          style: TextStyle(color: Colors.grey, fontSize: 16)),
-                    ),
-                  ),
-
                   const SizedBox(height: 30),
-
+                  // Opening Hours Section
+                  OpeningHours(openingHours: homePageActivity.openingHours),
+                  const SizedBox(height: 20),
+                  // Reviews Section
+                  Reviews(reviews: homePageActivity.reviews),
+                  const SizedBox(height: 30),
                   Center(
                     child: SizedBox(
                       width: 180, // Adjust the width as needed
@@ -131,9 +159,17 @@ class ActivityScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        InfoTile(icon: Icons.directions_walk, text: '45 mins'),
-        InfoTile(icon: Icons.calendar_today, text: '10/12/2024'),
-        InfoTile(icon: Icons.wb_sunny, text: '35°C'),
+        InfoTile(icon: Icons.star, text: homePageActivity.rating.toString()),
+        InfoTile(
+            icon: Icons.person,
+            text: homePageActivity.userRatingsTotal.toString()),
+        InfoTile(
+            icon: homePageActivity.isOpened == true
+                ? Icons.meeting_room
+                : Icons.door_front_door,
+            text: homePageActivity.isOpened == true
+                ? "Opened Now"
+                : "Closed Now"),
       ],
     );
   }
