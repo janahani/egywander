@@ -11,42 +11,58 @@ class Homepageactivityprovider with ChangeNotifier {
 
   Future<void> fetchPlacesForCity(String city) async {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    final categories = {
+      'Food': 'restaurants or food',
+      'Entertainment': 'entertainment or activities',
+      'Landmarks': 'landmarks or tourist attractions',
+      'Sea': 'beaches or sea'
+    };
+
+    List<HomePageActivity> fetchedActivities = [];
 
     try {
-      final url = Uri.parse(
-          "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('top places in $city')}&key=$apiKey&region=EG");
+      for (final category in categories.entries) {
+        final url = Uri.parse(
+            "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
 
-      final response = await http.get(url);
+        final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
 
-        if (data['results'] != null && data['results'].isNotEmpty) {
-          _activities =
-              await Future.wait(data['results'].map<Future<HomePageActivity>>(
-            (place) async {
-              final detailsUrl = Uri.parse(
-                  "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+          if (data['results'] != null && data['results'].isNotEmpty) {
+            final categoryActivities = await Future.wait<HomePageActivity>(
+              data['results'].map<Future<HomePageActivity>>((place) async {
+                final detailsUrl = Uri.parse(
+                    "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
 
-              final detailsResponse = await http.get(detailsUrl);
-              if (detailsResponse.statusCode == 200) {
-                final details = json.decode(detailsResponse.body)['result'];
-                return HomePageActivity.fromGooglePlace(details);
-              } else {
-                return HomePageActivity.fromGooglePlace(place);
-              }
-            },
-          ).toList());
+                final detailsResponse = await http.get(detailsUrl);
+
+                if (detailsResponse.statusCode == 200) {
+                  final details = json.decode(detailsResponse.body)['result'];
+                  return HomePageActivity.fromGooglePlace(
+                      details, category.key);
+                } else {
+                  return HomePageActivity.fromGooglePlace(place, category.key);
+                }
+              }).toList(), 
+            );
+
+            fetchedActivities.addAll(categoryActivities);
+          }
         } else {
-          _activities = [];
+          throw Exception(
+              'API call failed for ${category.key} with status: ${response.statusCode}');
         }
-      } else {
-        throw Exception('API call failed with status: ${response.statusCode}');
       }
+
+      _activities = fetchedActivities;
     } catch (e, stackTrace) {
       _activities = [];
       print('Error fetching places: $e\n$stackTrace');
       rethrow;
     }
+
+    notifyListeners();
   }
 }

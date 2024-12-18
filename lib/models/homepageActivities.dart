@@ -14,7 +14,6 @@ class HomePageActivity {
   final List<Map<String, dynamic>> reviews;
   final double? latitude;
   final double? longitude;
-  
 
   HomePageActivity({
     required this.id,
@@ -52,24 +51,9 @@ class HomePageActivity {
     );
   }
 
-  factory HomePageActivity.fromGooglePlace(Map<String, dynamic> place) {
+  factory HomePageActivity.fromGooglePlace(
+      Map<String, dynamic> place, String category) {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
-    String category = 'Other';
-    if (place['types'] != null) {
-      final types = List<String>.from(place['types']);
-      if (types.contains('restaurant') || types.contains('food')) {
-        category = 'Food';
-      } else if (types.contains('tourist_attraction') || types.contains('museum')) {
-        category = 'Landmarks';
-      } else if (types.contains('aquarium') ||
-          types.contains('spa') ||
-          types.contains('zoo') ||
-          types.contains('movie_theater')) {
-        category = 'Entertainment';
-      } else if (types.contains('beach') || types.contains('sea')) {
-        category = 'Sea';
-      }
-    }
 
     return HomePageActivity(
       id: place['place_id'] ?? const Uuid().v4(),
@@ -88,9 +72,10 @@ class HomePageActivity {
       reviews: place['reviews'] != null
           ? List<Map<String, dynamic>>.from(place['reviews'])
           : [],
-      latitude: (place['geometry']['location']['lat'] as num?)?.toDouble() ?? 0.0,
-      longitude: (place['geometry']['location']['lng'] as num?)?.toDouble() ?? 0.0,
+      latitude:
+          (place['geometry']['location']['lat'] as num?)?.toDouble() ?? 0.0,
+      longitude:
+          (place['geometry']['location']['lng'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }
-
