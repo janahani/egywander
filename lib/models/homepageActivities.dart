@@ -10,6 +10,7 @@ class HomePageActivity {
   final int? userRatingsTotal;
   final String category;
   final List<String> openingHours;
+  final bool isOpened;
   final List<Map<String, dynamic>> reviews;
 
   HomePageActivity({
@@ -21,6 +22,7 @@ class HomePageActivity {
     this.userRatingsTotal,
     required this.category,
     required this.openingHours,
+    required this.isOpened,
     required this.reviews,
   });
 
@@ -29,26 +31,29 @@ class HomePageActivity {
       id: json['id'],
       name: json['name'] ?? 'Unknown',
       location: json['location'] ?? 'Unknown',
-      imageUrl: json['imageUrl'],
-      rating: json['rating']?.toDouble(),
-      userRatingsTotal: json['userRatingsTotal'],
+      imageUrl: json['imageUrl'] ?? 'https://via.placeholder.com/150',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      userRatingsTotal: json['userRatingsTotal'] as int? ?? 0,
       category: json['category'] ?? 'Unknown',
-      openingHours: json['openingHours'] =
-          List<String>.from(json['openingHours']),
-      reviews: json['reviews'] =
-          List<Map<String, dynamic>>.from(json['reviews']),
+      openingHours: json['openingHours'] != null
+          ? List<String>.from(json['openingHours'])
+          : [],
+      isOpened: json['isOpened'] ?? false,
+      reviews: json['reviews'] != null
+          ? List<Map<String, dynamic>>.from(json['reviews'])
+          : [],
     );
   }
 
   factory HomePageActivity.fromGooglePlace(Map<String, dynamic> place) {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
     String category = 'Other';
+
     if (place['types'] != null) {
       final types = List<String>.from(place['types']);
       if (types.contains('restaurant') || types.contains('food')) {
         category = 'Food';
-      } else if (types.contains('tourist_attraction') ||
-          types.contains('museum')) {
+      } else if (types.contains('tourist_attraction') || types.contains('museum')) {
         category = 'Landmarks';
       } else if (types.contains('aquarium') ||
           types.contains('spa') ||
@@ -73,6 +78,7 @@ class HomePageActivity {
       openingHours: place['opening_hours']?['weekday_text'] != null
           ? List<String>.from(place['opening_hours']['weekday_text'])
           : [],
+      isOpened: place['opening_hours']?['open_now'] ?? false,
       reviews: place['reviews'] != null
           ? List<Map<String, dynamic>>.from(place['reviews'])
           : [],
