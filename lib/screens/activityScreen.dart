@@ -9,7 +9,6 @@ import '../widgets/customBtn.dart';
 import '../providers/userProvider.dart';
 
 class ActivityScreen extends StatelessWidget {
-
   final HomePageActivity homePageActivity;
 
   const ActivityScreen({
@@ -20,12 +19,16 @@ class ActivityScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddActivityScreen(activityTitle: homePageActivity.name, activityId: homePageActivity.id);
+        return AddActivityScreen(
+            activityTitle: homePageActivity.name,
+            activityId: homePageActivity.id);
       },
     ).then((result) {
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Activity added: \${result['homePageActivity.name']}")),
+          SnackBar(
+              content:
+                  Text("Activity added: \${result['homePageActivity.name']}")),
         );
       }
     });
@@ -74,13 +77,15 @@ class ActivityScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TitleAndLocation(title: homePageActivity.name, location: homePageActivity.location),
+                  TitleAndLocation(
+                      title: homePageActivity.name,
+                      location: homePageActivity.location),
                   const SizedBox(height: 16),
-                  PriceAndRatingSection(price: homePageActivity.category, rating: homePageActivity.rating!.toDouble()),
+                  CategoryAndRatingSection(
+                      category: homePageActivity.category,
+                      rating: homePageActivity.rating!.toDouble()),
                   const SizedBox(height: 16),
                   _InfoTilesRow(),
-                  const SizedBox(height: 25),
-                  DescriptionSection(),
                   const SizedBox(height: 30),
 
                   // Map Placeholder
@@ -98,62 +103,12 @@ class ActivityScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 30),
-
                   // Opening Hours Section
-                  Text(
-                    "Opening Hours",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  for (var hour in homePageActivity.openingHours)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Text(
-                        hour,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                      ),
-                    ),
-
-                  const SizedBox(height: 30),
-
+                  OpeningHours(openingHours: homePageActivity.openingHours),
+                  const SizedBox(height: 20),
                   // Reviews Section
-                  Text(
-                    "Reviews",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  for (var review in homePageActivity.reviews)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            review['author_name']!,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            review['text']!,
-                            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                          ),
-                        ],
-                      ),
-                    ),
-
+                  Reviews(reviews: homePageActivity.reviews),
                   const SizedBox(height: 30),
-
                   Center(
                     child: SizedBox(
                       width: 180, // Adjust the width as needed
@@ -178,9 +133,17 @@ class ActivityScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        InfoTile(icon: Icons.directions_walk, text: '45 mins'),
-        InfoTile(icon: Icons.calendar_today, text: '10/12/2024'),
-        InfoTile(icon: Icons.wb_sunny, text: '35°C'),
+        InfoTile(icon: Icons.star, text: homePageActivity.rating.toString()),
+        InfoTile(
+            icon: Icons.person,
+            text: homePageActivity.userRatingsTotal.toString()),
+        InfoTile(
+            icon: homePageActivity.isOpened == true
+                ? Icons.meeting_room
+                : Icons.door_front_door,
+            text: homePageActivity.isOpened == true
+                ? "Opened Now"
+                : "Closed Now"),
       ],
     );
   }
