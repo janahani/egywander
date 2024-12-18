@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '/providers/userProvider.dart'; 
+import '/providers/userProvider.dart';
 import '/widgets/systembars.dart';
 import '/widgets/scheduleItem.dart';
 
@@ -69,8 +69,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('schedule').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('schedule')
+                  .where('userId', isEqualTo: userId)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -113,9 +115,18 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 return TabBarView(
                   controller: _tabController,
                   children: [
-                    ScheduleItem(schedules: history, tabName: "History"),
-                    ScheduleItem(schedules: today, tabName: "Today"),
-                    ScheduleItem(schedules: upcoming, tabName: "Upcoming"),
+                    ScheduleItem(
+                        schedules: history,
+                        tabName: "History",
+                        allowEditDelete: false),
+                    ScheduleItem(
+                        schedules: today,
+                        tabName: "Today",
+                        allowEditDelete: true),
+                    ScheduleItem(
+                        schedules: upcoming,
+                        tabName: "Upcoming",
+                        allowEditDelete: true),
                   ],
                 );
               },
@@ -132,209 +143,206 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   }
 }
 
-  void deleteSchedule(DocumentSnapshot schedule) {
-    FirebaseFirestore.instance.collection('schedule').doc(schedule.id).delete();
+void deleteSchedule(DocumentSnapshot schedule) {
+  FirebaseFirestore.instance.collection('schedule').doc(schedule.id).delete();
+}
+
+void editSchedule(BuildContext context, DocumentSnapshot schedule) {
+  final data = schedule.data() as Map<String, dynamic>;
+
+  TextEditingController dateController =
+      TextEditingController(text: data['date']);
+  TextEditingController startTimeController =
+      TextEditingController(text: data['startingTime']);
+  TextEditingController endTimeController =
+      TextEditingController(text: data['endingTime']);
+
+  // Error states
+  String? dateError;
+  String? startTimeError;
+  String? endTimeError;
+
+  // Helper functions
+  TimeOfDay _parseTimeOfDay(String time) {
+    final parsed = DateFormat('HH:mm').parse(time);
+    return TimeOfDay(hour: parsed.hour, minute: parsed.minute);
   }
 
-  void editSchedule(BuildContext context, DocumentSnapshot schedule) {
-    final data = schedule.data() as Map<String, dynamic>;
+  String? _validateStartTime() {
+    final currentDateTime = DateTime.now();
+    final parsedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
+    final parsedStartTime = DateFormat('HH:mm').parse(startTimeController.text);
+    final selectedDateTimeStart = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedStartTime.hour,
+      parsedStartTime.minute,
+    );
 
-    TextEditingController dateController =
-        TextEditingController(text: data['date']);
-    TextEditingController startTimeController =
-        TextEditingController(text: data['startingTime']);
-    TextEditingController endTimeController =
-        TextEditingController(text: data['endingTime']);
-
-    // Error states
-    String? dateError;
-    String? startTimeError;
-    String? endTimeError;
-
-    // Helper functions
-    TimeOfDay _parseTimeOfDay(String time) {
-      final parsed = DateFormat('HH:mm').parse(time);
-      return TimeOfDay(hour: parsed.hour, minute: parsed.minute);
+    if (selectedDateTimeStart.isBefore(currentDateTime)) {
+      return 'Start time must be in the future';
     }
+    return null;
+  }
 
-    String? _validateStartTime() {
-      final currentDateTime = DateTime.now();
-      final parsedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
-      final parsedStartTime =
-          DateFormat('HH:mm').parse(startTimeController.text);
-      final selectedDateTimeStart = DateTime(
-        parsedDate.year,
-        parsedDate.month,
-        parsedDate.day,
-        parsedStartTime.hour,
-        parsedStartTime.minute,
-      );
+  String? _validateEndTime() {
+    final parsedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
+    final parsedStartTime = DateFormat('HH:mm').parse(startTimeController.text);
+    final parsedEndTime = DateFormat('HH:mm').parse(endTimeController.text);
 
-      if (selectedDateTimeStart.isBefore(currentDateTime)) {
-        return 'Start time must be in the future';
-      }
-      return null;
+    final selectedDateTimeStart = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedStartTime.hour,
+      parsedStartTime.minute,
+    );
+
+    final selectedDateTimeEnd = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedEndTime.hour,
+      parsedEndTime.minute,
+    );
+
+    if (selectedDateTimeEnd.isBefore(selectedDateTimeStart)) {
+      return 'End time must be after start time';
     }
+    return null;
+  }
 
-    String? _validateEndTime() {
-      final parsedDate = DateFormat('dd/MM/yyyy').parse(dateController.text);
-      final parsedStartTime =
-          DateFormat('HH:mm').parse(startTimeController.text);
-      final parsedEndTime = DateFormat('HH:mm').parse(endTimeController.text);
-
-      final selectedDateTimeStart = DateTime(
-        parsedDate.year,
-        parsedDate.month,
-        parsedDate.day,
-        parsedStartTime.hour,
-        parsedStartTime.minute,
-      );
-
-      final selectedDateTimeEnd = DateTime(
-        parsedDate.year,
-        parsedDate.month,
-        parsedDate.day,
-        parsedEndTime.hour,
-        parsedEndTime.minute,
-      );
-
-      if (selectedDateTimeEnd.isBefore(selectedDateTimeStart)) {
-        return 'End time must be after start time';
-      }
-      return null;
-    }
-
-    Future<void> _selectDate(BuildContext context) async {
-      final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2101),
-      );
-      if (picked != null) {
-        dateController.text = DateFormat('dd/MM/yyyy').format(picked);
-      }
-    }
-
-    Future<void> _selectTime(
-        BuildContext context, TextEditingController controller) async {
-      final TimeOfDay? picked = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          );
-        },
-      );
-
-      if (picked != null) {
-        final formattedTime = DateFormat('HH:mm').format(
-          DateTime(0, 0, 0, picked.hour, picked.minute),
-        );
-        controller.text = formattedTime;
-      }
-    }
-
-    showDialog(
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text("Edit Schedule"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: dateController,
-                    decoration: InputDecoration(
-                      labelText: "Date (dd/MM/yyyy)",
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.calendar_today),
-                        onPressed: () => _selectDate(context),
-                      ),
-                      errorText: dateError,
-                    ),
-                  ),
-                  TextField(
-                    controller: startTimeController,
-                    decoration: InputDecoration(
-                      labelText: "Start Time (HH:mm)",
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.access_time),
-                        onPressed: () =>
-                            _selectTime(context, startTimeController),
-                      ),
-                      errorText: startTimeError,
-                    ),
-                  ),
-                  TextField(
-                    controller: endTimeController,
-                    decoration: InputDecoration(
-                      labelText: "End Time (HH:mm)",
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.access_time),
-                        onPressed: () =>
-                            _selectTime(context, endTimeController),
-                      ),
-                      errorText: endTimeError,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text("Cancel"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      // Reset error messages
-                      dateError = null;
-                      startTimeError = null;
-                      endTimeError = null;
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      dateController.text = DateFormat('dd/MM/yyyy').format(picked);
+    }
+  }
 
-                      // Perform validations
-                      if (dateController.text.isEmpty ||
-                          startTimeController.text.isEmpty ||
-                          endTimeController.text.isEmpty) {
-                        dateError = 'All fields must be filled.';
-                        startTimeError = 'All fields must be filled.';
-                        endTimeError = 'All fields must be filled.';
-                        return;
-                      }
-
-                      startTimeError = _validateStartTime();
-                      endTimeError = _validateEndTime();
-
-                      if (startTimeError != null || endTimeError != null) {
-                        return; // Don't save if there are errors
-                      }
-                    });
-
-                    // Save data if valid
-                    if (startTimeError == null && endTimeError == null) {
-                      FirebaseFirestore.instance
-                          .collection('schedule')
-                          .doc(schedule.id)
-                          .update({
-                        'date': dateController.text,
-                        'startingTime': startTimeController.text,
-                        'endingTime': endTimeController.text,
-                      });
-
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text("Save"),
-                ),
-              ],
-            );
-          },
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
         );
       },
     );
+
+    if (picked != null) {
+      final formattedTime = DateFormat('HH:mm').format(
+        DateTime(0, 0, 0, picked.hour, picked.minute),
+      );
+      controller.text = formattedTime;
+    }
   }
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text("Edit Schedule"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: dateController,
+                  decoration: InputDecoration(
+                    labelText: "Date (dd/MM/yyyy)",
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () => _selectDate(context),
+                    ),
+                    errorText: dateError,
+                  ),
+                ),
+                TextField(
+                  controller: startTimeController,
+                  decoration: InputDecoration(
+                    labelText: "Start Time (HH:mm)",
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.access_time),
+                      onPressed: () =>
+                          _selectTime(context, startTimeController),
+                    ),
+                    errorText: startTimeError,
+                  ),
+                ),
+                TextField(
+                  controller: endTimeController,
+                  decoration: InputDecoration(
+                    labelText: "End Time (HH:mm)",
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.access_time),
+                      onPressed: () => _selectTime(context, endTimeController),
+                    ),
+                    errorText: endTimeError,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    // Reset error messages
+                    dateError = null;
+                    startTimeError = null;
+                    endTimeError = null;
+
+                    // Perform validations
+                    if (dateController.text.isEmpty ||
+                        startTimeController.text.isEmpty ||
+                        endTimeController.text.isEmpty) {
+                      dateError = 'All fields must be filled.';
+                      startTimeError = 'All fields must be filled.';
+                      endTimeError = 'All fields must be filled.';
+                      return;
+                    }
+
+                    startTimeError = _validateStartTime();
+                    endTimeError = _validateEndTime();
+
+                    if (startTimeError != null || endTimeError != null) {
+                      return; // Don't save if there are errors
+                    }
+                  });
+
+                  // Save data if valid
+                  if (startTimeError == null && endTimeError == null) {
+                    FirebaseFirestore.instance
+                        .collection('schedule')
+                        .doc(schedule.id)
+                        .update({
+                      'date': dateController.text,
+                      'startingTime': startTimeController.text,
+                      'endingTime': endTimeController.text,
+                    });
+
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text("Save"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
