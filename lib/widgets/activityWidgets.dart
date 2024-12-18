@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:egywander/providers/userProvider.dart';
+import 'package:egywander/providers/favoriteProvider.dart';
 
 // Widget for Top Image Section
 class TopImageSection extends StatelessWidget {
@@ -117,43 +120,44 @@ class InfoTile extends StatelessWidget {
   }
 }
 
+class FavoriteIcon extends StatelessWidget {
+  final String placeId;
 
-// Widget for Heart Icon with Snackbar
-class FavoriteIcon extends StatefulWidget {
-  @override
-  _FavoriteIconState createState() => _FavoriteIconState();
-}
-
-class _FavoriteIconState extends State<FavoriteIcon> {
-  bool isFavorited = false;
-
-  void _toggleFavorite() {
-    setState(() {
-      isFavorited = !isFavorited;
-    });
-
-    // Show snackbar when the heart is pressed
-    final snackBar = SnackBar(
-      content: Text(isFavorited ? 'Added to Favorites' : 'Removed from Favorites'),
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
+  const FavoriteIcon({required this.placeId});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleFavorite,
-      child: CircleAvatar(
-        radius: 24, // Adjust size
-        backgroundColor: Colors.white.withOpacity(1), // Light transparent background
-        child: Icon(
-          Icons.favorite,
-          color: isFavorited ? Colors.orange : Colors.grey[400], // Icon color changes
-          size: 28, // Icon size
+    final userProvider = Provider.of<UserProvider>(context);
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final isFavorite =
+        favoritesProvider.favorites.any((fav) => fav.placeId == placeId);
+
+    return Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 245, 245, 245), // Background color
+          shape: BoxShape.circle,
         ),
-      ),
-    );
+        child: IconButton(
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: isFavorite && userProvider.isLoggedIn
+                ? Colors.orange
+                : const Color.fromARGB(255, 112, 112, 112),
+            size: 35,
+          ),
+          onPressed: () {
+            if (userProvider.isLoggedIn) {
+              favoritesProvider.toggleFavorite(
+                userProvider.id!,
+                placeId,
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Please log in to manage favorites.')),
+              );
+            }
+          },
+        ));
   }
 }
 
@@ -265,7 +269,6 @@ class _ReviewsState extends State<Reviews> {
     );
   }
 }
-
 
 class OpeningHours extends StatefulWidget {
   final List<String> openingHours;
