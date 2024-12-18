@@ -10,42 +10,43 @@ class Homepageactivityprovider with ChangeNotifier {
   List<HomePageActivity> get activities => _activities;
 
   Future<void> fetchPlacesForCity(String city) async {
-  final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
-  try {
-    final url = Uri.parse(
-      "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('top places in $city')}&key=$apiKey&region=EG",
-    );
+    try {
+      final url = Uri.parse(
+          "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('top places in $city')}&key=$apiKey&region=EG");
 
-    final response = await http.get(url);
+      final response = await http.get(url);
 
-    print('Response Status: ${response.statusCode}');
-    print('Response Body: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      print('Decoded Data: $data');
+        if (data['results'] != null && data['results'].isNotEmpty) {
+          _activities =
+              await Future.wait(data['results'].map<Future<HomePageActivity>>(
+            (place) async {
+              final detailsUrl = Uri.parse(
+                  "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
 
-      if (data['results'] != null && data['results'].isNotEmpty) {
-        print('Fetched places: ${data['results']}');
-        _activities = data['results']
-            .map<HomePageActivity>((place) =>
-                HomePageActivity.fromGooglePlace(place))
-            .toList();
+              final detailsResponse = await http.get(detailsUrl);
+              if (detailsResponse.statusCode == 200) {
+                final details = json.decode(detailsResponse.body)['result'];
+                return HomePageActivity.fromGooglePlace(details);
+              } else {
+                return HomePageActivity.fromGooglePlace(place);
+              }
+            },
+          ).toList());
+        } else {
+          _activities = [];
+        }
       } else {
-        print('No results found.');
-        _activities = [];
+        throw Exception('API call failed with status: ${response.statusCode}');
       }
-    } else {
-      print('API call failed: ${response.statusCode} - ${response.body}');
-      throw Exception('API call failed with status: ${response.statusCode}');
+    } catch (e, stackTrace) {
+      _activities = [];
+      print('Error fetching places: $e\n$stackTrace');
+      rethrow;
     }
-  } catch (e) {
-    print('Error: $e');
-    _activities = [];
-    rethrow;
-  } finally {
-    notifyListeners();
   }
-}
 }
