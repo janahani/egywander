@@ -1,39 +1,31 @@
+import 'package:egywander/models/homepageActivities.dart';
 import 'package:egywander/screens/loginScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import Provider
-import 'package:egywander/widgets/activityWidgets.dart'; // Import the updated widgets
+import 'package:provider/provider.dart';
+import 'package:egywander/widgets/activityWidgets.dart';
 import '../widgets/systembars.dart';
-import './addActivityScreen.dart'; // Import the AddActivityScreen
-import '../widgets/customBtn.dart'; // Import the CustomButton widget
-import '../providers/userProvider.dart'; // Import UserProvider
+import './addActivityScreen.dart';
+import '../widgets/customBtn.dart';
+import '../providers/userProvider.dart';
 
 class ActivityScreen extends StatelessWidget {
-  final String id;
-  final String imageUrl;
-  final String title;
-  final String location;
-  final String price;
-  final double rating;
+
+  final HomePageActivity homePageActivity;
 
   const ActivityScreen({
-    required this.id,
-    required this.imageUrl,
-    required this.title,
-    required this.location,
-    required this.price,
-    required this.rating,
+    required this.homePageActivity,
   });
 
   void _openAddActivityDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddActivityScreen(activityTitle: title, activityId: id);
+        return AddActivityScreen(activityTitle: homePageActivity.name, activityId: homePageActivity.id);
       },
     ).then((result) {
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Activity added: ${result['title']}")),
+          SnackBar(content: Text("Activity added: \${result['homePageActivity.name']}")),
         );
       }
     });
@@ -69,11 +61,11 @@ class ActivityScreen extends StatelessWidget {
           children: [
             Stack(
               children: [
-                TopImageSection(imageUrl: imageUrl),
+                TopImageSection(imageUrl: homePageActivity.imageUrl),
                 Positioned(
                   bottom: 16,
                   right: 16,
-                  child: FavoriteIcon(), // Use the reusable FavoriteIcon widget
+                  child: FavoriteIcon(),
                 ),
               ],
             ),
@@ -82,9 +74,9 @@ class ActivityScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TitleAndLocation(title: title, location: location),
+                  TitleAndLocation(title: homePageActivity.name, location: homePageActivity.location),
                   const SizedBox(height: 16),
-                  PriceAndRatingSection(price: price, rating: rating),
+                  PriceAndRatingSection(price: homePageActivity.category, rating: homePageActivity.rating!.toDouble()),
                   const SizedBox(height: 16),
                   _InfoTilesRow(),
                   const SizedBox(height: 25),
@@ -104,6 +96,61 @@ class ActivityScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.grey, fontSize: 16)),
                     ),
                   ),
+
+                  const SizedBox(height: 30),
+
+                  // Opening Hours Section
+                  Text(
+                    "Opening Hours",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  for (var hour in homePageActivity.openingHours)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Text(
+                        hour,
+                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                      ),
+                    ),
+
+                  const SizedBox(height: 30),
+
+                  // Reviews Section
+                  Text(
+                    "Reviews",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  for (var review in homePageActivity.reviews)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            review['author_name']!,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            review['text']!,
+                            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                          ),
+                        ],
+                      ),
+                    ),
 
                   const SizedBox(height: 30),
 
