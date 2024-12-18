@@ -7,6 +7,7 @@ import '../widgets/systembars.dart';
 import './addActivityScreen.dart';
 import '../widgets/customBtn.dart';
 import '../providers/userProvider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ActivityScreen extends StatelessWidget {
   final HomePageActivity homePageActivity;
@@ -87,21 +88,46 @@ class ActivityScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _InfoTilesRow(),
                   const SizedBox(height: 30),
-
-                  // Map Placeholder
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
+                  if (homePageActivity.latitude != null &&
+                      homePageActivity.longitude != null)
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(
+                            homePageActivity.latitude!,
+                            homePageActivity.longitude!,
+                          ),
+                          zoom: 15,
+                        ),
+                        markers: {
+                          Marker(
+                            markerId: MarkerId(homePageActivity.id),
+                            position: LatLng(
+                              homePageActivity.latitude!,
+                              homePageActivity.longitude!,
+                            ),
+                            infoWindow: InfoWindow(
+                              title: homePageActivity.name,
+                              snippet: homePageActivity.location,
+                            ),
+                          ),
+                        },
+                      ),
+                    )
+                  else
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: Text(
+                          "Location not available",
+                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                        ),
+                      ),
                     ),
-                    child: const Center(
-                      child: Text("Map Placeholder",
-                          style: TextStyle(color: Colors.grey, fontSize: 16)),
-                    ),
-                  ),
-
                   const SizedBox(height: 30),
                   // Opening Hours Section
                   OpeningHours(openingHours: homePageActivity.openingHours),
