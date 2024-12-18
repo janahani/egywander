@@ -20,14 +20,13 @@ class FavoritesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 150,
+      height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             blurRadius: 4,
             color: const Color(0x33000000),
-            offset: const Offset(0, 2),
           ),
         ],
         borderRadius: BorderRadius.circular(8),
@@ -66,7 +65,7 @@ class FavoritesCard extends StatelessWidget {
                     location,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  SizedBox(height: 8),
+                  // SizedBox(height: 8),
                   Row(
                     children: [
                       Icon(Icons.star, color: Colors.amber, size: 18),
