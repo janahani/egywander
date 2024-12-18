@@ -9,20 +9,25 @@ import '../widgets/customBtn.dart';
 import '../providers/userProvider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class ActivityScreen extends StatelessWidget {
+class ActivityScreen extends StatefulWidget {
   final HomePageActivity homePageActivity;
 
   const ActivityScreen({
     required this.homePageActivity,
   });
 
+  @override
+  _ActivityScreenState createState() => _ActivityScreenState();
+}
+
+class _ActivityScreenState extends State<ActivityScreen> {
   void _openAddActivityDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AddActivityScreen(
-            activityTitle: homePageActivity.name,
-            activityId: homePageActivity.id);
+            activityTitle: widget.homePageActivity.name,
+            activityId: widget.homePageActivity.id);
       },
     ).then((result) {
       if (result != null) {
@@ -38,21 +43,24 @@ class ActivityScreen extends StatelessWidget {
   void _handleAddToSchedule(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.isLoggedIn) {
-      // User is logged in
       _openAddActivityDialog(context);
     } else {
-      // User is not logged in
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("You have to register/log in first."),
         ),
       );
-      // Redirect to login screen
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     }
   }
+
+void update(){
+  setState(() {
+    
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +73,11 @@ class ActivityScreen extends StatelessWidget {
           children: [
             Stack(
               children: [
-                TopImageSection(imageUrl: homePageActivity.imageUrl),
+                TopImageSection(imageUrl: widget.homePageActivity.imageUrl),
                 Positioned(
                   bottom: 16,
                   right: 16,
-                  child: FavoriteIcon(),
+                  child: FavoriteIcon(placeId: widget.homePageActivity.id),
                 ),
               ],
             ),
@@ -79,38 +87,38 @@ class ActivityScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TitleAndLocation(
-                      title: homePageActivity.name,
-                      location: homePageActivity.location),
+                      title: widget.homePageActivity.name,
+                      location: widget.homePageActivity.location),
                   const SizedBox(height: 16),
                   CategoryAndRatingSection(
-                      category: homePageActivity.category,
-                      rating: homePageActivity.rating!.toDouble()),
+                      category: widget.homePageActivity.category,
+                      rating: widget.homePageActivity.rating!.toDouble()),
                   const SizedBox(height: 16),
                   _InfoTilesRow(),
                   const SizedBox(height: 30),
-                  if (homePageActivity.latitude != null &&
-                      homePageActivity.longitude != null)
+                  if (widget.homePageActivity.latitude != null &&
+                      widget.homePageActivity.longitude != null)
                     Container(
                       height: 200,
                       width: double.infinity,
                       child: GoogleMap(
                         initialCameraPosition: CameraPosition(
                           target: LatLng(
-                            homePageActivity.latitude!,
-                            homePageActivity.longitude!,
+                            widget.homePageActivity.latitude!,
+                            widget.homePageActivity.longitude!,
                           ),
                           zoom: 15,
                         ),
                         markers: {
                           Marker(
-                            markerId: MarkerId(homePageActivity.id),
+                            markerId: MarkerId(widget.homePageActivity.id),
                             position: LatLng(
-                              homePageActivity.latitude!,
-                              homePageActivity.longitude!,
+                              widget.homePageActivity.latitude!,
+                              widget.homePageActivity.longitude!,
                             ),
                             infoWindow: InfoWindow(
-                              title: homePageActivity.name,
-                              snippet: homePageActivity.location,
+                              title: widget.homePageActivity.name,
+                              snippet: widget.homePageActivity.location,
                             ),
                           ),
                         },
@@ -129,15 +137,13 @@ class ActivityScreen extends StatelessWidget {
                       ),
                     ),
                   const SizedBox(height: 30),
-                  // Opening Hours Section
-                  OpeningHours(openingHours: homePageActivity.openingHours),
+                  OpeningHours(openingHours: widget.homePageActivity.openingHours),
                   const SizedBox(height: 20),
-                  // Reviews Section
-                  Reviews(reviews: homePageActivity.reviews),
+                  Reviews(reviews: widget.homePageActivity.reviews),
                   const SizedBox(height: 30),
                   Center(
                     child: SizedBox(
-                      width: 180, // Adjust the width as needed
+                      width: 180,
                       child: CustomButton(
                         text: "Add to Schedule",
                         onPressed: () {
@@ -159,15 +165,15 @@ class ActivityScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        InfoTile(icon: Icons.star, text: homePageActivity.rating.toString()),
+        InfoTile(icon: Icons.star, text: widget.homePageActivity.rating.toString()),
         InfoTile(
             icon: Icons.person,
-            text: homePageActivity.userRatingsTotal.toString()),
+            text: widget.homePageActivity.userRatingsTotal.toString()),
         InfoTile(
-            icon: homePageActivity.isOpened == true
+            icon: widget.homePageActivity.isOpened == true
                 ? Icons.meeting_room
                 : Icons.door_front_door,
-            text: homePageActivity.isOpened == true
+            text: widget.homePageActivity.isOpened == true
                 ? "Opened Now"
                 : "Closed Now"),
       ],

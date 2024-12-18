@@ -13,6 +13,7 @@ import 'providers/restaurantProvider.dart';
 import 'screens/OwnerReservationInfoForm.dart';
 import 'screens/selectedRestaurantScreen.dart';
 import 'providers/homepageactivityprovider.dart';
+import 'providers/favoriteProvider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
@@ -42,6 +43,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => Homepageactivityprovider()),
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
+        ChangeNotifierProvider(create: (context) => FavoritesProvider()),
+
 
       ],
       child: MyApp(),
