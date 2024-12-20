@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import 'package:flutter/material.dart';
 import '../models/homepageActivities.dart';
 import 'package:http/http.dart' as http;
@@ -90,3 +91,5 @@ class Homepageactivityprovider with ChangeNotifier {
     }
   }
 }
+=======
+>>>>>>> Stashed changes
