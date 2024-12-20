@@ -1,12 +1,14 @@
-<<<<<<< Updated upstream
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/homepageActivities.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../models/restaurant.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
   List<HomePageActivity> _activities = [];
+  final Map<String, List<HomePageActivity>> _cache = {};  // Cache map
 
   List<HomePageActivity> get activities => _activities;
 
@@ -23,6 +25,15 @@ class Homepageactivityprovider with ChangeNotifier {
 
     try {
       for (final category in categories.entries) {
+        // Cache key is a combination of city and category
+        final cacheKey = '${city}_${category.key}';
+
+        // Check if the result is already in cache
+        if (_cache.containsKey(cacheKey)) {
+          fetchedActivities.addAll(_cache[cacheKey]!);
+          continue;  // Skip API call if results are cached
+        }
+
         final url = Uri.parse(
             "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
 
@@ -32,8 +43,10 @@ class Homepageactivityprovider with ChangeNotifier {
           final data = json.decode(response.body);
 
           if (data['results'] != null && data['results'].isNotEmpty) {
-            final categoryActivities = await Future.wait<HomePageActivity>(
-              data['results'].map<Future<HomePageActivity>>((place) async {
+            final categoryActivities = await Future.wait<HomePageActivity>( 
+              data['results']
+                  .take(2) 
+                  .map<Future<HomePageActivity>>((place) async {
                 final detailsUrl = Uri.parse(
                     "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
 
@@ -41,8 +54,16 @@ class Homepageactivityprovider with ChangeNotifier {
 
                 if (detailsResponse.statusCode == 200) {
                   final details = json.decode(detailsResponse.body)['result'];
-                  return HomePageActivity.fromGooglePlace(
-                      details, category.key);
+                  final restaurant = Restaurant.fromGooglePlace(details);
+
+                  if (category.key == 'Food') {
+                    bool isApproved = await _checkRestaurantApproval(restaurant.id);
+                    if (isApproved) {
+                      return HomePageActivity.fromGooglePlace(details, category.key);
+                    }
+                  } else {
+                    return HomePageActivity.fromGooglePlace(details, category.key);
+                  }
                 } else {
                   return HomePageActivity.fromGooglePlace(place, category.key);
                 }
@@ -50,10 +71,12 @@ class Homepageactivityprovider with ChangeNotifier {
             );
 
             fetchedActivities.addAll(categoryActivities);
+
+            // Cache the results for this city and category
+            _cache[cacheKey] = fetchedActivities;
           }
         } else {
-          throw Exception(
-              'API call failed for ${category.key} with status: ${response.statusCode}');
+          throw Exception('API call failed for ${category.key} with status: ${response.statusCode}');
         }
       }
 
@@ -67,29 +90,20 @@ class Homepageactivityprovider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<HomePageActivity?> fetchActivityById(String placeId) async {
-    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
-
+  Future<bool> _checkRestaurantApproval(String restaurantId) async {
     try {
-      final detailsUrl = Uri.parse(
-          "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+      final restaurantDoc = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(restaurantId)
+          .get();
 
-      final response = await http.get(detailsUrl);
-
-      if (response.statusCode == 200) {
-        final details = json.decode(response.body)['result'];
-
-        // Assuming you have a method to parse the details into a HomePageActivity object
-        return HomePageActivity.fromGooglePlace(details, 'Unknown');
-      } else {
-        throw Exception(
-            'Failed to fetch details for placeId $placeId with status: ${response.statusCode}');
+      if (restaurantDoc.exists) {
+        final restaurant = Restaurant.fromMap(restaurantDoc.data()!);
+        return restaurant.isAccepted; 
       }
-    } catch (e, stackTrace) {
-      print('Error fetching activity by placeId: $e\n$stackTrace');
-      return null;
+    } catch (e) {
+      print('Error checking restaurant approval: $e');
     }
+    return false; 
   }
 }
-=======
->>>>>>> Stashed changes
