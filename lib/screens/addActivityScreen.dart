@@ -1,9 +1,11 @@
+import 'package:egywander/notificationsDbHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '/models/schedule.dart';
 import '/providers/userProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/usernotification.dart';
 
 class AddActivityScreen extends StatefulWidget {
   final String activityTitle;
@@ -102,39 +104,39 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     return null;
   }
 
- String? _validateEndTime() {
-  final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
-  final parsedStartTime = DateFormat('HH:mm').parse(_startTimeController.text);
-  final parsedEndTime = DateFormat('HH:mm').parse(_endTimeController.text);
+  String? _validateEndTime() {
+    final parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
+    final parsedStartTime =
+        DateFormat('HH:mm').parse(_startTimeController.text);
+    final parsedEndTime = DateFormat('HH:mm').parse(_endTimeController.text);
 
-  final selectedDateTimeStart = DateTime(
-    parsedDate.year,
-    parsedDate.month,
-    parsedDate.day,
-    parsedStartTime.hour,
-    parsedStartTime.minute,
-  );
+    final selectedDateTimeStart = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedStartTime.hour,
+      parsedStartTime.minute,
+    );
 
-  final selectedDateTimeEnd = DateTime(
-    parsedDate.year,
-    parsedDate.month,
-    parsedDate.day,
-    parsedEndTime.hour,
-    parsedEndTime.minute,
-  );
+    final selectedDateTimeEnd = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedEndTime.hour,
+      parsedEndTime.minute,
+    );
 
-  // If the end time is before the start time (and should be considered on the next day)
-  if (selectedDateTimeEnd.isBefore(selectedDateTimeStart)) {
-    // Add 1 day to the end time if it's before the start time
-    final adjustedEndTime = selectedDateTimeEnd.add(Duration(days: 1));
-    if (adjustedEndTime.isBefore(selectedDateTimeStart)) {
-      return 'End time must be after start time';
+    // If the end time is before the start time (and should be considered on the next day)
+    if (selectedDateTimeEnd.isBefore(selectedDateTimeStart)) {
+      // Add 1 day to the end time if it's before the start time
+      final adjustedEndTime = selectedDateTimeEnd.add(Duration(days: 1));
+      if (adjustedEndTime.isBefore(selectedDateTimeStart)) {
+        return 'End time must be after start time';
+      }
     }
+
+    return null; // Valid end time
   }
-
-  return null; // Valid end time
-}
-
 
   Future<void> _addActivityToSchedule() async {
     if (_formKey.currentState!.validate()) {
@@ -151,15 +153,44 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         final parsedEndTime =
             DateFormat('HH:mm').parse(_endTimeController.text);
 
+        final startingDateTime = DateTime(
+          parsedDate.year,
+          parsedDate.month,
+          parsedDate.day,
+          parsedStartTime.hour,
+          parsedStartTime.minute,
+        );
+
+        final endingDateTime = DateTime(
+          parsedDate.year,
+          parsedDate.month,
+          parsedDate.day,
+          parsedEndTime.hour,
+          parsedEndTime.minute,
+        );
+
+        // Calculate notification time (4 hours before the starting time)
+        final notificationTime = startingDateTime.subtract(Duration(hours: 4));
+
+        // Create the Notification model
+      final newNotification = UserNotification(
+        placename: widget.activityTitle, // Assuming placename is the title of the activity
+        date: parsedDate,
+        startingTime: startingDateTime,
+        endingTime: endingDateTime,
+        notificationsTime: notificationTime,
+      );
+
+      // Add the notification to the SQLite database
+      await NotificationDbHelper.instance.insertNotification(newNotification);
+
         // Creating the new schedule object
         final newSchedule = Schedule(
           userId: userId,
           placeId: widget.activityId,
           date: parsedDate,
-          startingTime: DateTime(parsedDate.year, parsedDate.month,
-              parsedDate.day, parsedStartTime.hour, parsedStartTime.minute),
-          endingTime: DateTime(parsedDate.year, parsedDate.month,
-              parsedDate.day, parsedEndTime.hour, parsedEndTime.minute),
+          startingTime: startingDateTime,
+          endingTime: endingDateTime,
         );
 
         // Add the new schedule to Firestore

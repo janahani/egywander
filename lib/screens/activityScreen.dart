@@ -56,11 +56,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-void update(){
-  setState(() {
-    
-  });
-}
+  void update() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,3 +178,5 @@ void update(){
     );
   }
 }
+
+  
