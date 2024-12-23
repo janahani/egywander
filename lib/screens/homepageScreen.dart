@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../models/restaurant.dart';
 import '../providers/homepageactivityprovider.dart';
 import 'filterScreen.dart';
+import '../screens/searchResultsScreen.dart';
+import '../providers/searchProvider.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -18,6 +20,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = 'Entertainment'; // Default category
   String popularCategory = 'Most Popular';
+  
+  final TextEditingController _searchController = TextEditingController();
+
 
   void _fetchActivities(BuildContext context, String city) async {
     final provider =
@@ -38,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+  final searchProvider = Provider.of<SearchProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: appBar(context),
@@ -64,17 +71,28 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  hintText: 'Search places',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
+              controller: _searchController,
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search places',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
                 ),
               ),
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SearchPage(query: value),
+                    ),
+                  );
+                }
+              },
+            ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -255,7 +273,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 35),
               //  section for "Most Popular"
               Align(
                 alignment: Alignment.centerLeft,
