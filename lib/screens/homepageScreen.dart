@@ -18,21 +18,21 @@ class _HomeScreenState extends State<HomeScreen> {
   String popularCategory = 'Most Popular';
 
   void _fetchActivities(BuildContext context, String city) async {
-  final provider = Provider.of<Homepageactivityprovider>(context, listen: false);
+    final provider =
+        Provider.of<Homepageactivityprovider>(context, listen: false);
 
-  try {
-    // Fetch places and popular places concurrently
-    await Future.wait([
-      provider.fetchPlacesForCity(city),
-      provider.fetchPopularPlacesForCity(city),
-    ]);
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to fetch activities for $city: $e')),
-    );
+    try {
+      // Fetch places and popular places concurrently
+      await Future.wait([
+        provider.fetchPlacesForCity(city),
+        provider.fetchPopularPlacesForCity(city),
+      ]);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch activities for $city: $e')),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         image: DecorationImage(
-                          image: AssetImage('assets/images/welcomescreen.jpg'), 
+                          image: AssetImage('assets/images/welcomescreen.jpg'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -211,7 +211,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                       ),
                       onPressed: () {},
                       child: Text(
@@ -232,7 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, provider, child) {
                     // Filter activities for the selected category ("Available Places")
                     final filteredActivities = provider.activities
-                        .where((activity) => activity.category == selectedCategory)
+                        .where(
+                            (activity) => activity.category == selectedCategory)
                         .toList();
 
                     return ListView.builder(
@@ -247,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 35),
-              // New section for "Most Popular"
+              //  section for "Most Popular"
               Align(
                 alignment: Alignment.centerLeft,
                 child: const Text(
@@ -255,14 +257,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
+              const SizedBox(height: 25),
               SizedBox(
                 height: 300,
                 child: Consumer<Homepageactivityprovider>(
                   builder: (context, provider, child) {
-                    // Filter activities for the "Most Popular" category
-                    final popularActivities = provider.activities
-                        .where((activity) => activity.category == 'Most Popular')
-                        .toList();
+                    final popularActivities = provider.popularActivities;
 
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,

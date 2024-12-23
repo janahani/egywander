@@ -7,10 +7,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/restaurant.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
-  List<HomePageActivity> _activities = [];
   final Map<String, List<HomePageActivity>> _cache = {}; // Cache map
 
+  List<HomePageActivity> _activities = [];
+  List<HomePageActivity> _popularActivities = [];
+
   List<HomePageActivity> get activities => _activities;
+  List<HomePageActivity> get popularActivities => _popularActivities;
 
   Future<bool> _checkRestaurantApproval(String restaurantName) async {
     if (restaurantName.isEmpty) return false;
@@ -129,19 +132,17 @@ class Homepageactivityprovider with ChangeNotifier {
       'Most Popular': 'places with high ratings',
     };
 
-    List<HomePageActivity> fetchedActivities = [];
+    List<HomePageActivity> fetchedPopularActivities = [];
 
     try {
       for (final category in categories.entries) {
         final cacheKey = '${city}_${category.key}';
 
-        // Check the cache first
         if (_cache.containsKey(cacheKey)) {
-          fetchedActivities.addAll(_cache[cacheKey]!);
+          fetchedPopularActivities.addAll(_cache[cacheKey]!);
           continue;
         }
 
-        // Fetch popular places from Google Places API
         final url = Uri.parse(
             "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
 
@@ -152,33 +153,27 @@ class Homepageactivityprovider with ChangeNotifier {
 
           if (data['results'] != null && data['results'].isNotEmpty) {
             final popularActivities = await Future.wait<HomePageActivity?>(
-              data['results']
-                  .take(3)
-                  .map<Future<HomePageActivity?>>((place) async {
-                final detailsUrl = Uri.parse(
-                    "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+                data['results']
+                    .take(3)
+                    .map<Future<HomePageActivity?>>((place) async {
+              final detailsUrl = Uri.parse(
+                  "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
 
-                final detailsResponse = await http.get(detailsUrl);
+              final detailsResponse = await http.get(detailsUrl);
 
-                if (detailsResponse.statusCode == 200) {
-                  final details = json.decode(detailsResponse.body)['result'];
-                  final restaurantName = details['name'] ?? '';
+              if (detailsResponse.statusCode == 200) {
+                final details = json.decode(detailsResponse.body)['result'];
+                return HomePageActivity.fromGooglePlace(
+                    details, 'Most Popular');
+              }
+              return null;
+            }).toList());
 
-                  // Create the HomePageActivity for the fetched popular place
-                  return HomePageActivity.fromGooglePlace(
-                      details, 'Most Popular');
-                }
-                return null;
-              }).toList(),
-            );
-
-            // Filter out nulls and add fetched activities to the cache
-            final validActivities =
+            final validPopularActivities =
                 popularActivities.whereType<HomePageActivity>().toList();
-            _cache[cacheKey] = validActivities;
+            _cache[cacheKey] = validPopularActivities;
 
-            // Add to the overall fetched activities
-            fetchedActivities.addAll(validActivities);
+            fetchedPopularActivities.addAll(validPopularActivities);
           }
         } else {
           throw Exception(
@@ -186,11 +181,10 @@ class Homepageactivityprovider with ChangeNotifier {
         }
       }
 
-      // Update the activities list
-      _activities = fetchedActivities;
+      _popularActivities = fetchedPopularActivities;
     } catch (e, stackTrace) {
-      _activities = [];
-      print('Error fetching places: $e\n$stackTrace');
+      _popularActivities = [];
+      print('Error fetching popular places: $e\n$stackTrace');
       rethrow;
     }
 
