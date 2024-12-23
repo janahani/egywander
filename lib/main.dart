@@ -1,3 +1,5 @@
+import 'package:egywander/models/homepageActivities.dart';
+import 'package:egywander/screens/activityScreen.dart';
 import 'package:egywander/screens/homepageScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -51,6 +53,7 @@ Future<void> main() async {
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
