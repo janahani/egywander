@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 import 'providers/userProvider.dart';
 import 'screens/welcomeScreen.dart';
 import 'screens/UserManagementScreen.dart';
-import 'screens/admindashScreen.dart';
-import 'providers/restaurantProvider.dart';
+import 'screens/filterScreen.dart';
+ import 'providers/restaurantProvider.dart';
 import 'screens/OwnerReservationInfoForm.dart';
 import 'screens/selectedRestaurantScreen.dart';
 import 'providers/homepageactivityprovider.dart';
@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: FilterScreen(),
     );
   }
 }
