@@ -26,6 +26,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     String? userId;
+    userProvider.isLoggedIn = true;
     if (userProvider.isLoggedIn) {
       userId = userProvider.id!;
     }
