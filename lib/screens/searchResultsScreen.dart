@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/searchProvider.dart';
 import '../widgets/systembars.dart';
-
+import '../screens/activityScreen.dart';
 class SearchPage extends StatelessWidget {
    final String query;
 
@@ -51,7 +51,8 @@ class SearchPage extends StatelessWidget {
                         ? Image.network(activity.imageUrl!)
                         : Icon(Icons.place),
                     onTap: () {
-                      // Handle item tap (e.g., navigate to details page)
+                      // Navigate to ActivityScreen and pass the activity
+                     
                     },
                   );
                 },

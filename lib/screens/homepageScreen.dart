@@ -80,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
+                  
                 ),
               ),
               onSubmitted: (value) {
