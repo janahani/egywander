@@ -1,3 +1,4 @@
+import 'package:egywander/notificationsDbHelper.dart';
 import 'package:egywander/screens/accountScreen.dart';
 import 'package:egywander/screens/favoritesScreen.dart';
 import 'package:egywander/screens/homepageScreen.dart';
@@ -6,7 +7,34 @@ import 'package:egywander/screens/adminDashScreen.dart';
 import 'package:flutter/material.dart';
 import '../screens/notificationsScreen.dart';
 
-AppBar appBar(context) {
+final NotificationDbHelper _db = NotificationDbHelper.instance;
+
+// To store notifications and the filtered notifications for today
+List<Map<String, dynamic>> allNotifications = [];
+List<Map<String, dynamic>> _notifications = [];
+
+// Function to calculate the notification count for today
+int calculateNotificationCount() {
+  DateTime now = DateTime.now();
+  DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+  return _notifications.where((notification) {
+    DateTime notificationTime =
+        DateTime.parse(notification['notificationsTime']);
+    return now.isAfter(notificationTime) && now.isBefore(endOfDay);
+  }).length;
+}
+
+// Function to mark notifications as viewed
+void markNotificationsAsViewed() {
+  _notifications.clear(); // Clear notifications after viewing
+  print("Notifications marked as viewed.");
+}
+
+// AppBar widget with notification count and navigation to NotificationsScreen
+AppBar appBar(BuildContext context) {
+  int notificationCount = calculateNotificationCount();
+
   return AppBar(
     elevation: 0,
     backgroundColor: Colors.transparent,
@@ -26,29 +54,36 @@ AppBar appBar(context) {
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.black),
             onPressed: () {
-              // Navigate to NotificationsScreen when the IconButton is pressed
+              // Navigate to NotificationsScreen and handle onViewedNotifications callback
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const NotificationsScreen(),
+                  builder: (context) => NotificationsScreen(
+                    onViewedNotifications: () {
+                      markNotificationsAsViewed(); // Reset notification count
+                      (context as Element)
+                          .markNeedsBuild(); // Force rebuild AppBar
+                    },
+                  ),
                 ),
               );
             },
           ),
-          const Positioned(
-            right: 10,
-            top: 10,
-            child: CircleAvatar(
-              radius: 8,
-              backgroundColor: Colors.red,
-              child: Text(
-                '2',
-                style: TextStyle(fontSize: 12, color: Colors.white),
+          if (notificationCount > 0)
+            Positioned(
+              right: 10,
+              top: 10,
+              child: CircleAvatar(
+                radius: 8,
+                backgroundColor: Colors.red,
+                child: Text(
+                  '$notificationCount',
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
+                ),
               ),
             ),
-          )
         ],
-      )
+      ),
     ],
   );
 }
