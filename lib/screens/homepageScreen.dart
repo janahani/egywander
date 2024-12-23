@@ -7,6 +7,8 @@ import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
 import '../models/restaurant.dart';
 import '../providers/homepageactivityprovider.dart';
+import 'filterScreen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -214,7 +216,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                       ),
-                      onPressed: () {},
+                      onPressed: () {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FilterScreen(),
+                          ),
+                        );},
                       child: Text(
                         'View All',
                         style: TextStyle(
