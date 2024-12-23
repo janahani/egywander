@@ -43,7 +43,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => Homepageactivityprovider()),
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
-        ChangeNotifierProvider(create: (context) => FavoritesProvider()),
+        // ChangeNotifierProvider(create: (context) => FavoritesProvider()),
 
 
       ],

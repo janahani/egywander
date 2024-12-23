@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../widgets/splashImageAPI.dart';
 
 class HomePageActivity {
   final String id;
@@ -29,15 +30,18 @@ class HomePageActivity {
     this.latitude,
     this.longitude,
   });
+  factory HomePageActivity.fromJson(
+      Map<String, dynamic> json, String imageUrl) {
+    final address = json['address'] ?? {};
 
-  factory HomePageActivity.fromJson(Map<String, dynamic> json) {
     return HomePageActivity(
-      id: json['id'],
-      name: json['name'] ?? 'Unknown',
-      location: json['location'] ?? 'Unknown',
-      imageUrl: json['imageUrl'] ?? 'https://via.placeholder.com/150',
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      userRatingsTotal: json['userRatingsTotal'] as int? ?? 0,
+      id: json['place_id']?.toString() ?? const Uuid().v4(),
+      name: json['name'] ?? address['road'] ?? 'Unknown',
+      location: json['display_name'] ?? 'Unknown Location',
+      imageUrl: imageUrl,
+      rating:
+          json['rating'] != null ? (json['rating'] as num).toDouble() : null,
+      userRatingsTotal: json['userRatingsTotal'] as int? ?? null,
       category: json['category'] ?? 'Unknown',
       openingHours: json['openingHours'] != null
           ? List<String>.from(json['openingHours'])
@@ -46,9 +50,22 @@ class HomePageActivity {
       reviews: json['reviews'] != null
           ? List<Map<String, dynamic>>.from(json['reviews'])
           : [],
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      latitude: double.tryParse(json['lat']?.toString() ?? '') ?? 0.0,
+      longitude: double.tryParse(json['lon']?.toString() ?? '') ?? 0.0,
     );
+  }
+
+  // Asynchronous method to create an instance
+  static Future<HomePageActivity> fromJsonAsync(
+      Map<String, dynamic> json) async {
+    // Fetch the name for the Unsplash query
+    final name = json['name'] ?? json['display_name'] ?? 'restaurant';
+
+    // Fetch the image URL based on the name
+    final imageUrl = await UnsplashService.fetchImage(name);
+    // Use the synchronous constructor to return the final object
+    return HomePageActivity.fromJson(
+        json, imageUrl ?? 'https://via.placeholder.com/150');
   }
 
   factory HomePageActivity.fromGooglePlace(

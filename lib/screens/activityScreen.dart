@@ -1,13 +1,14 @@
 import 'package:egywander/models/homepageActivities.dart';
 import 'package:egywander/screens/loginScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 import 'package:egywander/widgets/activityWidgets.dart';
 import '../widgets/systembars.dart';
 import './addActivityScreen.dart';
 import '../widgets/customBtn.dart';
 import '../providers/userProvider.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 
 class ActivityScreen extends StatefulWidget {
   final HomePageActivity homePageActivity;
@@ -56,11 +57,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-void update(){
-  setState(() {
-    
-  });
-}
+  void update() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +72,14 @@ void update(){
           children: [
             Stack(
               children: [
-                TopImageSection(imageUrl: widget.homePageActivity.imageUrl),
+                TopImageSection(
+                    imageUrl: widget.homePageActivity.imageUrl), // Main Image
                 Positioned(
                   bottom: 16,
                   right: 16,
-                  child: FavoriteIcon(placeId: widget.homePageActivity.id),
+                  child: Icon(Icons.favorite, color: Colors.red,),
+                  // FavoriteIcon(
+                  //     placeId: widget.homePageActivity.id),
                 ),
               ],
             ),
@@ -87,43 +89,54 @@ void update(){
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TitleAndLocation(
-                      title: widget.homePageActivity.name,
-                      location: widget.homePageActivity.location),
+                    title: widget.homePageActivity.name,
+                    location: widget.homePageActivity.location,
+                  ),
                   const SizedBox(height: 16),
                   CategoryAndRatingSection(
-                      category: widget.homePageActivity.category,
-                      rating: widget.homePageActivity.rating!.toDouble()),
+                    category: widget.homePageActivity.category,
+                    rating: widget.homePageActivity.rating?.toDouble() ??
+                        0.0, // Default to 0.0
+                  ),
                   const SizedBox(height: 16),
                   _InfoTilesRow(),
                   const SizedBox(height: 30),
-                  if (widget.homePageActivity.latitude != null &&
+                   if (widget.homePageActivity.latitude != null &&
                       widget.homePageActivity.longitude != null)
                     Container(
-                      height: 200,
-                      width: double.infinity,
-                      child: GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                            widget.homePageActivity.latitude!,
-                            widget.homePageActivity.longitude!,
+                        height: 200,
+                        width: double.infinity,
+                        child: FlutterMap(
+                          options: MapOptions(
+                            initialCenter: LatLng(
+                                widget.homePageActivity.latitude ?? 0,
+                                widget.homePageActivity.longitude ?? 0),
+                            initialZoom: 15.0,
                           ),
-                          zoom: 15,
-                        ),
-                        markers: {
-                          Marker(
-                            markerId: MarkerId(widget.homePageActivity.id),
-                            position: LatLng(
-                              widget.homePageActivity.latitude!,
-                              widget.homePageActivity.longitude!,
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                              subdomains: ['a', 'b', 'c'],
                             ),
-                            infoWindow: InfoWindow(
-                              title: widget.homePageActivity.name,
-                              snippet: widget.homePageActivity.location,
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: LatLng(
+                                      widget.homePageActivity.latitude ?? 0,
+                                      widget.homePageActivity.longitude ?? 0),
+                                  width: 40,
+                                  height: 40,
+                                  child: const Icon(
+                                    Icons.location_on,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        },
-                      ),
-                    )
+                          ],
+                        ))
                   else
                     Container(
                       height: 200,
@@ -137,9 +150,10 @@ void update(){
                       ),
                     ),
                   const SizedBox(height: 30),
-                  OpeningHours(openingHours: widget.homePageActivity.openingHours),
+                  OpeningHours(
+                      openingHours: widget.homePageActivity.openingHours ?? []),
                   const SizedBox(height: 20),
-                  Reviews(reviews: widget.homePageActivity.reviews),
+                  Reviews(reviews: widget.homePageActivity.reviews ?? []),
                   const SizedBox(height: 30),
                   Center(
                     child: SizedBox(
@@ -165,17 +179,22 @@ void update(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        InfoTile(icon: Icons.star, text: widget.homePageActivity.rating.toString()),
         InfoTile(
-            icon: Icons.person,
-            text: widget.homePageActivity.userRatingsTotal.toString()),
+          icon: Icons.star,
+          text: widget.homePageActivity.rating?.toStringAsFixed(1) ?? "N/A",
+        ),
         InfoTile(
-            icon: widget.homePageActivity.isOpened == true
-                ? Icons.meeting_room
-                : Icons.door_front_door,
-            text: widget.homePageActivity.isOpened == true
-                ? "Opened Now"
-                : "Closed Now"),
+          icon: Icons.person,
+          text: widget.homePageActivity.userRatingsTotal?.toString() ?? "0",
+        ),
+        InfoTile(
+          icon: widget.homePageActivity.isOpened == true
+              ? Icons.meeting_room
+              : Icons.door_front_door,
+          text: widget.homePageActivity.isOpened == true
+              ? "Opened Now"
+              : "Closed Now",
+        ),
       ],
     );
   }

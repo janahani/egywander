@@ -6,6 +6,9 @@ import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
 import '../models/restaurant.dart';
 import '../providers/homepageactivityprovider.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../models/restaurant.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,7 +17,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = 'Entertainment'; // Default category
-
   void _fetchActivities(BuildContext context, String city) async {
     final provider =
         Provider.of<Homepageactivityprovider>(context, listen: false);
@@ -26,6 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
         SnackBar(content: Text('Failed to fetch activities for $city: $e')),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchActivities(context, 'Cairo'); // Example: Fetch for Cairo on load
+    });
   }
 
   @override
@@ -77,8 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () =>
-                        _fetchActivities(context, 'Luxor and Aswan'),
+                    onPressed: () => _fetchActivities(context, 'Luxor'),
                     child: Text('Luxor and Aswan'),
                   ),
                 ],
@@ -165,22 +174,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
               SizedBox(
-                height: 300,
+                height: 300, // Optional: Remove height for a scrollable grid
                 child: Consumer<Homepageactivityprovider>(
                   builder: (context, provider, child) {
-                    final filteredActivities = provider.activities
-                        .where(
-                            (activity) => activity.category == selectedCategory)
-                        .take(10)
-                        .toList();
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: filteredActivities.length,
+                    final activities = provider.activities;
+
+                    if (activities.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No activities found.',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      );
+                    }
+
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, // Number of columns
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio:
+                            2 / 3, // Adjust ratio to allow more height
+                      ),
+                      itemCount: activities.length,
                       itemBuilder: (context, index) {
-                        final activity = filteredActivities[index];
-                        return TravelCard(
-                          homePageActivity: activity,
-                        );
+                        final activity = activities[index];
+                        return TravelCard(homePageActivity: activity);
                       },
                     );
                   },

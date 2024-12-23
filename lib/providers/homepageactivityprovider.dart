@@ -1,24 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../models/homepageActivities.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/restaurant.dart';
+import '../models/homepageActivities.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
   List<HomePageActivity> _activities = [];
-  final Map<String, List<HomePageActivity>> _cache = {};  // Cache map
+  final Map<String, List<HomePageActivity>> _cache = {}; // Cache map
 
   List<HomePageActivity> get activities => _activities;
-
   Future<void> fetchPlacesForCity(String city) async {
-    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    // Categories mapping for Nominatim queries
     final categories = {
-      'Food': 'restaurants or food',
-      'Entertainment': 'entertainment or activities',
-      'Landmarks': 'landmarks or tourist attractions',
-      'Sea': 'beaches or sea'
+      'Food': 'restaurant',
+      'Entertainment': 'entertainment',
+      'Landmarks': 'landmark',
+      'Sea': 'beach',
     };
 
     List<HomePageActivity> fetchedActivities = [];
@@ -31,52 +27,37 @@ class Homepageactivityprovider with ChangeNotifier {
         // Check if the result is already in cache
         if (_cache.containsKey(cacheKey)) {
           fetchedActivities.addAll(_cache[cacheKey]!);
-          continue;  // Skip API call if results are cached
+          continue; // Skip API call if results are cached
         }
 
+        // Build the API URL
         final url = Uri.parse(
-            "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
+          'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(city)}%20${category.value}&format=json&addressdetails=1&limit=10',
+        );
 
-        final response = await http.get(url);
+        // Send the API request
+        final response = await http.get(
+          url,
+          headers: {"User-Agent": "egywander (egywander@gmail.com)"},
+        );
 
         if (response.statusCode == 200) {
-          final data = json.decode(response.body);
+          final List<dynamic> data = json.decode(response.body);
 
-          if (data['results'] != null && data['results'].isNotEmpty) {
-            final categoryActivities = await Future.wait<HomePageActivity>( 
-              data['results']
-                  .take(2) 
-                  .map<Future<HomePageActivity>>((place) async {
-                final detailsUrl = Uri.parse(
-                    "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+          final categoryActivities = await Future.wait(
+              data.map<Future<HomePageActivity>>((place) async {
+            final placeWithCategory = (place as Map<String, dynamic>)
+              ..['category'] = category.key;
+            return HomePageActivity.fromJsonAsync(placeWithCategory);
+          }).toList());
 
-                final detailsResponse = await http.get(detailsUrl);
+          fetchedActivities.addAll(categoryActivities);
 
-                if (detailsResponse.statusCode == 200) {
-                  final details = json.decode(detailsResponse.body)['result'];
-                  final restaurant = Restaurant.fromGooglePlace(details);
-
-                  if (category.key == 'Food') {
-                    bool isApproved = await _checkRestaurantApproval(restaurant.id);
-                    if (isApproved) {
-                      return HomePageActivity.fromGooglePlace(details, category.key);
-                    }
-                  } else {
-                    return HomePageActivity.fromGooglePlace(details, category.key);
-                  }
-                } else {
-                  return HomePageActivity.fromGooglePlace(place, category.key);
-                }
-              }).toList(),
-            );
-
-            fetchedActivities.addAll(categoryActivities);
-
-            // Cache the results for this city and category
-            _cache[cacheKey] = fetchedActivities;
-          }
+          // Cache the results for this city and category
+          // _cache[cacheKey] = categoryActivities;
         } else {
-          throw Exception('API call failed for ${category.key} with status: ${response.statusCode}');
+          throw Exception(
+              'API call failed for ${category.key} with status: ${response.statusCode}');
         }
       }
 
@@ -88,22 +69,5 @@ class Homepageactivityprovider with ChangeNotifier {
     }
 
     notifyListeners();
-  }
-
-  Future<bool> _checkRestaurantApproval(String restaurantId) async {
-    try {
-      final restaurantDoc = await FirebaseFirestore.instance
-          .collection('restaurants')
-          .doc(restaurantId)
-          .get();
-
-      if (restaurantDoc.exists) {
-        final restaurant = Restaurant.fromMap(restaurantDoc.data()!);
-        return restaurant.isAccepted; 
-      }
-    } catch (e) {
-      print('Error checking restaurant approval: $e');
-    }
-    return false; 
   }
 }

@@ -123,7 +123,7 @@ class InfoTile extends StatelessWidget {
 class FavoriteIcon extends StatelessWidget {
   final String placeId;
 
-  const FavoriteIcon({required this.placeId});
+  const FavoriteIcon({super.key, required this.placeId});
 
   @override
   Widget build(BuildContext context) {
