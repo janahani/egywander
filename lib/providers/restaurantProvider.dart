@@ -134,7 +134,7 @@ class RestaurantProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchRestaurantDetails(String name) async {
+  /* Future<void> fetchRestaurantDetails(String name) async {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
     final url = Uri.parse(
         "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(name)}&key=$apiKey&region=EG");
@@ -155,7 +155,7 @@ class RestaurantProvider extends ChangeNotifier {
   }
 
  
-  /* Future<void> cachePlacesInFirestore(
+   Future<void> cachePlacesInFirestore(
       String city, List<Restaurant> places) async {
     final collection = FirebaseFirestore.instance.collection('places');
     await collection.doc(city).set({

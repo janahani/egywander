@@ -15,19 +15,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = 'Entertainment'; // Default category
+  String popularCategory = 'Most Popular';
 
   void _fetchActivities(BuildContext context, String city) async {
-    final provider =
-        Provider.of<Homepageactivityprovider>(context, listen: false);
+  final provider = Provider.of<Homepageactivityprovider>(context, listen: false);
 
-    try {
-      await provider.fetchPlacesForCity(city);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch activities for $city: $e')),
-      );
-    }
+  try {
+    // Fetch places and popular places concurrently
+    await Future.wait([
+      provider.fetchPlacesForCity(city),
+      provider.fetchPopularPlacesForCity(city),
+    ]);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to fetch activities for $city: $e')),
+    );
   }
+}
 
 
   @override
@@ -73,15 +77,76 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: () => _fetchActivities(context, 'Cairo'),
-                    child: Text('Cairo'),
+                  GestureDetector(
+                    onTap: () => _fetchActivities(context, 'Cairo'),
+                    child: Container(
+                      width: 182,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/pyramids.jpg'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          // Orange Overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.6),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              'Cairo',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () =>
-                        _fetchActivities(context, 'Luxor and Aswan'),
-                    child: Text('Luxor and Aswan'),
+                  GestureDetector(
+                    onTap: () => _fetchActivities(context, 'Luxor and Aswan'),
+                    child: Container(
+                      width: 182,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/welcomescreen.jpg'), 
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          // Orange Overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.6),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              'Luxor & Aswan',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -92,8 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CategoryChip(
                     label: 'Entertainment',
                     color: const Color.fromARGB(255, 158, 158, 158),
-                    isSelected: selectedCategory ==
-                        'Entertainment', // Check if this category is selected
+                    isSelected: selectedCategory == 'Entertainment',
                     onPressed: () {
                       setState(() {
                         selectedCategory = 'Entertainment';
@@ -103,8 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CategoryChip(
                     label: 'Food',
                     color: const Color.fromARGB(255, 158, 158, 158),
-                    isSelected: selectedCategory ==
-                        'Food', // Check if this category is selected
+                    isSelected: selectedCategory == 'Food',
                     onPressed: () {
                       setState(() {
                         selectedCategory = 'Food';
@@ -114,8 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CategoryChip(
                     label: 'Landmarks',
                     color: Colors.grey,
-                    isSelected: selectedCategory ==
-                        'Landmarks', // Check if this category is selected
+                    isSelected: selectedCategory == 'Landmarks',
                     onPressed: () {
                       setState(() {
                         selectedCategory = 'Landmarks';
@@ -125,8 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CategoryChip(
                     label: 'Sea',
                     color: Colors.grey,
-                    isSelected: selectedCategory ==
-                        'Sea', // Check if this category is selected
+                    isSelected: selectedCategory == 'Sea',
                     onPressed: () {
                       setState(() {
                         selectedCategory = 'Sea';
@@ -150,8 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                       onPressed: () {},
                       child: Text(
@@ -170,19 +230,46 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 300,
                 child: Consumer<Homepageactivityprovider>(
                   builder: (context, provider, child) {
+                    // Filter activities for the selected category ("Available Places")
                     final filteredActivities = provider.activities
-                        .where(
-                            (activity) => activity.category == selectedCategory)
-                        .take(10)
+                        .where((activity) => activity.category == selectedCategory)
                         .toList();
+
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: filteredActivities.length,
                       itemBuilder: (context, index) {
                         final activity = filteredActivities[index];
-                        return TravelCard(
-                          homePageActivity: activity,
-                        );
+                        return TravelCard(homePageActivity: activity);
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 35),
+              // New section for "Most Popular"
+              Align(
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  'Most Popular Places',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(
+                height: 300,
+                child: Consumer<Homepageactivityprovider>(
+                  builder: (context, provider, child) {
+                    // Filter activities for the "Most Popular" category
+                    final popularActivities = provider.activities
+                        .where((activity) => activity.category == 'Most Popular')
+                        .toList();
+
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: popularActivities.length,
+                      itemBuilder: (context, index) {
+                        final activity = popularActivities[index];
+                        return TravelCard(homePageActivity: activity);
                       },
                     );
                   },
