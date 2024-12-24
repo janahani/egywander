@@ -6,6 +6,8 @@ import 'package:egywander/screens/scheduleScreen.dart';
 import 'package:egywander/screens/adminDashScreen.dart';
 import 'package:flutter/material.dart';
 import '../screens/notificationsScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:egywander/providers/userProvider.dart';
 
 final NotificationDbHelper _db = NotificationDbHelper.instance;
 
@@ -34,6 +36,7 @@ void markNotificationsAsViewed() {
 }
 
 AppBar appBar(BuildContext context) {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
   return AppBar(
     elevation: 0,
     backgroundColor: Colors.transparent,
@@ -78,7 +81,7 @@ AppBar appBar(BuildContext context) {
                   );
                 },
               ),
-              if (notificationCount > 0)
+              if (notificationCount > 0 && userProvider.isLoggedIn)
                 Positioned(
                   right: 10,
                   top: 10,
