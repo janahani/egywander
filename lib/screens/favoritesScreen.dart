@@ -63,10 +63,7 @@ class FavoritesScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final activity = favoriteActivities[index];
                   return FavoritesCard(
-                    name: activity.name,
-                    location: activity.location,
-                    rating: activity.rating!.toDouble(),
-                    imageUrl: activity.imageUrl,
+                    activity: activity,
                     Remove: () {
                       favoritesProvider.toggleFavorite(userId, activity.id);
                     },
