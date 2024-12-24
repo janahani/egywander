@@ -61,7 +61,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     // Format the duration as "X hours Y minutes"
     int hours = duration.inHours;
     int minutes = duration.inMinutes % 60;
-    return '$hours hours';
+
+    if(hours>0 && minutes>0)
+    {
+      return '$hours.$minutes hours';
+    }
+    else if(hours>0 && minutes==0)
+    {
+      return '$hours hours';
+    }
+    else if(hours==0 && minutes>0)
+    {
+      return '$minutes minutes';
+    }
+
+    return '0';
+    
   }
 
   String _formatNotificationMessage(Map<String, dynamic> notification) {

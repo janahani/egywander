@@ -1,17 +1,19 @@
+import 'package:egywander/models/homepageActivities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/searchProvider.dart';
 import '../widgets/systembars.dart';
 import '../screens/activityScreen.dart';
+import 'package:egywander/providers/homepageactivityprovider.dart';
+
 class SearchPage extends StatelessWidget {
-   final String query;
+  // final String query;
 
-  const SearchPage({Key? key, required this.query}) : super(key: key);
-
+  SearchPage({super.key});
+// , required this.query
   @override
   Widget build(BuildContext context) {
     final searchProvider = Provider.of<SearchProvider>(context);
-    
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -34,8 +36,7 @@ class SearchPage extends StatelessWidget {
           ),
           if (searchProvider.isLoading)
             Center(child: CircularProgressIndicator()),
-          if (!searchProvider.isLoading &&
-              searchProvider.searchResults.isEmpty)
+          if (!searchProvider.isLoading && searchProvider.searchResults.isEmpty)
             Center(child: Text('No results found.')),
           if (!searchProvider.isLoading &&
               searchProvider.searchResults.isNotEmpty)
@@ -50,9 +51,33 @@ class SearchPage extends StatelessWidget {
                     leading: activity.imageUrl != null
                         ? Image.network(activity.imageUrl!)
                         : Icon(Icons.place),
-                    onTap: () {
-                      // Navigate to ActivityScreen and pass the activity
-                     
+                    onTap: () async {
+                      // Get the activity provider from the Provider
+                      final activityProvider =
+                          Provider.of<Homepageactivityprovider>(context,
+                              listen: false);
+
+                      // Fetch the activity details
+                       HomePageActivity? homePageActivity =
+                          await activityProvider.fetchActivityById(activity.id);
+                          
+                      if (homePageActivity != null) {
+                        homePageActivity.category = ' ';
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ActivityScreen(
+                              homePageActivity: homePageActivity,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to fetch activity details.'),
+                          ),
+                        );
+                      }
                     },
                   );
                 },

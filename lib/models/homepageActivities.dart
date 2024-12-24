@@ -8,7 +8,7 @@ class HomePageActivity {
   final String imageUrl;
   final double? rating;
   final int? userRatingsTotal;
-  final String category;
+  String category;
   final List<String> openingHours;
   final bool isOpened;
   final List<Map<String, dynamic>> reviews;
