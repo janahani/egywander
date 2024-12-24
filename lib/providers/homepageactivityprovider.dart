@@ -7,64 +7,180 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/restaurant.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
+  final Map<String, List<HomePageActivity>> _cache = {}; // Cache map
+
   List<HomePageActivity> _activities = [];
-  final Map<String, List<HomePageActivity>> _cache = {};  // Cache map
+  List<HomePageActivity> _popularActivities = [];
 
   List<HomePageActivity> get activities => _activities;
+  List<HomePageActivity> get popularActivities => _popularActivities;
 
-  Future<bool> _checkRestaurantApproval(String restaurantId) async {
+  Future<List<String>> _getApprovedRestaurantNames() async {
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .where('isAccepted', isEqualTo: true)
+        .get();
+
+    return querySnapshot.docs
+        .map((doc) => (doc.data()['restaurantName'] as String).toLowerCase())
+        .toList();
+  } catch (e) {
+    print('Error fetching approved restaurants: $e');
+    return [];
+  }
+}
+
+
+
+ Future<void> fetchPlacesForCity(String city) async {
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    final categories = {
+      'Food': 'restaurants or food',
+      'Entertainment': 'entertainment or activities',
+      'Landmarks': 'landmarks or tourist attractions',
+      'Sea': 'beaches or sea',
+    };
+
+    List<HomePageActivity> fetchedActivities = [];
+
     try {
-      final restaurantDoc = await FirebaseFirestore.instance
-          .collection('restaurants')
-          .doc(restaurantId)
-          .get();
+      for (final category in categories.entries) {
+        final cacheKey = '${city}_${category.key}';
 
-      if (restaurantDoc.exists) {
-        final restaurant = Restaurant.fromMap(restaurantDoc.data()!);
-        return restaurant.isAccepted; 
+        if (_cache.containsKey(cacheKey)) {
+          print('Cache hit for $cacheKey');
+          fetchedActivities.addAll(_cache[cacheKey]!);
+          continue;
+        } else {
+          print('Cache miss for $cacheKey');
+        }
+
+        if (category.key == 'Food') {
+          final approvedRestaurants = await FirebaseFirestore.instance
+              .collection('restaurants')
+              .where('isAccepted', isEqualTo: true)
+              .get();
+
+          for (var doc in approvedRestaurants.docs) {
+            final restaurantName = doc['restaurantName'] ?? '';
+            final url = Uri.parse(
+                "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('$restaurantName in $city')}&key=$apiKey&region=EG");
+
+            final response = await http.get(url);
+
+            if (response.statusCode == 200) {
+              final data = json.decode(response.body);
+
+              if (data['results'] != null && data['results'].isNotEmpty) {
+                final categoryActivities = await Future.wait<HomePageActivity?>(
+                  data['results']
+                      .take(2)
+                      .map<Future<HomePageActivity?>>((place) async {
+                    final detailsUrl = Uri.parse(
+                        "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+
+                    final detailsResponse = await http.get(detailsUrl);
+
+                    if (detailsResponse.statusCode == 200) {
+                      final details = json.decode(detailsResponse.body)['result'];
+                      return HomePageActivity.fromGooglePlace(details, category.key);
+                    }
+                    return null; // Skip failed fetches
+                  }).toList(),
+                );
+
+                final validActivities =
+                    categoryActivities.whereType<HomePageActivity>().toList();
+                _cache[cacheKey] = validActivities;
+
+                fetchedActivities.addAll(validActivities);
+              }
+            } else {
+              throw Exception('API call failed for Food category with status: ${response.statusCode}');
+            }
+          }
+        } else {
+          final url = Uri.parse(
+              "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
+
+          final response = await http.get(url);
+
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+
+            if (data['results'] != null && data['results'].isNotEmpty) {
+              final categoryActivities = await Future.wait<HomePageActivity?>(
+                data['results']
+                    .take(2)
+                    .map<Future<HomePageActivity?>>((place) async {
+                  final detailsUrl = Uri.parse(
+                      "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+
+                  final detailsResponse = await http.get(detailsUrl);
+
+                  if (detailsResponse.statusCode == 200) {
+                    final details = json.decode(detailsResponse.body)['result'];
+                    return HomePageActivity.fromGooglePlace(details, category.key);
+                  }
+                  return null; // Skip failed fetches
+                }).toList(),
+              );
+
+              final validActivities =
+                  categoryActivities.whereType<HomePageActivity>().toList();
+              _cache[cacheKey] = validActivities;
+
+              fetchedActivities.addAll(validActivities);
+            }
+          } else {
+            throw Exception('API call failed for ${category.key} with status: ${response.statusCode}');
+          }
+        }
       }
-    } catch (e) {
-      print('Error checking restaurant approval: $e');
+
+      _activities = fetchedActivities;
+      print('Cache size: ${_cache.length}');
+    } catch (e, stackTrace) {
+      _activities = [];
+      print('Error fetching places: $e\n$stackTrace');
+      rethrow;
     }
-    return false; 
+
+    notifyListeners();
   }
 
 
-Future<void> fetchPlacesForCity(String city) async {
-  final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
-  final categories = {
-    'Food': 'restaurants or food',
-    'Entertainment': 'entertainment or activities',
-    'Landmarks': 'landmarks or tourist attractions',
-    'Sea': 'beaches or sea'
-  };
+  Future<void> fetchPopularPlacesForCity(String city) async {
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    final categories = {
+      'Most Popular': 'places with high ratings',
+    };
 
-  List<HomePageActivity> fetchedActivities = [];
+    List<HomePageActivity> fetchedPopularActivities = [];
 
-  try {
-    for (final category in categories.entries) {
-      final cacheKey = '${city}_${category.key}';
+    try {
+      for (final category in categories.entries) {
+        final cacheKey = '${city}_${category.key}';
 
-      // Check the cache first
-      if (_cache.containsKey(cacheKey)) {
-        fetchedActivities.addAll(_cache[cacheKey]!);
-        continue; 
-      }
+        if (_cache.containsKey(cacheKey)) {
+          fetchedPopularActivities.addAll(_cache[cacheKey]!);
+          continue;
+        }
 
-      // Fetch places from Google Places API
-      final url = Uri.parse(
-          "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
+        final url = Uri.parse(
+            "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent('${category.value} in $city')}&key=$apiKey&region=EG");
 
-      final response = await http.get(url);
+        final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
 
-        if (data['results'] != null && data['results'].isNotEmpty) {
-          final categoryActivities = await Future.wait<HomePageActivity>(
-            data['results']
-                .take(2) 
-                .map<Future<HomePageActivity>>((place) async {
+          if (data['results'] != null && data['results'].isNotEmpty) {
+            final popularActivities = await Future.wait<HomePageActivity?>(
+                data['results']
+                    .take(3)
+                    .map<Future<HomePageActivity?>>((place) async {
               final detailsUrl = Uri.parse(
                   "https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
 
@@ -72,43 +188,31 @@ Future<void> fetchPlacesForCity(String city) async {
 
               if (detailsResponse.statusCode == 200) {
                 final details = json.decode(detailsResponse.body)['result'];
-                final restaurant = Restaurant.fromGooglePlace(details);
-
-                if (category.key == 'Food') {
-                  bool isApproved = await _checkRestaurantApproval(restaurant.id);
-                  if (isApproved) {
-                    return HomePageActivity.fromGooglePlace(details, category.key);
-                  }
-                } else {
-                  return HomePageActivity.fromGooglePlace(details, category.key);
-                }
+                return HomePageActivity.fromGooglePlace(
+                    details, 'Most Popular');
               }
-              return HomePageActivity.fromGooglePlace(place, category.key);
-            }).toList(),
-          );
+              return null;
+            }).toList());
 
-          // Add fetched activities to the cache
-          _cache[cacheKey] = categoryActivities;
+            final validPopularActivities =
+                popularActivities.whereType<HomePageActivity>().toList();
+            _cache[cacheKey] = validPopularActivities;
 
-          // Add to the overall fetched activities
-          fetchedActivities.addAll(categoryActivities);
+            fetchedPopularActivities.addAll(validPopularActivities);
+          }
+        } else {
+          throw Exception(
+              'API call failed for ${category.key} with status: ${response.statusCode}');
         }
-      } else {
-        throw Exception('API call failed for ${category.key} with status: ${response.statusCode}');
       }
+
+      _popularActivities = fetchedPopularActivities;
+    } catch (e, stackTrace) {
+      _popularActivities = [];
+      print('Error fetching popular places: $e\n$stackTrace');
+      rethrow;
     }
 
-    // Update the activities list
-    _activities = fetchedActivities;
-  } catch (e, stackTrace) {
-    _activities = [];
-    print('Error fetching places: $e\n$stackTrace');
-    rethrow;
+    notifyListeners();
   }
-
-  notifyListeners();
-}
-
-
-  
 }

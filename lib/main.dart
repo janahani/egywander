@@ -10,12 +10,13 @@ import 'package:provider/provider.dart';
 import 'providers/userProvider.dart';
 import 'screens/welcomeScreen.dart';
 import 'screens/UserManagementScreen.dart';
-import 'screens/admindashScreen.dart';
-import 'providers/restaurantProvider.dart';
+import 'screens/filterScreen.dart';
+ import 'providers/restaurantProvider.dart';
 import 'screens/OwnerReservationInfoForm.dart';
 import 'screens/selectedRestaurantScreen.dart';
 import 'providers/homepageactivityprovider.dart';
 import 'providers/favoriteProvider.dart';
+import 'providers/searchProvider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
@@ -46,6 +47,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => Homepageactivityprovider()),
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
+
 
 
       ],

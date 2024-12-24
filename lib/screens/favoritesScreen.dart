@@ -87,7 +87,7 @@ class FavoritesScreen extends StatelessWidget {
     // Fetch all activities
     final activities = await Future.wait(
       favorites.map((favorite) async {
-        //return await activitiesProvider.fetchActivityById(favorite.placeId);
+        return await activitiesProvider.fetchActivityById(favorite.placeId);
       }),
     );
 
