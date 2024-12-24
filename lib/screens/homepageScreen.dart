@@ -83,16 +83,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                 ),
               ),
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
+              onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SearchPage(query: value),
+                      builder: (context) => SearchPage(),
                     ),
                   );
                 }
-              },
             ),
               const SizedBox(height: 20),
               Row(
