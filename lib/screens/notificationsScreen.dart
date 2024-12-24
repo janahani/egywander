@@ -1,8 +1,12 @@
+import 'package:egywander/screens/loginScreen.dart';
 import 'package:flutter/material.dart';
 import '/widgets/notificationscard.dart';
 import '../widgets/systembars.dart';
+import 'package:provider/provider.dart';
+import 'package:egywander/providers/userProvider.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import 'package:egywander/notificationsDbHelper.dart'; // Import the database helper
+
 
 class NotificationsScreen extends StatefulWidget {
   final Function onViewedNotifications; // Callback to notify the AppBar
@@ -15,6 +19,7 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final NotificationDbHelper _db = NotificationDbHelper.instance;
   List<Map<String, dynamic>> _notifications = [];
@@ -98,6 +103,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+     if (!userProvider.isLoggedIn) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("You should log in/register")),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      });
+      return Scaffold();
+    }
+
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
