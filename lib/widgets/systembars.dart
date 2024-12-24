@@ -9,16 +9,18 @@ import '../screens/notificationsScreen.dart';
 
 final NotificationDbHelper _db = NotificationDbHelper.instance;
 
-// To store notifications and the filtered notifications for today
 List<Map<String, dynamic>> allNotifications = [];
-List<Map<String, dynamic>> _notifications = [];
+
+Future<void> fetchNotifications() async {
+  allNotifications = await _db.getNotificationsForToday();
+}
 
 // Function to calculate the notification count for today
 int calculateNotificationCount() {
   DateTime now = DateTime.now();
   DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-  return _notifications.where((notification) {
+  return allNotifications.where((notification) {
     DateTime notificationTime =
         DateTime.parse(notification['notificationsTime']);
     return now.isAfter(notificationTime) && now.isBefore(endOfDay);
@@ -27,14 +29,11 @@ int calculateNotificationCount() {
 
 // Function to mark notifications as viewed
 void markNotificationsAsViewed() {
-  _notifications.clear(); // Clear notifications after viewing
+  allNotifications.clear(); // Clear notifications after viewing
   print("Notifications marked as viewed.");
 }
 
-// AppBar widget with notification count and navigation to NotificationsScreen
 AppBar appBar(BuildContext context) {
-  int notificationCount = calculateNotificationCount();
-
   return AppBar(
     elevation: 0,
     backgroundColor: Colors.transparent,
@@ -49,44 +48,57 @@ AppBar appBar(BuildContext context) {
     ),
     centerTitle: true,
     actions: [
-      Stack(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {
-              // Navigate to NotificationsScreen and handle onViewedNotifications callback
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationsScreen(
-                    onViewedNotifications: () {
-                      markNotificationsAsViewed(); // Reset notification count
-                      (context as Element)
-                          .markNeedsBuild(); // Force rebuild AppBar
-                    },
+      FutureBuilder(
+        future: fetchNotifications(), // Load notifications
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.black),
+              onPressed: null, // Disable button while loading
+            );
+          }
+
+          int notificationCount = calculateNotificationCount();
+
+          return Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsScreen(
+                        onViewedNotifications: () {
+                          markNotificationsAsViewed();
+                          (context as Element).markNeedsBuild();
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (notificationCount > 0)
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      '$notificationCount',
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    ),
                   ),
                 ),
-              );
-            },
-          ),
-          if (notificationCount > 0)
-            Positioned(
-              right: 10,
-              top: 10,
-              child: CircleAvatar(
-                radius: 8,
-                backgroundColor: Colors.red,
-                child: Text(
-                  '$notificationCount',
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
-                ),
-              ),
-            ),
-        ],
+            ],
+          );
+        },
       ),
     ],
   );
 }
+
 
 BottomNavigationBar bottomNavigationBar(BuildContext context) {
   return BottomNavigationBar(
