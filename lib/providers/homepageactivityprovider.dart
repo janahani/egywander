@@ -215,4 +215,24 @@ class Homepageactivityprovider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<HomePageActivity?> fetchActivityById(String placeId) async {
+    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    try {
+      final detailsUrl = Uri.parse(
+          "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=place_id,name,rating,user_ratings_total,formatted_address,photos,types,opening_hours,reviews,geometry/location&key=$apiKey");
+      final response = await http.get(detailsUrl);
+      if (response.statusCode == 200) {
+        final details = json.decode(response.body)['result'];
+        // Assuming you have a method to parse the details into a HomePageActivity object
+        return HomePageActivity.fromGooglePlace(details, 'Unknown');
+      } else {
+        throw Exception(
+            'Failed to fetch details for placeId $placeId with status: ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      print('Error fetching activity by placeId: $e\n$stackTrace');
+      return null;
+    }
+  }
 }
