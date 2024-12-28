@@ -1,11 +1,15 @@
-import 'package:egywander/screens/accountScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import '../widgets/systembars.dart';
-import 'package:egywander/providers/userProvider.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+//screens
+import 'package:egywander/screens/accountScreen.dart';
+import 'admindashScreen.dart';
+//widgets
+import '../widgets/systembars.dart';
+//providers
+import 'package:egywander/providers/userProvider.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -154,10 +158,21 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           );
 
           // Navigate to the AccountScreen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => AccountScreen()),
-          );
+          if (userDoc['usertype'] == 'Admin') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdminDashboardScreen(),
+              ),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AccountScreen(),
+              ),
+            );
+          }
 
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(

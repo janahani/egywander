@@ -102,8 +102,9 @@ AppBar appBar(BuildContext context) {
   );
 }
 
-
 BottomNavigationBar bottomNavigationBar(BuildContext context) {
+  final userProvider = Provider.of<UserProvider>(context);
+
   return BottomNavigationBar(
     backgroundColor: const Color.fromARGB(255, 35, 35, 35),
     selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
@@ -127,10 +128,19 @@ BottomNavigationBar bottomNavigationBar(BuildContext context) {
           MaterialPageRoute(builder: (context) => ScheduleScreen()),
         );
       } else if (index == 3) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AccountScreen()),
-        );
+        if (userProvider.userType == 'Admin') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminDashboardScreen(),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AccountScreen()),
+          );
+        }
       }
     },
     items: const [

@@ -4,8 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:animate_do/animate_do.dart';
 import 'dart:convert';
+//screens 
 import 'registerScreen.dart';
+import 'admindashScreen.dart';
+//widgets
 import '../widgets/systembars.dart';
+//providers
 import 'package:provider/provider.dart';
 import 'package:egywander/providers/userProvider.dart';
 
@@ -69,12 +73,21 @@ class _LoginScreenState extends State<LoginScreen> {
             userDoc['password'],
             userDoc['usertype'],
             userDoc);
+        if(userDoc['usertype'] == 'Admin'){
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdminDashboardScreen(),
+          ),
+        );
+        } else{
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => AccountScreen(),
           ),
         );
+        }
       } else {
         _showMessage("Invalid email or password.", Colors.red);
       }

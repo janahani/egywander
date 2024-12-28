@@ -1,22 +1,29 @@
-import 'package:egywander/models/homepageActivities.dart';
-import 'package:egywander/screens/activityScreen.dart';
-import 'package:egywander/screens/homepageScreen.dart';
+//packages
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-import 'providers/userProvider.dart';
+//screens
+import 'screens/activityScreen.dart';
+import 'screens/homepageScreen.dart';
 import 'screens/welcomeScreen.dart';
 import 'screens/UserManagementScreen.dart';
 import 'screens/filterScreen.dart';
- import 'providers/restaurantProvider.dart';
 import 'screens/OwnerReservationInfoForm.dart';
-import 'screens/selectedRestaurantScreen.dart';
+import 'screens/admindashscreen.dart';
+
+//providers
+import 'providers/userProvider.dart';
 import 'providers/homepageactivityprovider.dart';
 import 'providers/favoriteProvider.dart';
 import 'providers/searchProvider.dart';
+import 'providers/restaurantProvider.dart';
+
+//models
+import 'package:egywander/models/homepageActivities.dart';
+
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');

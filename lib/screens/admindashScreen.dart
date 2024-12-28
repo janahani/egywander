@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+//screens
 import 'package:egywander/screens/accountsettingsScreen.dart';
-import 'package:egywander/widgets/systembars.dart';
-import '/widgets/accountmenubtns.dart';
 import 'userManagementScreen.dart';
 import 'aboutusScreen.dart';
 import 'restaurantManagementScreen.dart';
 import 'addUserScreen.dart';
+import 'loginScreen.dart';
+//widgets
+import 'package:egywander/widgets/systembars.dart';
+import '/widgets/accountmenubtns.dart';
+//providers
+import 'package:egywander/providers/userProvider.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   @override
@@ -18,6 +24,10 @@ class AdminDashboardScreen extends StatelessWidget {
     double fontSize(double size) => size * screenWidth / 400;
     double spacing(double size) => size * screenHeight / 800;
 
+    final userProvider = Provider.of<UserProvider>(context);
+    String? firstName = userProvider.firstName;
+    String? email = userProvider.email;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       bottomNavigationBar: bottomNavigationBar(context),
@@ -25,12 +35,12 @@ class AdminDashboardScreen extends StatelessWidget {
         children: [
           // Gradient Circle Background
           Positioned(
-            top: spacing(-250),
-            left: 0,
-            right: 0,
+            top: spacing(-350), // Adjust vertical placement
+            left: spacing(-100),
+            right: spacing(-100),
             child: Container(
-              width: spacing(500), // Adjust size for the circle
-              height: spacing(500),
+              width: spacing(600), // Adjust size for the circle
+              height: spacing(600),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
@@ -46,31 +56,31 @@ class AdminDashboardScreen extends StatelessWidget {
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding:
-                     EdgeInsets.symmetric(horizontal: spacing(16), vertical: spacing(20)),
+                padding: EdgeInsets.symmetric(
+                    horizontal: spacing(16), vertical: spacing(20)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                     SizedBox(height: spacing(40)),
+                    SizedBox(height: spacing(40)),
 
                     // User Greeting
                     Text(
-                      "Hello, Fatimah",
+                      "Hello, $firstName",
                       style: GoogleFonts.lato(
                         color: Colors.white,
                         fontSize: fontSize(28),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                     SizedBox(height: spacing(5)),
+                    SizedBox(height: spacing(5)),
                     Text(
-                      "fatimah@gmail.com",
+                      "$email",
                       style: GoogleFonts.lato(
                         fontSize: 20,
                         color: Colors.white,
                       ),
                     ),
-                     SizedBox(height: spacing(30)),
+                    SizedBox(height: spacing(30)),
 
                     // Profile Avatar
                     CircleAvatar(
@@ -105,11 +115,14 @@ class AdminDashboardScreen extends StatelessWidget {
                       context,
                       icon: Icons.restaurant,
                       text: "Restaurant Management",
-                      onTap: () {Navigator.push(
+                      onTap: () {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => RestaurantManagementScreen(),
-                          ),);},
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                     buildMenuButton(
@@ -158,7 +171,15 @@ class AdminDashboardScreen extends StatelessWidget {
                       context,
                       icon: Icons.logout,
                       text: "Logout",
-                      onTap: () {},
+                      onTap: () {
+                        userProvider.logout();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

@@ -23,6 +23,89 @@ class _AddUserScreenState extends State<AddUserScreen> {
   TextEditingController _restaurantLocationController = TextEditingController();
   TextEditingController _restaurantPhoneController = TextEditingController();
 
+  // Email Validation
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null; // Synchronous checks only
+  }
+
+  Future<bool> isEmailRegistered(String email) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email.toLowerCase())
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<void> checkEmailExists(String email) async {
+    bool emailExists = await isEmailRegistered(email);
+    if (emailExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('This email is already registered')),
+      );
+    }
+  }
+
+  // Name Validation (only letters)
+  String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Name is required';
+    }
+    if (!RegExp(r"^[a-zA-Z]+$").hasMatch(value)) {
+      return 'Name must contain only letters';
+    }
+    return null;
+  }
+
+  // Age Validation (2 digits only)
+  String? validateAge(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Age is required';
+    }
+    if (!RegExp(r"^\d{1,2}$").hasMatch(value)) {
+      return 'Age must be a valid number with at most 2 digits';
+    }
+    return null;
+  }
+
+  // Password Validation (at least 8 characters)
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    return null;
+  }
+
+
+  // Restaurant Phone Number Validation
+  String? validateRestaurantPhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    // Regex for 5-digit hotline or 11-digit mobile number starting with 0
+    if (!RegExp(r"^\d{5}$").hasMatch(value) &&
+        !RegExp(r"^0\d{10}$").hasMatch(value)) {
+      return 'Phone number must be either a 5-digit hotline or an 11-digit number starting with 0';
+    }
+    return null;
+  }
+
+  String? validateRequired(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return '$fieldName is required';
+    }
+    return null;
+  }
+
   // Gender and User Type selections
   String _selectedGender = 'Female';
   final List<String> genders = ['Male', 'Female', 'Other'];
@@ -109,6 +192,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
               TextFormField(
                 controller: _firstnameController,
                 decoration: customInputDecoration('First Name'),
+                validator: validateName,
               ),
               SizedBox(height: 20),
 
@@ -116,6 +200,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
               TextFormField(
                 controller: _lastnameController,
                 decoration: customInputDecoration('Last Name'),
+                validator: validateName,
               ),
               SizedBox(height: 20),
 
@@ -124,6 +209,10 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 controller: _emailController,
                 decoration: customInputDecoration('Email'),
                 keyboardType: TextInputType.emailAddress,
+                validator: validateEmail,
+                onFieldSubmitted: (value) async {
+                  await checkEmailExists(value);
+                },
               ),
               SizedBox(height: 20),
 
@@ -132,6 +221,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 controller: _ageController,
                 decoration: customInputDecoration('Age'),
                 keyboardType: TextInputType.number,
+                validator: validateAge,
               ),
               SizedBox(height: 20),
 
@@ -147,6 +237,12 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   });
                 },
                 decoration: customInputDecoration('Gender'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select your gender';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 20),
 
@@ -170,6 +266,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 controller: _passwordController,
                 decoration: customInputDecoration('Password'),
                 obscureText: true,
+                validator: validatePassword,
               ),
               SizedBox(height: 20),
 
@@ -197,12 +294,19 @@ class _AddUserScreenState extends State<AddUserScreen> {
                     });
                   },
                   decoration: customInputDecoration('Cuisine Type'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a cuisine type';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 20),
                 TextFormField(
                   controller: _restaurantPhoneController,
                   decoration: customInputDecoration('Restaurant Phone Number'),
                   keyboardType: TextInputType.phone,
+                  validator: validateRestaurantPhoneNumber,
                 ),
                 SizedBox(height: 20),
               ],
