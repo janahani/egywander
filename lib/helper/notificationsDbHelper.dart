@@ -6,17 +6,21 @@ import 'package:path/path.dart';
 import 'package:egywander/models/usernotification.dart';
 
 class NotificationDbHelper {
+  // Singleton instance of NotificationDbHelper which calls private constructor
   static final NotificationDbHelper instance = NotificationDbHelper._init();
   static Database? _database;
 
+  // Private constructor to prevent direct instantiation from outside the class
   NotificationDbHelper._init();
 
+  // Getter for the database, initializes it if not already initialized
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('notifications.db');
     return _database!;
   }
 
+  // Initializes the database by creating or opening the database file at the specified path.
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
@@ -76,6 +80,7 @@ class NotificationDbHelper {
     return await db.delete('notifications', where: 'id = ?', whereArgs: [id]);
   }
 
+  // Get Notifications for today
   Future<List<Map<String, dynamic>>> getNotificationsForToday() async {
     final db = await database;
     String today = DateTime.now()
@@ -88,6 +93,7 @@ class NotificationDbHelper {
     );
   }
 
+  //Remove notifications that were older than today's date
   Future<void> removeExpiredNotifications() async {
     final db = await database;
     String today = DateTime.now().toIso8601String().split("T")[0];
@@ -98,10 +104,10 @@ class NotificationDbHelper {
     );
   }
 
+  // Delete everything in notifications table
   Future<void> clearAllNotifications() async {
-    final db = await database; // Ensure database is initialized
+    final db = await database; 
     await db.delete(
-        'notifications'); // Replace 'notifications' with your table name
-    print("All notifications have been deleted.");
+        'notifications'); 
   }
 }

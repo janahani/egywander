@@ -30,6 +30,7 @@ class HomePageActivity {
     this.longitude,
   });
 
+  // Create a HomePageActivity object from a JSON map
   factory HomePageActivity.fromJson(Map<String, dynamic> json) {
     return HomePageActivity(
       id: json['id'],
@@ -51,6 +52,7 @@ class HomePageActivity {
     );
   }
 
+  // Create a HomePageActivity object from Google Place API
   factory HomePageActivity.fromGooglePlace(
       Map<String, dynamic> place, String category) {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';

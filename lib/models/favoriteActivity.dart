@@ -9,6 +9,7 @@ class FavoriteActivity {
     this.isFavorite = true,
   });
 
+  // Convert favorite activity object in to map from firestore
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -17,6 +18,7 @@ class FavoriteActivity {
     };
   }
 
+  // Convert map to favorite activity object from firestore
   factory FavoriteActivity.fromMap(Map<String, dynamic> map) {
     return FavoriteActivity(
       userId: map['userId'] ?? '',

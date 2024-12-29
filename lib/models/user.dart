@@ -1,6 +1,5 @@
 import 'package:uuid/uuid.dart';
 
-// Enums for Gender and UserType
 enum Gender { male, female }
 
 enum UserType { admin, owner, wanderer }
@@ -11,13 +10,12 @@ class User {
   final String lastname;
   final String email;
   final int age;
-  final Gender gender; // Enum for gender
+  final Gender gender; 
   final String password;
-  final UserType usertype; // Enum for user type
+  final UserType usertype; 
 
-  // Constructor with auto-generated UUID
   User({
-    String? id, // Allow optional UUID to be passed
+    String? id,
     required this.firstname,
     required this.lastname,
     required this.email,
@@ -25,9 +23,9 @@ class User {
     required this.gender,
     required this.password,
     required this.usertype,
-  }) : id = id ?? const Uuid().v4(); // Auto-generate UUID if not provided
+  }) : id = id ?? const Uuid().v4(); 
 
-  // Convert User object to Map (for saving in Firebase, etc.)
+  // Convert User object to Map for saving in Firestore
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -35,13 +33,13 @@ class User {
       'lastname': lastname,
       'email': email,
       'age': age,
-      'gender': gender.toString().split('.').last, // Convert enum to string
+      'gender': gender.toString().split('.').last, 
       'password': password,
-      'usertype': usertype.toString().split('.').last, // Convert enum to string
+      'usertype': usertype.toString().split('.').last, 
     };
   }
 
-  // Convert Map to User object (when fetching from Firebase, etc.)
+  // Convert Map to User object when fetching from Firestore
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       id: map['id'],

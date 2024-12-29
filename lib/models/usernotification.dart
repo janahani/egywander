@@ -27,6 +27,7 @@ class UserNotification {
     };
   }
 
+  // Convert map to Notification object
   factory UserNotification.fromMap(Map<String, dynamic> map) {
     return UserNotification(
       id: map['id'],

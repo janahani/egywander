@@ -1,10 +1,8 @@
 import 'package:uuid/uuid.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// Enum for cuisine types
 enum CuisineType { Egyptian, Italian, Chinese, Other }
 
-// Restaurant model class
 class Restaurant {
   final String id;
   final String ownerId;
@@ -14,11 +12,10 @@ class Restaurant {
   final CuisineType cuisineType;
   final bool isAccepted;
   final bool isReservationAvailable;
-  final String? imageUrl; // New optional field for image URL
-  final double? rating; // New optional field for rating
-  final int? userRatingsTotal; // New optional field for total user ratings
+  final String? imageUrl; 
+  final double? rating;
+  final int? userRatingsTotal; 
 
-  // Constructor
   Restaurant({
     String? id,
     required this.ownerId,
@@ -36,7 +33,10 @@ class Restaurant {
   // Convert CuisineType to string
   String get cuisineTypeAsString => cuisineType.toString().split('.').last;
 
-  // Convert Restaurant object to Map<String, dynamic> (for saving in Firestore)
+  // Method to get the status of the request
+  String get status => isAccepted ? "Accepted" : "Pending";
+
+  // Convert Restaurant object to Map<String, dynamic> for saving in Firestore
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -53,7 +53,7 @@ class Restaurant {
     };
   }
 
-  // Create a Restaurant object from Map<String, dynamic> (Firestore schema)
+  // Create a Restaurant object from Map<String, dynamic>
   factory Restaurant.fromMap(Map<String, dynamic> map) {
     return Restaurant(
       id: map['id'] ?? const Uuid().v4(),
@@ -75,12 +75,12 @@ class Restaurant {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
     return Restaurant(
       id: place['place_id'] ?? const Uuid().v4(),
-      ownerId: '', // Google Places does not have this
+      ownerId: '',
       name: place['name'] ?? '',
-      contactNumber: '', // Google Places does not have this
+      contactNumber: '',
       location: place['formatted_address'] ?? '',
       cuisineType:
-          CuisineType.Other, // Assuming API doesn't provide cuisine type
+          CuisineType.Other,
       isAccepted: true,
       isReservationAvailable: false,
       imageUrl: place['photos'] != null
@@ -91,7 +91,7 @@ class Restaurant {
     );
   }
 
-  // Helper method to parse CuisineType from string
+  // Helper function to parse CuisineType from string
   static CuisineType _cuisineTypeFromString(String? value) {
     if (value == null) return CuisineType.Other;
     return CuisineType.values.firstWhere(
@@ -100,6 +100,4 @@ class Restaurant {
     );
   }
 
-  // Method to get the status of the request
-  String get status => isAccepted ? "Accepted" : "Pending";
 }

@@ -25,11 +25,11 @@ class Schedule {
       'userId': userId,
       'placeId': placeId,
       'date':
-          DateFormat('dd/MM/yyyy').format(date), // Format date as dd/MM/yyyy
+          DateFormat('dd/MM/yyyy').format(date), 
       'startingTime': DateFormat('HH:mm')
-          .format(startingTime), // Format start time as HH:mm
+          .format(startingTime), 
       'endingTime':
-          DateFormat('HH:mm').format(endingTime), // Format end time as HH:mm
+          DateFormat('HH:mm').format(endingTime), 
     };
   }
 
@@ -39,7 +39,7 @@ class Schedule {
       id: map['id'],
       userId: map['userId'],
       placeId: map['placeId'],
-      date: DateTime.parse(map['date']), // Parse ISO 8601 formatted date
+      date: DateTime.parse(map['date']), 
       startingTime: DateTime.parse(map['startingTime']),
       endingTime: DateTime.parse(map['endingTime']),
     );
@@ -56,11 +56,11 @@ class Schedule {
         'Ending Time: ${_formatTime(endingTime)}';
   }
 
-  // Private helper to format DateTime to "dd/MM/yyyy"
+  // Private function to format DateTime to "dd/MM/yyyy"
   String _formatDate(DateTime dt) =>
       '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 
-  // Private helper to format DateTime to "HH:mm"
+  // Private function to format DateTime to "HH:mm"
   String _formatTime(DateTime dt) =>
       '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 }
