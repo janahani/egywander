@@ -103,11 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
-      backgroundColor: Colors.white,
       bottomNavigationBar: bottomNavigationBar(context),
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(color: Colors.white),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -128,7 +126,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               Container(
                 decoration: const BoxDecoration(
-                  color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(60),
                     topRight: Radius.circular(60),
@@ -246,10 +243,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
+                              Text(
                                 "Don't have an account? ",
                                 style: TextStyle(
-                                  color: Colors.grey,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white // White text in dark mode
+                                      : Colors.grey, // Grey text in light mode
                                   fontSize: 14,
                                 ),
                               ),

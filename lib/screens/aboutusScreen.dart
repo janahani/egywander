@@ -11,7 +11,6 @@ class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: SingleChildScrollView(
@@ -43,22 +42,23 @@ class AboutUsScreen extends StatelessWidget {
               'EgyWanders is here to help you explore the best of Egypt! Once you sign up, you can easily discover a variety of exciting places, from cultural landmarks to the best restaurants and malls. Whether you’re looking for adventure or a relaxing day out, we’ve got you covered.',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black87,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white // White text in dark mode
+                    : Colors.black87, // Black text in light mode
                 height: 1.5,
               ),
             ),
 
             const SizedBox(height: 20),
-
-            // Key Features Section with Icons
             Text(
               'Key Features',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
-                color: Colors.black,
+                color: Colors.orange, // Set the text color to orange
               ),
             ),
+
             const SizedBox(height: 15),
             Column(
               children: [

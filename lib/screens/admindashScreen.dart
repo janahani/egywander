@@ -35,7 +35,6 @@ class AdminDashboardScreen extends StatelessWidget {
     String? email = userProvider.email;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       bottomNavigationBar: bottomNavigationBar(context),
       body: Stack(
         children: [

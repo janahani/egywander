@@ -114,8 +114,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
+    return Scaffold(  
       appBar: adminAppbar(context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -75,7 +75,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Scaffold(
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
-      backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
         child: Column(
           children: [

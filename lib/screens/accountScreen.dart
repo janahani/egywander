@@ -27,8 +27,7 @@ class AccountScreen extends StatelessWidget {
         print("User Type in AccountScreen: ${userProvider.userType}");
 
         return Scaffold(
-          backgroundColor: Colors.grey[100],
-          appBar: appBar(context),
+          appBar: accountScreenAppBar(context),
           bottomNavigationBar: bottomNavigationBar(context),
           body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -53,9 +52,15 @@ class AccountScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Text(
                           userProvider.email ?? "",
-                          style:
-                              TextStyle(fontSize: 14, color: Colors.grey[700]),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).brightness ==
+                                    Brightness.dark
+                                ? Colors.white // White text in dark mode
+                                : Colors.grey[700], // Grey text in light mode
+                          ),
                         ),
+
                         const SizedBox(height: 20),
                         // Common Buttons for All Users
                         buildMenuButton(
@@ -131,7 +136,7 @@ class AccountScreen extends StatelessWidget {
                             },
                           ),
                         ],
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
                         buildMenuButton(
                           context,
                           icon: Icons.logout,

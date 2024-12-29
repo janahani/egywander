@@ -58,7 +58,6 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: adminAppbar(context),
       body: Container(
         child: DefaultTabController(

@@ -237,14 +237,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     return null;
   }
 
-  // Build text field with validation
-  Widget _buildTextField(String labelText,
-      {String initialValue = "",
-      bool readOnly = false,
-      bool obscureText = false,
-      TextInputType keyboardType = TextInputType.text,
-      Function(String)? onChanged,
-      String? Function(String?)? validator}) {
+// Build text field with validation
+  Widget _buildTextField(
+    String labelText, {
+    String initialValue = "",
+    bool readOnly = false,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    Function(String)? onChanged,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
       initialValue: initialValue,
       readOnly: readOnly,
@@ -252,14 +254,31 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       keyboardType: keyboardType,
       onChanged: onChanged,
       validator: validator,
+      style: TextStyle(
+        color: readOnly
+            ? (Theme.of(context).brightness == Brightness.dark
+                ? Colors.black // White text in dark mode
+                : Colors.black) // Black text in light mode
+            : Colors.black, // Text color when editable
+      ),
       decoration: InputDecoration(
         labelText: labelText,
+        labelStyle: TextStyle(
+          color: Colors.orange, // Orange color for label text
+          fontWeight: FontWeight.bold, // Bold label text
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.orange, width: 2),
+          borderSide: const BorderSide(
+              color: Colors.orange, width: 3), // Increased border width
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(
+              color: Colors.orange, width: 2), // Border when not focused
         ),
         filled: true,
         fillColor: Colors.white,
