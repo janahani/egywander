@@ -200,14 +200,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         FadeInUp(
-                          duration: const Duration(milliseconds: 1600),
-                          child: const Text(
-                            "Forgot Password?",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        FadeInUp(
                           duration: const Duration(milliseconds: 1700),
                           child: ElevatedButton(
                             onPressed: _loginUser,
