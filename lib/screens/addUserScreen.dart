@@ -96,7 +96,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
       return 'Location is required';
     }
     // Ensures a valid google maps link
-    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value)) {
+    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value) &&
+        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$").hasMatch(value)) {
       return 'Enter a valid google maps location link';
     }
     return null;
