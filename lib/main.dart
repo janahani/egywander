@@ -4,15 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-//screens
-import 'screens/homepageScreen.dart';
+//screen
+import 'package:egywander/screens/welcomeScreen.dart';
 
 //providers
-import 'providers/userProvider.dart';
-import 'providers/homepageactivityprovider.dart';
-import 'providers/favoriteProvider.dart';
-import 'providers/searchProvider.dart';
-import 'providers/restaurantProvider.dart';
+import 'package:egywander/providers/favoriteProvider.dart';
+import 'package:egywander/providers/homepageactivityprovider.dart';
+import 'package:egywander/providers/restaurantProvider.dart';
+import 'package:egywander/providers/searchProvider.dart';
+import 'package:egywander/providers/userProvider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: WelcomeScreen(),
     );
   }
 }
