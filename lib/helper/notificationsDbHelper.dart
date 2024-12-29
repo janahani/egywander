@@ -62,22 +62,21 @@ class NotificationDbHelper {
     });
   }
 
-  // Get a single notification by ID
-  Future<UserNotification?> getNotification(int id) async {
+  // Get a single notification by place name
+  Future<UserNotification?> getNotificationByPlaceName(String placeName) async {
     final db = await database;
-    final maps =
-        await db.query('notifications', where: 'id = ?', whereArgs: [id]);
+
+    final maps = await db.query(
+      'notifications',
+      where: 'placename = ?',
+      whereArgs: [placeName],
+    );
 
     if (maps.isNotEmpty) {
       return UserNotification.fromMap(maps.first);
     }
-    return null;
-  }
 
-  // Delete a notification by ID
-  Future<int> deleteNotification(int id) async {
-    final db = await database;
-    return await db.delete('notifications', where: 'id = ?', whereArgs: [id]);
+    return null;
   }
 
   // Get Notifications for today
@@ -104,10 +103,26 @@ class NotificationDbHelper {
     );
   }
 
+  // Update a notification based on place name
+  Future<int> updateNotificationByPlaceName(String placeName, String date,
+      String startingTime, String endingTime) async {
+    final db = await database;
+    // Update the notification by matching the placeName
+    return await db.update(
+      'notifications',
+      {
+        'date': date,
+        'startingTime': startingTime,
+        'endingTime': endingTime,
+      },
+      where: 'placename = ?',
+      whereArgs: [placeName],
+    );
+  }
+
   // Delete everything in notifications table
   Future<void> clearAllNotifications() async {
-    final db = await database; 
-    await db.delete(
-        'notifications'); 
+    final db = await database;
+    await db.delete('notifications');
   }
 }
