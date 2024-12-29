@@ -1,6 +1,8 @@
-// Favorites Provider
+//packages
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+//model
 import 'package:egywander/models/favoriteActivity.dart';
 
 class FavoritesProvider extends ChangeNotifier {

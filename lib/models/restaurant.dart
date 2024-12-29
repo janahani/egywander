@@ -4,7 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // Enum for cuisine types
 enum CuisineType { Egyptian, Italian, Chinese, Other }
 
-
 // Restaurant model class
 class Restaurant {
   final String id;
@@ -80,7 +79,8 @@ class Restaurant {
       name: place['name'] ?? '',
       contactNumber: '', // Google Places does not have this
       location: place['formatted_address'] ?? '',
-      cuisineType: CuisineType.Other, // Assuming API doesn't provide cuisine type
+      cuisineType:
+          CuisineType.Other, // Assuming API doesn't provide cuisine type
       isAccepted: true,
       isReservationAvailable: false,
       imageUrl: place['photos'] != null

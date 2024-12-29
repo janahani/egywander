@@ -1,10 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+//packages
 import 'package:flutter/material.dart';
-import '../models/homepageActivities.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/restaurant.dart';
+
+//model
+import 'package:egywander/models/homepageActivities.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
   final Map<String, List<HomePageActivity>> _cache = {}; // Cache map
@@ -16,24 +18,22 @@ class Homepageactivityprovider with ChangeNotifier {
   List<HomePageActivity> get popularActivities => _popularActivities;
 
   Future<List<String>> _getApprovedRestaurantNames() async {
-  try {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('restaurants')
-        .where('isAccepted', isEqualTo: true)
-        .get();
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .where('isAccepted', isEqualTo: true)
+          .get();
 
-    return querySnapshot.docs
-        .map((doc) => (doc.data()['restaurantName'] as String).toLowerCase())
-        .toList();
-  } catch (e) {
-    print('Error fetching approved restaurants: $e');
-    return [];
+      return querySnapshot.docs
+          .map((doc) => (doc.data()['restaurantName'] as String).toLowerCase())
+          .toList();
+    } catch (e) {
+      print('Error fetching approved restaurants: $e');
+      return [];
+    }
   }
-}
 
-
-
- Future<void> fetchPlacesForCity(String city) async {
+  Future<void> fetchPlacesForCity(String city) async {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
     final categories = {
       'Food': 'restaurants or food',
@@ -83,8 +83,10 @@ class Homepageactivityprovider with ChangeNotifier {
                     final detailsResponse = await http.get(detailsUrl);
 
                     if (detailsResponse.statusCode == 200) {
-                      final details = json.decode(detailsResponse.body)['result'];
-                      return HomePageActivity.fromGooglePlace(details, category.key);
+                      final details =
+                          json.decode(detailsResponse.body)['result'];
+                      return HomePageActivity.fromGooglePlace(
+                          details, category.key);
                     }
                     return null; // Skip failed fetches
                   }).toList(),
@@ -97,7 +99,8 @@ class Homepageactivityprovider with ChangeNotifier {
                 fetchedActivities.addAll(validActivities);
               }
             } else {
-              throw Exception('API call failed for Food category with status: ${response.statusCode}');
+              throw Exception(
+                  'API call failed for Food category with status: ${response.statusCode}');
             }
           }
         } else {
@@ -121,7 +124,8 @@ class Homepageactivityprovider with ChangeNotifier {
 
                   if (detailsResponse.statusCode == 200) {
                     final details = json.decode(detailsResponse.body)['result'];
-                    return HomePageActivity.fromGooglePlace(details, category.key);
+                    return HomePageActivity.fromGooglePlace(
+                        details, category.key);
                   }
                   return null; // Skip failed fetches
                 }).toList(),
@@ -134,7 +138,8 @@ class Homepageactivityprovider with ChangeNotifier {
               fetchedActivities.addAll(validActivities);
             }
           } else {
-            throw Exception('API call failed for ${category.key} with status: ${response.statusCode}');
+            throw Exception(
+                'API call failed for ${category.key} with status: ${response.statusCode}');
           }
         }
       }
@@ -149,7 +154,6 @@ class Homepageactivityprovider with ChangeNotifier {
 
     notifyListeners();
   }
-
 
   Future<void> fetchPopularPlacesForCity(String city) async {
     final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';

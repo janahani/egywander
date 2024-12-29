@@ -13,29 +13,9 @@ class UserProvider extends ChangeNotifier {
   // Getter for isLoggedIn - checks if email is set
   bool get isLoggedIn => email != null;
 
-  String? get userID => id;
-
-   // Setter for userID
-  void setID(String id) {
-    id = id;
-    notifyListeners();  // Notify listeners when user ID is set
-  }
-
-  // Setter for isLoggedIn (to manually set login status)
-  set isLoggedIn(bool status) {
-    if (status) {
-      email = 'yassminezzat@gmail.com';  
-    } else {
-      email = null;
-      password = null;
-      notifyListeners();  
-    }
-    notifyListeners();  
-  }
-
   // Function to log in the user with all user details
-  void login(String id, String firstName, String lastName, String email, int age, String gender, 
-      String password, String userType, userDoc) {
+  void login(String id, String firstName, String lastName, String email,
+      int age, String gender, String password, String userType, userDoc) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;

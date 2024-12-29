@@ -1,8 +1,8 @@
 import 'package:uuid/uuid.dart';
 
 class TableInfo {
-  final String id; 
-  int tableNumber; 
+  final String id;
+  int tableNumber;
   int seatCount;
 
   TableInfo({

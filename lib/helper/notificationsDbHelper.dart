@@ -1,6 +1,9 @@
+//packages
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../models/usernotification.dart'; // Import your Notification model here
+
+//model
+import 'package:egywander/models/usernotification.dart';
 
 class NotificationDbHelper {
   static final NotificationDbHelper instance = NotificationDbHelper._init();
@@ -96,9 +99,9 @@ class NotificationDbHelper {
   }
 
   Future<void> clearAllNotifications() async {
-  final db = await database; // Ensure database is initialized
-  await db.delete('notifications'); // Replace 'notifications' with your table name
-  print("All notifications have been deleted.");
-}
-
+    final db = await database; // Ensure database is initialized
+    await db.delete(
+        'notifications'); // Replace 'notifications' with your table name
+    print("All notifications have been deleted.");
+  }
 }

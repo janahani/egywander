@@ -1,10 +1,10 @@
+//packages
 import 'package:flutter/material.dart';
-import '../models/restaurant.dart';
-import '../models/tableinfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+//models
+import 'package:egywander/models/restaurant.dart';
+import 'package:egywander/models/tableinfo.dart';
 
 class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];

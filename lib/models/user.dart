@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 // Enums for Gender and UserType
 enum Gender { male, female }
+
 enum UserType { admin, owner, wanderer }
 
 class User {
@@ -48,18 +49,19 @@ class User {
       lastname: map['lastname'],
       email: map['email'],
       age: map['age'],
-      gender: Gender.values.firstWhere((e) => e.toString().split('.').last == map['gender']),
+      gender: Gender.values
+          .firstWhere((e) => e.toString().split('.').last == map['gender']),
       password: map['password'],
-      usertype: UserType.values.firstWhere((e) => e.toString().split('.').last == map['usertype']),
+      usertype: UserType.values
+          .firstWhere((e) => e.toString().split('.').last == map['usertype']),
     );
   }
-
 
   // String representation of the User object
   @override
   String toString() {
     return 'User(id: $id, firstname: $firstname, lastname: $lastname, email: $email, '
-           'age: $age, gender: ${gender.toString().split('.').last}, '
-           ' usertype: ${usertype.toString().split('.').last})';
+        'age: $age, gender: ${gender.toString().split('.').last}, '
+        ' usertype: ${usertype.toString().split('.').last})';
   }
 }

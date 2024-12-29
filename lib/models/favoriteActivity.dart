@@ -1,4 +1,3 @@
-// Favorites Model
 class FavoriteActivity {
   final String userId;
   final String placeId;
