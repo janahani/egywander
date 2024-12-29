@@ -65,7 +65,6 @@ class _RestaurantManagementScreenState
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.grey[100],
         appBar: adminAppbar(context),
         body: Column(
           children: [

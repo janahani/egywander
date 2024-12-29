@@ -176,7 +176,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: adminAppbar(context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

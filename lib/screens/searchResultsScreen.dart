@@ -23,7 +23,6 @@ class SearchPage extends StatelessWidget {
     final searchProvider = Provider.of<SearchProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: Column(

@@ -29,7 +29,6 @@ class _ViewReservationsScreenState extends State<ViewReservationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: Padding(

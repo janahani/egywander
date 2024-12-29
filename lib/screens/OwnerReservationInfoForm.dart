@@ -81,7 +81,6 @@ class _OwnerReservationInfoFormState extends State<OwnerReservationInfoForm> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: SingleChildScrollView( // Wrap the entire body in SingleChildScrollView

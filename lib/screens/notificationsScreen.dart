@@ -120,7 +120,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: Colors.grey[100],
         appBar: appBar(context),
         bottomNavigationBar: bottomNavigationBar(context),
         body: SafeArea(

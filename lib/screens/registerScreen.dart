@@ -238,7 +238,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       bottomNavigationBar: bottomNavigationBar(context),
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(color: Colors.white),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -512,10 +511,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
+                              Text(
                                 "Already have an account?",
                                 style: TextStyle(
-                                  color: Colors.grey,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white // White text in dark mode
+                                      : Colors.grey, 
                                   fontSize: 14,
                                 ),
                               ),
