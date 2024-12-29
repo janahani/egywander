@@ -121,8 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return 'Phone number is required';
     }
     // Regex for 5-digit hotline or 11-digit mobile number starting with 0
-    if (!RegExp(r"^\d{5}$").hasMatch(value) &&
-        !RegExp(r"^0\d{10}$").hasMatch(value)) {
+    if (!RegExp(r"^19\d{3}$").hasMatch(value) &&
+        !RegExp(r"^(010|011|012|015)\d{8}$").hasMatch(value)) {
       return 'Phone number must be either a 5-digit hotline or an 11-digit number starting with 0';
     }
     return null;
