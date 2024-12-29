@@ -36,8 +36,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     _loadNotifications();
     _removeExpiredNotifications();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onViewedNotifications(); // Notify the AppBar
-    });
+    if (_notifications.isNotEmpty) {
+      // gets called when there is notif to avoid exception
+      widget.onViewedNotifications();
+    }
+  });
   }
 
   Future<void> _deleteAllNotificationsOnce() async {
