@@ -11,6 +11,7 @@ class FavoritesProvider extends ChangeNotifier {
 
   List<FavoriteActivity> get favorites => _favorites;
 
+  //Fetches the list of favorite activities for the specified user from Firestore
   Future<void> fetchFavorites(String userId) async {
     final snapshot = await _firestore
         .collection('favorites')
@@ -23,6 +24,7 @@ class FavoritesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Toggles the favorite button of a specific place for the specified user in Firestore
   Future<void> toggleFavorite(String userId, String placeId) async {
     final docRef = _firestore.collection('favorites').doc('$userId-$placeId');
     final docSnapshot = await docRef.get();

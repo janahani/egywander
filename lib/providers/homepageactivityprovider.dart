@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:egywander/models/homepageActivities.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
-  final Map<String, List<HomePageActivity>> _cache = {}; // Cache map
+  final Map<String, List<HomePageActivity>> _cache = {}; 
 
   List<HomePageActivity> _activities = [];
   List<HomePageActivity> _popularActivities = [];

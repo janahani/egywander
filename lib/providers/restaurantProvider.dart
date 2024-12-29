@@ -27,7 +27,6 @@ class RestaurantProvider extends ChangeNotifier {
   String? get contactNumber => _contactNumber;
   String? get location => _location;
 
-  // Setters with notifyListeners to rebuild UI
   void setRestaurantId(String restaurantId) {
     _restaurantId = restaurantId;
     notifyListeners();
@@ -84,13 +83,13 @@ class RestaurantProvider extends ChangeNotifier {
           .get();
 
       if (doc.docs.isNotEmpty) {
-        return doc.docs.first.id; // Return the restaurant ID if found
+        return doc.docs.first.id;
       } else {
-        return null; // Return null if no restaurant found
+        return null; 
       }
     } catch (e) {
       print('Error fetching restaurant: $e');
-      return null; // Return null on error
+      return null; 
     }
   }
 
@@ -105,7 +104,7 @@ class RestaurantProvider extends ChangeNotifier {
       if (doc.docs.isNotEmpty) {
         return Restaurant.fromMap(doc.docs.first.data());
       } else {
-        return null; // No restaurant found
+        return null;
       }
     } catch (e) {
       print('Error fetching restaurant details: $e');
@@ -115,18 +114,16 @@ class RestaurantProvider extends ChangeNotifier {
 
   Future<Restaurant?> fetchRestaurantDetailsById(String restaurantId) async {
     try {
-      // Fetch restaurant document by its ID
       var doc = await FirebaseFirestore.instance
           .collection('restaurants')
-          .doc(restaurantId) // Use doc instead of where to search by ID
+          .doc(restaurantId) 
           .get();
 
       if (doc.exists) {
-        // Ensure all fields are included in the Restaurant object
         return Restaurant.fromMap(
-            doc.data()!); // Convert the document data to Restaurant object
+            doc.data()!); 
       } else {
-        return null; // Return null if the restaurant does not exist
+        return null; 
       }
     } catch (e) {
       print('Error fetching restaurant: $e');

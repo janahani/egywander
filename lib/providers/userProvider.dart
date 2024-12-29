@@ -10,7 +10,6 @@ class UserProvider extends ChangeNotifier {
   String? password;
   String? userType;
 
-  // Getter for isLoggedIn - checks if email is set
   bool get isLoggedIn => email != null;
 
   // Function to log in the user with all user details
@@ -27,14 +26,14 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Update user details (e.g., email, password)
+  // Update user details 
   void update(String email, String password, userDoc) {
     this.email = email;
     this.password = password;
     notifyListeners();
   }
 
-  // Function to log out the user (clears all user data)
+  // Function to log out the user
   void logout() {
     id = null;
     firstName = null;
