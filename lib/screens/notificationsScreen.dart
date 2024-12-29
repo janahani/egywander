@@ -115,7 +115,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       });
       return Scaffold();
     }
-
+    if(_notifications.isNotEmpty){
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -126,6 +126,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           top: true,
           child: ListView(
             children: [
+              
               // Display notifications dynamically
               for (var notification in _notifications)
                 Padding(
@@ -147,5 +148,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
       ),
     );
+    }
+    return Scaffold(
+        key: scaffoldKey,
+        appBar: appBar(context),
+        bottomNavigationBar: bottomNavigationBar(context),
+        body: Center(child: Text("Nothing to show here"),));
   }
 }
