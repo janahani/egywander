@@ -48,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final searchProvider = Provider.of<SearchProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: appBar(context),
       bottomNavigationBar: bottomNavigationBar(context),
       body: LayoutBuilder(
@@ -106,7 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         'Schedule your',
                         style: TextStyle(
                           fontSize: subtitleFontSize,
-                          color: Colors.black54,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white // Dark mode: white text
+                              : Colors.black54, 
                         ),
                       ),
                       Text(
@@ -316,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text(
                             'View All',
                             style: TextStyle(
-                              color: Colors.grey[700],
+                              color: Colors.grey,
                               fontWeight: FontWeight.bold,
                               fontSize: isPhone ? 12 : 14,
                             ),
