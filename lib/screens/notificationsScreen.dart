@@ -5,7 +5,7 @@ import '../widgets/systembars.dart';
 import 'package:provider/provider.dart';
 import 'package:egywander/providers/userProvider.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import 'package:egywander/notificationsDbHelper.dart'; // Import the database helper
+import 'package:egywander/helper/notificationsDbHelper.dart'; // Import the database helper
 
 
 class NotificationsScreen extends StatefulWidget {

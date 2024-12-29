@@ -1,4 +1,4 @@
-import 'package:egywander/notificationsDbHelper.dart';
+import 'package:egywander/helper/notificationsDbHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

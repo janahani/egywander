@@ -1,4 +1,4 @@
-import 'package:egywander/notificationsDbHelper.dart';
+import 'package:egywander/helper/notificationsDbHelper.dart';
 import 'package:flutter/material.dart';
 import '../widgets/categorychip.dart';
 import '../widgets/travelcard.dart';

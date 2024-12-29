@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'models/usernotification.dart'; // Import your Notification model here
+import '../models/usernotification.dart'; // Import your Notification model here
 
 class NotificationDbHelper {
   static final NotificationDbHelper instance = NotificationDbHelper._init();
