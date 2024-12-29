@@ -1,15 +1,25 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:egywander/providers/userProvider.dart';
-import 'loginScreen.dart';
-import 'accountsettingsScreen.dart';
-import 'aboutusScreen.dart';
-import '../widgets/systembars.dart';
+
+//widgets
 import 'package:egywander/widgets/accountmenubtns.dart';
-import 'OwnerReservationInfoForm.dart';
-import 'viewReservationScreen.dart';
-import '../screens/requestStatusOwner.dart';
+import 'package:egywander/widgets/systembars.dart';
+
+//screens
+import 'package:egywander/screens/OwnerReservationInfoForm.dart';
+import 'package:egywander/screens/aboutusScreen.dart';
+import 'package:egywander/screens/accountsettingsScreen.dart';
+import 'package:egywander/screens/loginScreen.dart';
+import 'package:egywander/screens/requestStatusOwner.dart';
+import 'package:egywander/screens/viewReservationScreen.dart';
+
+//provider
+import 'package:egywander/providers/userProvider.dart';
+
 class AccountScreen extends StatelessWidget {
+  const AccountScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
@@ -24,7 +34,7 @@ class AccountScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: userProvider.isLoggedIn
                 ? SingleChildScrollView(
-                  child: Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // User Avatar and Info
@@ -43,7 +53,8 @@ class AccountScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Text(
                           userProvider.email ?? "",
-                          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.grey[700]),
                         ),
                         const SizedBox(height: 20),
                         // Common Buttons for All Users
@@ -81,8 +92,11 @@ class AccountScreen extends StatelessWidget {
                             icon: Icons.assignment,
                             text: "View Request Status",
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => RequestStatusOwner(),
-                              ),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RequestStatusOwner(),
+                                ),
                               );
                             },
                           ),
@@ -110,7 +124,8 @@ class AccountScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ViewReservationsScreen(),
+                                  builder: (context) =>
+                                      ViewReservationsScreen(),
                                 ),
                               );
                             },
@@ -127,7 +142,7 @@ class AccountScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                )
+                  )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [

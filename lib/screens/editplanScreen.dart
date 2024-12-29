@@ -1,6 +1,9 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import '../widgets/systembars.dart'; // Assuming you have a custom appBar and bottomNavBar
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
 
 class EditPlanScreen extends StatefulWidget {
   final String title;
@@ -8,7 +11,8 @@ class EditPlanScreen extends StatefulWidget {
   final String startTime;
   final String endTime;
 
-  EditPlanScreen({
+  const EditPlanScreen({
+    super.key,
     required this.title,
     required this.date,
     required this.startTime,
@@ -57,7 +61,8 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
   }
 
   // Method to open the time picker for start and end times
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
@@ -68,7 +73,8 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
 
     if (picked != null) {
       setState(() {
-        controller.text = picked.format(context); // Set the time to the controller
+        controller.text =
+            picked.format(context); // Set the time to the controller
       });
     }
   }
@@ -77,20 +83,22 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
   void _saveChanges() {
     // Create the updated plan object
     final updatedPlan = {
-      "title": widget.title,  // Title remains unchanged
+      "title": widget.title, // Title remains unchanged
       "date": _dateController.text,
       "startTime": _startTimeController.text,
       "endTime": _endTimeController.text,
     };
 
-    Navigator.pop(context, updatedPlan); // Pop back to ScheduleScreen with updated data
+    Navigator.pop(
+        context, updatedPlan); // Pop back to ScheduleScreen with updated data
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context), // Your custom AppBar
-      bottomNavigationBar: bottomNavigationBar(context), // Your custom BottomNavBar
+      bottomNavigationBar:
+          bottomNavigationBar(context), // Your custom BottomNavBar
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -154,11 +162,14 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
                 onPressed: _saveChanges,
                 child: Text(
                   "Save Changes",
-                  style: TextStyle(fontSize: 18, color: Colors.white), // Larger font and white color
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white), // Larger font and white color
                 ),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24), 
-                  backgroundColor: Colors.orange, // Background color for the button
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  backgroundColor:
+                      Colors.orange, // Background color for the button
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8), // Rounded corners
                   ),

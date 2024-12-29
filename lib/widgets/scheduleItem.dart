@@ -4,10 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 //provider
-import '/providers/scheduleProvider.dart';
+import 'package:egywander/providers/scheduleProvider.dart';
 
 //screen
-import '/screens/scheduleScreen.dart';
+import 'package:egywander/screens/scheduleScreen.dart';
+
 
 class ScheduleItem extends StatelessWidget {
   final List<DocumentSnapshot> schedules;

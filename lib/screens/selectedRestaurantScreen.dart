@@ -1,9 +1,12 @@
+//package
 import 'package:flutter/material.dart';
-import '../screens/reservationPage.dart';
-import '../widgets/customBtn.dart'; 
+
+//widgets
 import 'package:egywander/widgets/systembars.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:egywander/widgets/customBtn.dart';
+
+//screen
+import 'package:egywander/screens/reservationPage.dart';
 
 class RestaurantDetailsPage extends StatelessWidget {
   final String restaurantName = "Sizzler Stakehouse";
@@ -19,6 +22,8 @@ class RestaurantDetailsPage extends StatelessWidget {
   ];
   final String imagePath = "assets/images/sizzlereg.jpeg";
   final String workingHours = "10:00 AM - 11:00 PM";
+
+  RestaurantDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +144,12 @@ class RestaurantDetailsPage extends StatelessWidget {
                     runSpacing: 8,
                     children: features.map((feature) {
                       return Chip(
-                        label: Text(feature, style: TextStyle(color:  Color.fromARGB(255, 255, 152, 0), fontWeight: FontWeight.bold),),
+                        label: Text(
+                          feature,
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 255, 152, 0),
+                              fontWeight: FontWeight.bold),
+                        ),
                         backgroundColor: const Color.fromARGB(255, 253, 177, 63)
                             .withOpacity(0.2),
                         side: BorderSide.none,

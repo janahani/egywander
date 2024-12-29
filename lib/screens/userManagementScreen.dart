@@ -1,10 +1,15 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'userDetailsScreen.dart';
-import '../widgets/systembars.dart';
+
+//screens
+import 'package:egywander/screens/userDetailsScreen.dart';
+import 'package:egywander/widgets/systembars.dart';
 
 class UsersManagementScreen extends StatefulWidget {
+  const UsersManagementScreen({super.key});
+
   @override
   _UsersManagementScreenState createState() => _UsersManagementScreenState();
 }
@@ -129,7 +134,10 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       future: _fetchUsersByType(userType),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator(color: Colors.orange,));
+          return Center(
+              child: CircularProgressIndicator(
+            color: Colors.orange,
+          ));
         } else if (snapshot.hasError) {
           return Center(child: Text('Error fetching data.'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -168,7 +176,8 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
             ),
             title: Text(
               "${user["firstname"]} ${user["lastname"]}",
-              style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
+              style:
+                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
               user["email"],

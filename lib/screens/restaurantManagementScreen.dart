@@ -1,11 +1,17 @@
-import 'package:egywander/screens/admindashScreen.dart';
+//packages
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../widgets/systembars.dart';
-import 'requestDetailsScreen.dart';
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
+
+//screen
+import 'package:egywander/screens/requestDetailsScreen.dart';
 
 class RestaurantManagementScreen extends StatefulWidget {
+  const RestaurantManagementScreen({super.key});
+
   @override
   _RestaurantManagementScreenState createState() =>
       _RestaurantManagementScreenState();
@@ -17,7 +23,8 @@ class _RestaurantManagementScreenState
   String _searchQuery = "";
 
   // Fetch restaurant requests from Firestore based on acceptance status
-  Future<List<Map<String, dynamic>>> _fetchRestaurantRequests(bool isAccepted) async {
+  Future<List<Map<String, dynamic>>> _fetchRestaurantRequests(
+      bool isAccepted) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('restaurants')
@@ -139,7 +146,10 @@ class _RestaurantManagementScreenState
         } else if (snapshot.hasError) {
           return Center(child: Text('Error fetching data.'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text(isAccepted ? 'No accepted restaurants found.' : 'No rejected restaurants found.'));
+          return Center(
+              child: Text(isAccepted
+                  ? 'No accepted restaurants found.'
+                  : 'No rejected restaurants found.'));
         } else {
           List<Map<String, dynamic>> filteredRestaurants =
               _filterRestaurants(snapshot.data!, _searchQuery);
@@ -174,7 +184,8 @@ class _RestaurantManagementScreenState
             ),
             title: Text(
               restaurant["restaurantName"],
-              style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
+              style:
+                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
               "Owner: ${restaurant["ownerId"]}",

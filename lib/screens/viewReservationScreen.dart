@@ -1,10 +1,13 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import '../widgets/systembars.dart';
-import '../widgets/customBtn.dart';
+
+//widgets
+import 'package:egywander/widgets/systembars.dart';
+import 'package:egywander/widgets/customBtn.dart';
 
 class ViewReservationsScreen extends StatefulWidget {
-  const ViewReservationsScreen({Key? key}) : super(key: key);
+  const ViewReservationsScreen({super.key});
 
   @override
   _ViewReservationsScreenState createState() => _ViewReservationsScreenState();
@@ -16,8 +19,10 @@ class _ViewReservationsScreenState extends State<ViewReservationsScreen> {
     5,
     (index) => {
       'tableNumber': index + 1,
-      'reservationTime': DateTime.now().add(Duration(hours: index)), // Adjust time for sample data
-      'reservationDate': DateTime.now().add(Duration(days: index)), // Adjust date for sample data
+      'reservationTime': DateTime.now()
+          .add(Duration(hours: index)), // Adjust time for sample data
+      'reservationDate': DateTime.now()
+          .add(Duration(days: index)), // Adjust date for sample data
     },
   );
 
@@ -73,7 +78,8 @@ class _ViewReservationsScreenState extends State<ViewReservationsScreen> {
                           // Implement navigation or logic for viewing detailed reservation info
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Details for Table ${reservation['tableNumber']}'),
+                              content: Text(
+                                  'Details for Table ${reservation['tableNumber']}'),
                             ),
                           );
                         },

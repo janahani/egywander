@@ -1,15 +1,24 @@
-import 'package:egywander/models/homepageActivities.dart';
+//packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/searchProvider.dart';
-import '../widgets/systembars.dart';
-import '../screens/activityScreen.dart';
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
+
+//model
+import 'package:egywander/models/homepageActivities.dart';
+
+//providers
 import 'package:egywander/providers/homepageactivityprovider.dart';
+import 'package:egywander/providers/searchProvider.dart';
+
+//screen
+import 'package:egywander/screens/activityScreen.dart';
 
 class SearchPage extends StatelessWidget {
   // final String query;
 
-  SearchPage({super.key});
+  const SearchPage({super.key});
 // , required this.query
   @override
   Widget build(BuildContext context) {
@@ -58,9 +67,9 @@ class SearchPage extends StatelessWidget {
                               listen: false);
 
                       // Fetch the activity details
-                       HomePageActivity? homePageActivity =
+                      HomePageActivity? homePageActivity =
                           await activityProvider.fetchActivityById(activity.id);
-                          
+
                       if (homePageActivity != null) {
                         homePageActivity.category = ' ';
                         Navigator.push(

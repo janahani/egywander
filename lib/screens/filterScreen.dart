@@ -1,16 +1,17 @@
+//packages
 import 'package:flutter/material.dart';
-import '../widgets/categorychip.dart';
-import '../widgets/travelcard.dart';
-import '../widgets/systembars.dart';
-import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
-import '../models/restaurant.dart';
-import '../providers/homepageactivityprovider.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../models/restaurant.dart';
+
+//widgets
+import 'package:egywander/widgets/systembars.dart';
+import 'package:egywander/widgets/travelcard.dart';
+
+//provider
+import 'package:egywander/providers/homepageactivityprovider.dart';
 
 class FilterScreen extends StatefulWidget {
+  const FilterScreen({super.key});
+
   @override
   _FilterScreenState createState() => _FilterScreenState();
 }
@@ -65,7 +66,11 @@ class _FilterScreenState extends State<FilterScreen> {
                       side: BorderSide.none,
                       backgroundColor: Color.fromARGB(255, 242, 227, 194),
                       selectedColor: Color.fromARGB(255, 242, 227, 194),
-                      label: Text(category, style: TextStyle(color: const Color.fromARGB(255, 162, 98, 1)),),
+                      label: Text(
+                        category,
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 162, 98, 1)),
+                      ),
                       selected: selectedCategory == category,
                       onSelected: (bool selected) {
                         setState(() {
@@ -122,13 +127,17 @@ class _FilterScreenState extends State<FilterScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                   onPressed: () {
                     Navigator.pop(context);
                     // Logic to apply filters
                     _applyFilters();
                   },
-                  child: const Text('Apply Filters', style: TextStyle(fontSize: 16,color: Colors.white),),
+                  child: const Text(
+                    'Apply Filters',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
               ),
             ],

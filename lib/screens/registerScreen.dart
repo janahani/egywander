@@ -1,18 +1,23 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'loginScreen.dart';
-import '../widgets/systembars.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
+//screen
+import 'package:egywander/screens/loginScreen.dart';
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
+
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
- 
+
 class _RegisterScreenState extends State<RegisterScreen> {
   bool isOwner = false;
   String? selectedGender;
@@ -37,36 +42,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final List<String> genders = ["Male", "Female"];
   final List<String> cuisines = ["Egyptian", "Italian", "Chinese", "Other"];
 
-
   // Email Validation
-String? validateEmail(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Email is required';
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null; // Synchronous checks only
   }
-  if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
-    return 'Please enter a valid email address';
+
+  Future<bool> isEmailRegistered(String email) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email.toLowerCase())
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
   }
-  return null; // Synchronous checks only
-}
-Future<bool> isEmailRegistered(String email) async {
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where('email', isEqualTo: email.toLowerCase())
-      .get();
 
-  return querySnapshot.docs.isNotEmpty;
-  
-}
-Future<void> checkEmailExists(String email) async {
-  bool emailExists = await isEmailRegistered(email);
-  if (emailExists) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('This email is already registered')),
-    );
+  Future<void> checkEmailExists(String email) async {
+    bool emailExists = await isEmailRegistered(email);
+    if (emailExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('This email is already registered')),
+      );
+    }
   }
-}
-
-
 
   // Name Validation (only letters)
   String? validateName(String? value) {
@@ -132,106 +135,101 @@ Future<void> checkEmailExists(String email) async {
     return null;
   }
 
-Widget _buildTextField(String labelText, TextEditingController controller,
-    {bool obscureText = false,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
-    void Function(String)? onFieldSubmitted}) {
-  return TextFormField(
-    controller: controller,
-    obscureText: obscureText,
-    keyboardType: keyboardType,
-    validator: validator,
-    onFieldSubmitted: onFieldSubmitted, // Callback for Firestore validation
-    decoration: InputDecoration(
-      labelText: labelText,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
+  Widget _buildTextField(String labelText, TextEditingController controller,
+      {bool obscureText = false,
+      TextInputType keyboardType = TextInputType.text,
+      String? Function(String?)? validator,
+      void Function(String)? onFieldSubmitted}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      onFieldSubmitted: onFieldSubmitted, // Callback for Firestore validation
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.orange, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: const BorderSide(color: Colors.orange, width: 2),
-      ),
-      filled: true,
-      fillColor: Colors.white,
-    ),
-  );
-}
-
+    );
+  }
 
   String? password;
 
-String _hashPassword(String password) {
-  final bytes = utf8.encode(password); // Convert password to bytes
-  final hashed = sha256.convert(bytes); // Generate SHA-256 hash
-  return hashed.toString(); // Return the hash as a string
-}
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password); // Convert password to bytes
+    final hashed = sha256.convert(bytes); // Generate SHA-256 hash
+    return hashed.toString(); // Return the hash as a string
+  }
 
+  Future<void> _registerUser() async {
+    if (_formKey.currentState!.validate()) {
+      // Perform asynchronous email validation
+      bool emailExists = await isEmailRegistered(emailController.text);
+      if (emailExists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('This email is already registered')),
+        );
 
-Future<void> _registerUser() async {
-  if (_formKey.currentState!.validate()) {
-    // Perform asynchronous email validation
-    bool emailExists = await isEmailRegistered(emailController.text);
-  if (emailExists) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('This email is already registered')),
-    );
-  
-      return;
-    }
-
-    final hashedPassword = _hashPassword(passwordController.text);
-
- final userData = {
-      'firstname': firstNameController.text.trim(),
-      'lastname': lastNameController.text.trim(),
-      'email': emailController.text.trim().toLowerCase(),
-      'age': int.parse(ageController.text.trim()),
-      'gender': selectedGender,
-      'password': hashedPassword,
-      'usertype': isOwner ? "Owner" : "Wanderer",
-    };
-
-    print('User Data: $userData');
-
-    try {
-      // Attempt to add the user data to Firestore
-    DocumentReference docRef = await FirebaseFirestore.instance
-        .collection('users')
-        .add(userData);
-
-    // Retrieve the auto-generated document ID
-    String userId = docRef.id;
-      if(isOwner)
-      {
-        final restaurantData = {
-        'ownerId': userId,
-        'restaurantName': restaurantNameController.text.trim(),
-        'restaurantLocation': restaurantLocationController.text.trim(),
-        'cuisineType': selectedCuisine,
-        'restaurantPhoneNumber': restaurantPhoneController.text.trim(),
-        'isAccepted' : false,
-      };
-        await FirebaseFirestore.instance.collection('restaurants').add(restaurantData);
+        return;
       }
 
-      // Navigate to Login screen after successful registration
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
-    } catch (e) {
-      // Handle the error
-      print('Error: $e'); // Debugging error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration failed: $e')),
-      );
+      final hashedPassword = _hashPassword(passwordController.text);
+
+      final userData = {
+        'firstname': firstNameController.text.trim(),
+        'lastname': lastNameController.text.trim(),
+        'email': emailController.text.trim().toLowerCase(),
+        'age': int.parse(ageController.text.trim()),
+        'gender': selectedGender,
+        'password': hashedPassword,
+        'usertype': isOwner ? "Owner" : "Wanderer",
+      };
+
+      print('User Data: $userData');
+
+      try {
+        // Attempt to add the user data to Firestore
+        DocumentReference docRef =
+            await FirebaseFirestore.instance.collection('users').add(userData);
+
+        // Retrieve the auto-generated document ID
+        String userId = docRef.id;
+        if (isOwner) {
+          final restaurantData = {
+            'ownerId': userId,
+            'restaurantName': restaurantNameController.text.trim(),
+            'restaurantLocation': restaurantLocationController.text.trim(),
+            'cuisineType': selectedCuisine,
+            'restaurantPhoneNumber': restaurantPhoneController.text.trim(),
+            'isAccepted': false,
+          };
+          await FirebaseFirestore.instance
+              .collection('restaurants')
+              .add(restaurantData);
+        }
+
+        // Navigate to Login screen after successful registration
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      } catch (e) {
+        // Handle the error
+        print('Error: $e'); // Debugging error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: $e')),
+        );
+      }
     }
   }
-}
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -355,11 +353,13 @@ Future<void> _registerUser() async {
                         const SizedBox(height: 20),
                         FadeInUp(
                           duration: const Duration(milliseconds: 1400),
-                          child: _buildTextField("Email", emailController,
-                              validator: validateEmail,
-                              onFieldSubmitted: (value) async {
-                               await checkEmailExists(value);
-                              },
+                          child: _buildTextField(
+                            "Email",
+                            emailController,
+                            validator: validateEmail,
+                            onFieldSubmitted: (value) async {
+                              await checkEmailExists(value);
+                            },
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -393,12 +393,12 @@ Future<void> _registerUser() async {
                               filled: true,
                               fillColor: Colors.white,
                             ),
-                             validator: (value) {
-                               if (value == null || value.isEmpty) {
-                                 return 'Please select your gender';
-                               }
-                               return null;
-                             },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your gender';
+                              }
+                              return null;
+                            },
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -413,8 +413,8 @@ Future<void> _registerUser() async {
                           child: _buildTextField(
                               "Confirm Password", confirmPasswordController,
                               obscureText: true,
-                              validator: (value) =>
-                                  validateConfirmPassword(value, passwordController.text)),
+                              validator: (value) => validateConfirmPassword(
+                                  value, passwordController.text)),
                         ),
                         const SizedBox(height: 20),
                         // Additional Fields for Owner
@@ -458,12 +458,12 @@ Future<void> _registerUser() async {
                                 filled: true,
                                 fillColor: Colors.white,
                               ),
-                               validator: (value) {
-                               if (value == null || value.isEmpty) {
-                                 return 'Please select a cuisine type';
-                               }
-                               return null;
-                             },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a cuisine type';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                           const SizedBox(height: 20),

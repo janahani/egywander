@@ -1,13 +1,23 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/tableinfo.dart';
-import '../widgets/customBtn.dart';
-import '../providers/restaurantProvider.dart';
-import '../widgets/systembars.dart';
-import '../providers/userProvider.dart';
+
+//model
+import 'package:egywander/models/tableinfo.dart';
+
+//providers
+import 'package:egywander/providers/restaurantProvider.dart';
+import 'package:egywander/providers/userProvider.dart';
+
+//widgets
+import 'package:egywander/widgets/customBtn.dart';
+import 'package:egywander/widgets/systembars.dart';
+
 
 class OwnerReservationInfoForm extends StatefulWidget {
+  const OwnerReservationInfoForm({super.key});
+
   @override
   _OwnerReservationInfoFormState createState() =>
       _OwnerReservationInfoFormState();

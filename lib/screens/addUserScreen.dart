@@ -1,11 +1,16 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../widgets/systembars.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+//widget
+import 'package:egywander/widgets/systembars.dart';
+
 class AddUserScreen extends StatefulWidget {
+  const AddUserScreen({super.key});
+
   @override
   _AddUserScreenState createState() => _AddUserScreenState();
 }
@@ -84,7 +89,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
     }
     return null;
   }
-
 
   // Restaurant Phone Number Validation
   String? validateRestaurantPhoneNumber(String? value) {

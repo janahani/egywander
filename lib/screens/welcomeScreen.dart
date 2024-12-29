@@ -1,9 +1,12 @@
-import 'dart:async';
+//packages
 import 'package:flutter/material.dart';
-import '../screens/homepageScreen.dart';
+import 'dart:async';
+
+//screens
+import 'package:egywander/screens/homepageScreen.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();

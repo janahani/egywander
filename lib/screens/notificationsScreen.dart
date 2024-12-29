@@ -1,25 +1,31 @@
-import 'package:egywander/screens/loginScreen.dart';
+//packages
 import 'package:flutter/material.dart';
-import '/widgets/notificationscard.dart';
-import '../widgets/systembars.dart';
 import 'package:provider/provider.dart';
-import 'package:egywander/providers/userProvider.dart';
 import 'package:intl/intl.dart'; // For date formatting
+
+//screen
+import 'package:egywander/screens/loginScreen.dart';
+
+//provider
+import 'package:egywander/providers/userProvider.dart';
+
+//helper
 import 'package:egywander/helper/notificationsDbHelper.dart'; // Import the database helper
 
+//widgets
+import 'package:egywander/widgets/notificationscard.dart';
+import 'package:egywander/widgets/systembars.dart';
 
 class NotificationsScreen extends StatefulWidget {
   final Function onViewedNotifications; // Callback to notify the AppBar
 
-  const NotificationsScreen({required this.onViewedNotifications, Key? key})
-      : super(key: key);
+  const NotificationsScreen({required this.onViewedNotifications, super.key});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final NotificationDbHelper _db = NotificationDbHelper.instance;
   List<Map<String, dynamic>> _notifications = [];
@@ -67,21 +73,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     int hours = duration.inHours;
     int minutes = duration.inMinutes % 60;
 
-    if(hours>0 && minutes>0)
-    {
+    if (hours > 0 && minutes > 0) {
       return '$hours.$minutes hours';
-    }
-    else if(hours>0 && minutes==0)
-    {
+    } else if (hours > 0 && minutes == 0) {
       return '$hours hours';
-    }
-    else if(hours==0 && minutes>0)
-    {
+    } else if (hours == 0 && minutes > 0) {
       return '$minutes minutes';
     }
 
     return '0';
-    
   }
 
   String _formatNotificationMessage(Map<String, dynamic> notification) {
@@ -104,7 +104,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-     if (!userProvider.isLoggedIn) {
+    if (!userProvider.isLoggedIn) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("You should log in/register")),
@@ -115,7 +115,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       });
       return Scaffold();
     }
-
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),

@@ -1,11 +1,14 @@
+//packages
 import 'package:flutter/material.dart';
-import '../widgets/systembars.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
 
 class RequestDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> restaurant;
 
-  RequestDetailsScreen({required this.restaurant});
+  const RequestDetailsScreen({super.key, required this.restaurant});
 
   // Accept request function
   Future<void> _acceptRequest(BuildContext context) async {

@@ -1,18 +1,23 @@
-import 'package:egywander/helper/notificationsDbHelper.dart';
+//packages
 import 'package:flutter/material.dart';
-import '../widgets/categorychip.dart';
-import '../widgets/travelcard.dart';
-import '../widgets/systembars.dart';
-import '../providers/restaurantProvider.dart';
 import 'package:provider/provider.dart';
-import '../models/restaurant.dart';
-import '../providers/homepageactivityprovider.dart';
-import 'filterScreen.dart';
-import '../screens/searchResultsScreen.dart';
-import '../providers/searchProvider.dart';
 
+//providers
+import 'package:egywander/providers/homepageactivityprovider.dart';
+import 'package:egywander/providers/searchProvider.dart';
+
+//screens
+import 'package:egywander/screens/filterScreen.dart';
+import 'package:egywander/screens/searchResultsScreen.dart';
+
+//widgets
+import 'package:egywander/widgets/categorychip.dart';
+import 'package:egywander/widgets/systembars.dart';
+import 'package:egywander/widgets/travelcard.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -20,9 +25,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = 'Entertainment'; // Default category
   String popularCategory = 'Most Popular';
-  
-  final TextEditingController _searchController = TextEditingController();
 
+  final TextEditingController _searchController = TextEditingController();
 
   void _fetchActivities(BuildContext context, String city) async {
     final provider =
@@ -43,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-  final searchProvider = Provider.of<SearchProvider>(context);
+    final searchProvider = Provider.of<SearchProvider>(context);
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -71,27 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Search places',
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                  
-                ),
-              ),
-              onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SearchPage(),
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: 'Search places',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
                     ),
-                  );
-                }
-            ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchPage(),
+                      ),
+                    );
+                  }),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -233,12 +235,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                       ),
-                      onPressed: () {Navigator.push(
+                      onPressed: () {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => FilterScreen(),
                           ),
-                        );},
+                        );
+                      },
                       child: Text(
                         'View All',
                         style: TextStyle(

@@ -1,13 +1,22 @@
-import 'package:egywander/screens/loginScreen.dart';
+//packages
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '/providers/userProvider.dart';
-import '/widgets/systembars.dart';
-import '/widgets/scheduleItem.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+//screens
+import 'package:egywander/screens/loginScreen.dart';
+
+//providers
+import 'package:egywander/providers/userProvider.dart';
+
+//widgets
+import 'package:egywander/widgets/systembars.dart';
+import 'package:egywander/widgets/scheduleItem.dart';
 
 class ScheduleScreen extends StatefulWidget {
+  const ScheduleScreen({super.key});
+
   @override
   _ScheduleScreenState createState() => _ScheduleScreenState();
 }

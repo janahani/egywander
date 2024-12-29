@@ -1,14 +1,18 @@
-import 'package:egywander/screens/accountScreen.dart';
+//packages
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:animate_do/animate_do.dart';
 import 'dart:convert';
-//screens 
-import 'registerScreen.dart';
-import 'admindashScreen.dart';
-//widgets
-import '../widgets/systembars.dart';
+
+//screens
+import 'package:egywander/screens/accountScreen.dart';
+import 'package:egywander/screens/admindashScreen.dart';
+import 'package:egywander/screens/registerScreen.dart';
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
+
 //providers
 import 'package:provider/provider.dart';
 import 'package:egywander/providers/userProvider.dart';
@@ -51,18 +55,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       QuerySnapshot snapshot;
-        snapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email',
-                isEqualTo: loginInput.toLowerCase()) // Case-insensitive email
-            .where('password', isEqualTo: enteredPasswordHash)
-            .get();
+      snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email',
+              isEqualTo: loginInput.toLowerCase()) // Case-insensitive email
+          .where('password', isEqualTo: enteredPasswordHash)
+          .get();
 
       if (snapshot.docs.isNotEmpty) {
         _showMessage("Login Successful!", Colors.green);
         final userProvider = Provider.of<UserProvider>(context, listen: false);
-        final userDoc = snapshot.docs.first; 
-        print(userDoc['age']);
+        final userDoc = snapshot.docs.first;
         userProvider.login(
             userDoc.id,
             userDoc['firstname'],
@@ -73,20 +76,20 @@ class _LoginScreenState extends State<LoginScreen> {
             userDoc['password'],
             userDoc['usertype'],
             userDoc);
-        if(userDoc['usertype'] == 'Admin'){
+        if (userDoc['usertype'] == 'Admin') {
           Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AdminDashboardScreen(),
-          ),
-        );
-        } else{
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AccountScreen(),
-          ),
-        );
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminDashboardScreen(),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AccountScreen(),
+            ),
+          );
         }
       } else {
         _showMessage("Invalid email or password.", Colors.red);
@@ -132,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:  30),
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Form(
                     key: _formKey,
                     child: Column(

@@ -1,11 +1,12 @@
+//package
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import '../widgets/systembars.dart';
-import 'editplanScreen.dart'; // Import if you need to use it in this screen
-import '../widgets/customBtn.dart';
+
+//widgets
+import 'package:egywander/widgets/systembars.dart';
+import 'package:egywander/widgets/customBtn.dart';
 
 class ReservationPage extends StatefulWidget {
-  const ReservationPage({Key? key}) : super(key: key);
+  const ReservationPage({super.key});
 
   @override
   _ReservationPageState createState() => _ReservationPageState();

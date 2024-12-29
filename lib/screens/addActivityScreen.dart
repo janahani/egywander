@@ -1,18 +1,25 @@
-import 'package:egywander/helper/notificationsDbHelper.dart';
+//packages;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '/models/schedule.dart';
-import '/providers/userProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/usernotification.dart';
+
+//helper
+import 'package:egywander/helper/notificationsDbHelper.dart';
+
+//models
+import 'package:egywander/models/schedule.dart';
+import 'package:egywander/models/usernotification.dart';
+
+//provider
+import 'package:egywander/providers/userProvider.dart';
 
 class AddActivityScreen extends StatefulWidget {
   final String activityTitle;
   final String activityId;
 
   const AddActivityScreen(
-      {required this.activityTitle, required this.activityId});
+      {super.key, required this.activityTitle, required this.activityId});
 
   @override
   _AddActivityScreenState createState() => _AddActivityScreenState();

@@ -1,18 +1,28 @@
-import 'package:egywander/models/homepageActivities.dart';
-import 'package:egywander/screens/loginScreen.dart';
+//packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:egywander/widgets/activityWidgets.dart';
-import '../widgets/systembars.dart';
-import './addActivityScreen.dart';
-import '../widgets/customBtn.dart';
-import '../providers/userProvider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+//model
+import 'package:egywander/models/homepageActivities.dart';
+
+//screens
+import 'package:egywander/screens/loginScreen.dart';
+import 'package:egywander/screens/addActivityScreen.dart';
+
+//widgets
+import 'package:egywander/widgets/activityWidgets.dart';
+import 'package:egywander/widgets/customBtn.dart';
+import 'package:egywander/widgets/systembars.dart';
+
+//provider
+import 'package:egywander/providers/userProvider.dart';
 
 class ActivityScreen extends StatefulWidget {
   final HomePageActivity homePageActivity;
 
   const ActivityScreen({
+    super.key,
     required this.homePageActivity,
   });
 
@@ -135,7 +145,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       ),
                     ),
                   const SizedBox(height: 30),
-                  OpeningHours(openingHours: widget.homePageActivity.openingHours),
+                  OpeningHours(
+                      openingHours: widget.homePageActivity.openingHours),
                   const SizedBox(height: 20),
                   Reviews(reviews: widget.homePageActivity.reviews),
                   const SizedBox(height: 30),
@@ -163,7 +174,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        InfoTile(icon: Icons.star, text: widget.homePageActivity.rating.toString()),
+        InfoTile(
+            icon: Icons.star, text: widget.homePageActivity.rating.toString()),
         InfoTile(
             icon: Icons.person,
             text: widget.homePageActivity.userRatingsTotal.toString()),
@@ -178,5 +190,3 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 }
-
-  

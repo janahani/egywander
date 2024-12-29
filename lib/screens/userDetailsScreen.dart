@@ -1,12 +1,15 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/systembars.dart';
+
+//widgets
+import 'package:egywander/widgets/systembars.dart';
 
 class UserDetailScreen extends StatefulWidget {
   final Map<String, dynamic> user;
 
-  UserDetailScreen({required this.user});
+  const UserDetailScreen({super.key, required this.user});
 
   @override
   _UserDetailScreenState createState() => _UserDetailScreenState();
@@ -81,8 +84,8 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text('Update User'),
-          content:
-              Text('Are you sure you want to update ${widget.user["firstname"]}?'),
+          content: Text(
+              'Are you sure you want to update ${widget.user["firstname"]}?'),
           actions: [
             TextButton(
               onPressed: () {

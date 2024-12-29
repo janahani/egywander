@@ -1,14 +1,18 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+
 //screens
 import 'package:egywander/screens/accountScreen.dart';
-import 'admindashScreen.dart';
-//widgets
-import '../widgets/systembars.dart';
-//providers
+import 'package:egywander/screens/admindashScreen.dart';
+
+//widget
+import 'package:egywander/widgets/systembars.dart';
+
+//provider
 import 'package:egywander/providers/userProvider.dart';
 
 class AccountSettingsScreen extends StatefulWidget {

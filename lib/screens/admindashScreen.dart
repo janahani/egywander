@@ -1,20 +1,26 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
 //screens
 import 'package:egywander/screens/accountsettingsScreen.dart';
-import 'userManagementScreen.dart';
-import 'aboutusScreen.dart';
-import 'restaurantManagementScreen.dart';
-import 'addUserScreen.dart';
-import 'loginScreen.dart';
+import 'package:egywander/screens/aboutusScreen.dart';
+import 'package:egywander/screens/addUserScreen.dart';
+import 'package:egywander/screens/loginScreen.dart';
+import 'package:egywander/screens/restaurantManagementScreen.dart';
+import 'package:egywander/screens/userManagementScreen.dart';
+
 //widgets
 import 'package:egywander/widgets/systembars.dart';
-import '/widgets/accountmenubtns.dart';
-//providers
+import 'package:egywander/widgets/accountmenubtns.dart';
+
+//provider
 import 'package:egywander/providers/userProvider.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
+  const AdminDashboardScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
