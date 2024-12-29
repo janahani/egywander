@@ -16,10 +16,8 @@ import 'package:egywander/providers/searchProvider.dart';
 import 'package:egywander/screens/activityScreen.dart';
 
 class SearchPage extends StatelessWidget {
-  // final String query;
-
   const SearchPage({super.key});
-// , required this.query
+
   @override
   Widget build(BuildContext context) {
     final searchProvider = Provider.of<SearchProvider>(context);
@@ -39,7 +37,24 @@ class SearchPage extends StatelessWidget {
                 suffixIcon: Icon(Icons.search),
               ),
               onChanged: (value) {
-                searchProvider.debounceSearch(value);
+                if (value.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Query cannot be empty.'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  searchProvider.debounceSearch(''); 
+                } else if (value.trim().length < 3) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Query must be at least 3 characters.'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                } else {
+                  searchProvider.debounceSearch(value); 
+                }
               },
             ),
           ),
@@ -61,12 +76,10 @@ class SearchPage extends StatelessWidget {
                         ? Image.network(activity.imageUrl!)
                         : Icon(Icons.place),
                     onTap: () async {
-                      // Get the activity provider from the Provider
                       final activityProvider =
                           Provider.of<Homepageactivityprovider>(context,
                               listen: false);
 
-                      // Fetch the activity details
                       HomePageActivity? homePageActivity =
                           await activityProvider.fetchActivityById(activity.id);
 

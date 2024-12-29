@@ -35,6 +35,13 @@ class SearchProvider with ChangeNotifier {
       return;
     }
 
+    if (query.isEmpty || query.trim().length < 3) {
+      print('Error: Query must be at least 3 characters long.');
+      _searchResults = [];
+      notifyListeners();
+      return;
+    }
+
     final normalizedQuery = query.trim().toLowerCase();
 
     // Egypt's approximate central coordinates
