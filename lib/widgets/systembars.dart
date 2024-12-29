@@ -15,6 +15,7 @@ import 'package:egywander/screens/notificationsScreen.dart';
 
 //providers
 import 'package:egywander/providers/userProvider.dart';
+import 'package:egywander/providers/themeProvider.dart';
 
 final NotificationDbHelper _db = NotificationDbHelper.instance;
 
@@ -74,7 +75,12 @@ AppBar appBar(BuildContext context) {
           return Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications, color: Colors.black),
+                icon: Icon(
+                  Icons.notifications,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white // White icon in dark mode
+                      : Colors.black, // Black icon in light mode
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -104,6 +110,92 @@ AppBar appBar(BuildContext context) {
                 ),
             ],
           );
+        },
+      ),
+    ],
+  );
+}
+
+AppBar accountScreenAppBar(BuildContext context) {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  return AppBar(
+    elevation: 0,
+    backgroundColor: Colors.transparent,
+    title: const Text(
+      "EGYWANDERS",
+      style: TextStyle(
+        color: Colors.orange,
+        fontSize: 20,
+        letterSpacing: 2.0,
+        fontFamily: 'egy',
+      ),
+    ),
+    centerTitle: true,
+    actions: [
+      // FutureBuilder for notifications
+      FutureBuilder(
+        future: fetchNotifications(), // Load notifications
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.black),
+              onPressed: null, // Disable button while loading
+            );
+          }
+
+          int notificationCount = calculateNotificationCount();
+
+          return Stack(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.notifications,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white // White icon in dark mode
+                      : Colors.black, // Black icon in light mode
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsScreen(
+                        onViewedNotifications: () {
+                          markNotificationsAsViewed();
+                          (context as Element).markNeedsBuild();
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (notificationCount > 0 && userProvider.isLoggedIn)
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      '$notificationCount',
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+      IconButton(
+        icon: Icon(
+          Provider.of<ThemeProvider>(context).themeMode == ThemeMode.light
+              ? Icons.dark_mode
+              : Icons.light_mode,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white // White icon in dark mode
+              : Colors.black, // Black icon in light mode
+        ),
+        onPressed: () {
+          Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
         },
       ),
     ],
