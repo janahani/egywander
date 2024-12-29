@@ -1,6 +1,9 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+
+//providers
 import 'package:egywander/providers/userProvider.dart';
 import 'package:egywander/providers/favoriteProvider.dart';
 
@@ -8,7 +11,7 @@ import 'package:egywander/providers/favoriteProvider.dart';
 class TopImageSection extends StatelessWidget {
   final String imageUrl;
 
-  const TopImageSection({required this.imageUrl});
+  const TopImageSection({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +33,7 @@ class TitleAndLocation extends StatelessWidget {
   final String location;
 
   const TitleAndLocation({
+    super.key,
     required this.title,
     required this.location,
   });
@@ -66,6 +70,7 @@ class CategoryAndRatingSection extends StatelessWidget {
   final double rating;
 
   const CategoryAndRatingSection({
+    super.key,
     required this.category,
     required this.rating,
   });
@@ -103,7 +108,7 @@ class InfoTile extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const InfoTile({required this.icon, required this.text});
+  const InfoTile({super.key, required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +132,6 @@ class FavoriteIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     final userProvider = Provider.of<UserProvider>(context);
     final favoritesProvider = Provider.of<FavoritesProvider>(context);
     final isFavorite =
@@ -166,7 +170,7 @@ class PlaceMap extends StatelessWidget {
   final double latitude;
   final double longitude;
 
-  PlaceMap({required this.latitude, required this.longitude});
+  const PlaceMap({super.key, required this.latitude, required this.longitude});
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +206,7 @@ class PlaceMap extends StatelessWidget {
 class Reviews extends StatefulWidget {
   final List<Map<String, dynamic>> reviews;
 
-  Reviews({required this.reviews});
+  const Reviews({super.key, required this.reviews});
 
   @override
   _ReviewsState createState() => _ReviewsState();
@@ -274,7 +278,7 @@ class _ReviewsState extends State<Reviews> {
 class OpeningHours extends StatefulWidget {
   final List<String> openingHours;
 
-  OpeningHours({required this.openingHours});
+  const OpeningHours({super.key, required this.openingHours});
 
   @override
   _OpeningHoursState createState() => _OpeningHoursState();

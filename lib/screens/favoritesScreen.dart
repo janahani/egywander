@@ -64,7 +64,7 @@ class FavoritesScreen extends StatelessWidget {
                   final activity = favoriteActivities[index];
                   return FavoritesCard(
                     activity: activity,
-                    Remove: () {
+                    remove: () {
                       favoritesProvider.toggleFavorite(userId, activity.id);
                     },
                   );

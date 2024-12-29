@@ -4,20 +4,22 @@ class ReminderCard extends StatelessWidget {
   final String date;
   final String location;
   final String time;
-  final String formattedNotificationMessage; // Added for the notification message
+  final String
+      formattedNotificationMessage; // Added for the notification message
 
   const ReminderCard({
-    Key? key,
+    super.key,
     required this.date,
     required this.location,
     required this.time,
     required this.formattedNotificationMessage, // Accepting formatted notification message
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Adjusted padding
+      padding: const EdgeInsets.symmetric(
+          horizontal: 16.0, vertical: 8.0), // Adjusted padding
       child: Container(
         width: double.infinity, // Full width for the card
         decoration: BoxDecoration(
@@ -49,7 +51,8 @@ class ReminderCard extends StatelessWidget {
               // Time row with the starting and ending time
               Row(
                 children: [
-                  Icon(Icons.access_time, color: Colors.black, size: 18), // Time icon
+                  Icon(Icons.access_time,
+                      color: Colors.black, size: 18), // Time icon
                   SizedBox(width: 6), // Space between icon and time text
                   Text(
                     time,

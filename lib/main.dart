@@ -1,18 +1,11 @@
 //packages
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 //screens
-import 'screens/activityScreen.dart';
 import 'screens/homepageScreen.dart';
-import 'screens/welcomeScreen.dart';
-import 'screens/UserManagementScreen.dart';
-import 'screens/filterScreen.dart';
-import 'screens/OwnerReservationInfoForm.dart';
-import 'screens/admindashscreen.dart';
 
 //providers
 import 'providers/userProvider.dart';
@@ -21,15 +14,10 @@ import 'providers/favoriteProvider.dart';
 import 'providers/searchProvider.dart';
 import 'providers/restaurantProvider.dart';
 
-//models
-import 'package:egywander/models/homepageActivities.dart';
-
-
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
-
 
   // Initialize Firebase with provided options
   await Firebase.initializeApp(
@@ -55,15 +43,11 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
-
-
-
       ],
       child: MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

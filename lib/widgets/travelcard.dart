@@ -1,11 +1,17 @@
-import 'package:egywander/models/homepageActivities.dart';
+//package
 import 'package:flutter/material.dart';
+
+//model
+import 'package:egywander/models/homepageActivities.dart';
+
+//screen
 import 'package:egywander/screens/activityScreen.dart';
 
 class TravelCard extends StatelessWidget {
   final HomePageActivity homePageActivity;
 
   const TravelCard({
+    super.key,
     required this.homePageActivity,
   });
 

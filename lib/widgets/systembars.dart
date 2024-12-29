@@ -1,18 +1,26 @@
+//packages
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+//helper
 import 'package:egywander/helper/notificationsDbHelper.dart';
+
+//screens
 import 'package:egywander/screens/accountScreen.dart';
 import 'package:egywander/screens/favoritesScreen.dart';
 import 'package:egywander/screens/homepageScreen.dart';
 import 'package:egywander/screens/scheduleScreen.dart';
 import 'package:egywander/screens/adminDashScreen.dart';
-import 'package:flutter/material.dart';
-import '../screens/notificationsScreen.dart';
-import 'package:provider/provider.dart';
+import 'package:egywander/screens/notificationsScreen.dart';
+
+//providers
 import 'package:egywander/providers/userProvider.dart';
 
 final NotificationDbHelper _db = NotificationDbHelper.instance;
 
 List<Map<String, dynamic>> allNotifications = [];
 
+// Gets all notifications of today
 Future<void> fetchNotifications() async {
   allNotifications = await _db.getNotificationsForToday();
 }

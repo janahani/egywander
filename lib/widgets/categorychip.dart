@@ -7,6 +7,7 @@ class CategoryChip extends StatelessWidget {
   final bool isSelected; // Add isSelected parameter to track the selection
 
   const CategoryChip({
+    super.key,
     required this.label,
     required this.color,
     required this.onPressed,
@@ -17,8 +18,10 @@ class CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     // Set the background color to orange if selected, otherwise use original color with opacity
     final backgroundColor = isSelected
-        ? const Color.fromARGB(255, 255, 152, 0).withOpacity(0.2) // Orange for selected
-        : color.withOpacity(0.2); // Original color with opacity for non-selected
+        ? const Color.fromARGB(255, 255, 152, 0)
+            .withOpacity(0.2) // Orange for selected
+        : color
+            .withOpacity(0.2); // Original color with opacity for non-selected
 
     return TextButton(
       onPressed: onPressed,
@@ -32,7 +35,9 @@ class CategoryChip extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isSelected ? Colors.orange : color, // White text when selected, original color otherwise
+          color: isSelected
+              ? Colors.orange
+              : color, // White text when selected, original color otherwise
           fontWeight: FontWeight.bold,
         ),
       ),

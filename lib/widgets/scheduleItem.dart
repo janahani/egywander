@@ -1,7 +1,12 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+
+//provider
 import '/providers/scheduleProvider.dart';
+
+//screen
 import '/screens/scheduleScreen.dart';
 
 class ScheduleItem extends StatelessWidget {
@@ -9,8 +14,9 @@ class ScheduleItem extends StatelessWidget {
   final String tabName;
   final bool allowEditDelete;
 
-  ScheduleItem(
-      {required this.schedules,
+  const ScheduleItem(
+      {super.key,
+      required this.schedules,
       required this.tabName,
       required this.allowEditDelete});
 

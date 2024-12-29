@@ -1,16 +1,18 @@
-import 'package:egywander/models/homepageActivities.dart';
-import 'package:egywander/screens/activityScreen.dart';
+//package
 import 'package:flutter/material.dart';
 
+//model
+import 'package:egywander/models/homepageActivities.dart';
+
+//screen
+import 'package:egywander/screens/activityScreen.dart';
+
 class FavoritesCard extends StatelessWidget {
-  final VoidCallback Remove;
+  final VoidCallback remove;
   final HomePageActivity activity;
 
-  const FavoritesCard({
-    Key? key,
-    required this.Remove,
-    required this.activity
-  }) : super(key: key);
+  const FavoritesCard(
+      {super.key, required this.remove, required this.activity});
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +22,7 @@ class FavoritesCard extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ActivityScreen(homePageActivity: activity),
+            builder: (context) => ActivityScreen(homePageActivity: activity),
           ),
         );
       },
@@ -84,7 +85,7 @@ class FavoritesCard extends StatelessWidget {
                         Spacer(),
                         IconButton(
                           icon: Icon(Icons.favorite, color: Colors.orange),
-                          onPressed: Remove,
+                          onPressed: remove,
                         ),
                       ],
                     ),
