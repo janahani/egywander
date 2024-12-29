@@ -44,15 +44,6 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     _endTimeController = TextEditingController();
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _dateController.dispose();
-    _startTimeController.dispose();
-    _endTimeController.dispose();
-    super.dispose();
-  }
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -142,7 +133,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       }
     }
 
-    return null; // Valid end time
+    return null; 
   }
 
   Future<void> _addActivityToSchedule() async {
@@ -179,7 +170,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         // Calculate notification time (4 hours before the starting time)
         final notificationTime = startingDateTime.subtract(Duration(hours: 4));
 
-        // Create the Notification model
+      // Create the Notification model
       final newNotification = UserNotification(
         placename: widget.activityTitle, // Assuming placename is the title of the activity
         date: parsedDate,

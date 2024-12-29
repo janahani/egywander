@@ -25,7 +25,7 @@ class RequestDetailsScreen extends StatelessWidget {
         ),
       );
 
-      Navigator.pop(context); // Go back to the previous screen
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -51,7 +51,7 @@ class RequestDetailsScreen extends StatelessWidget {
         ),
       );
 
-      Navigator.pop(context); // Go back to the previous screen
+      Navigator.pop(context); 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

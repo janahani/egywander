@@ -1,7 +1,7 @@
 //packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart'; 
 
 //screen
 import 'package:egywander/screens/loginScreen.dart';
@@ -10,14 +10,14 @@ import 'package:egywander/screens/loginScreen.dart';
 import 'package:egywander/providers/userProvider.dart';
 
 //helper
-import 'package:egywander/helper/notificationsDbHelper.dart'; // Import the database helper
+import 'package:egywander/helper/notificationsDbHelper.dart'; 
 
 //widgets
 import 'package:egywander/widgets/notificationscard.dart';
 import 'package:egywander/widgets/systembars.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  final Function onViewedNotifications; // Callback to notify the AppBar
+  final Function onViewedNotifications; 
 
   const NotificationsScreen({required this.onViewedNotifications, super.key});
 
@@ -54,7 +54,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         DateTime notificationTime =
             DateTime.parse(notification['notificationsTime']);
         DateTime endOfDay = DateTime(
-            now.year, now.month, now.day, 23, 59, 59); // Today's end time
+            now.year, now.month, now.day, 23, 59, 59); 
 
         // Include notifications if notification time has passed and today hasn't ended
         return now.isAfter(notificationTime) && now.isBefore(endOfDay);

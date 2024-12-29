@@ -18,7 +18,6 @@ class AboutUsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title Section with Image
             Center(
               child: Column(
                 children: [
@@ -44,7 +43,7 @@ class AboutUsScreen extends StatelessWidget {
                 fontSize: 16,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white // White text in dark mode
-                    : Colors.black87, // Black text in light mode
+                    : Colors.black87, 
                 height: 1.5,
               ),
             ),
@@ -55,7 +54,7 @@ class AboutUsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
-                color: Colors.orange, // Set the text color to orange
+                color: Colors.orange, 
               ),
             ),
 
@@ -125,7 +124,6 @@ class AboutUsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // Closing Statement Section with Divider
             Divider(color: Colors.grey.shade400, thickness: 1),
             const SizedBox(height: 20),
             Text(
@@ -137,30 +135,6 @@ class AboutUsScreen extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
-            // Center(
-            //   child: ElevatedButton(
-            //     onPressed: () {
-            //       Navigator.pop(context);
-            //     },
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.orange,
-            //       padding:
-            //           const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(8.0),
-            //       ),
-            //     ),
-            //     child: const Text(
-            //       'Back to Home',
-            //       style: TextStyle(
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.white,
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

@@ -60,7 +60,6 @@ AppBar appBar(BuildContext context) {
     ),
     centerTitle: true,
     actions: [
-      // Row to align the theme icon and notifications icon next to each other
       Row(
         children: [
           IconButton(

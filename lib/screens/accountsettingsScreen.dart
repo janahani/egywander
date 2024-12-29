@@ -25,7 +25,7 @@ class AccountSettingsScreen extends StatefulWidget {
 class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Editable fields
+  // All fields
   String firstName = '';
   String lastName = '';
   String gender = '';
@@ -68,7 +68,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             .where('ownerId', isEqualTo: userProvider.id)
             .get();
 
-        print('Restaurant Data: ${restaurantDoc.docs.first.data()}');
         if (restaurantDoc.docs.isNotEmpty) {
           final restaurantData = restaurantDoc.docs.first.data();
           setState(() {
@@ -147,7 +146,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           }
         }
 
-        // Fetch the updated user data directly by document ID
+        // Fetch the updated user data directly by user ID
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userProvider.id)
@@ -161,7 +160,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             userDoc.data()!,
           );
 
-          // Navigate to the AccountScreen
           if (userDoc['usertype'] == 'Admin') {
             Navigator.pushReplacement(
               context,
@@ -257,15 +255,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       style: TextStyle(
         color: readOnly
             ? (Theme.of(context).brightness == Brightness.dark
-                ? Colors.black // White text in dark mode
-                : Colors.black) // Black text in light mode
-            : Colors.black, // Text color when editable
+                ? Colors.black 
+                : Colors.black) 
+            : Colors.black, 
       ),
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: TextStyle(
-          color: Colors.orange, // Orange color for label text
-          fontWeight: FontWeight.bold, // Bold label text
+          color: Colors.orange, 
+          fontWeight: FontWeight.bold, 
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
@@ -273,12 +271,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(
-              color: Colors.orange, width: 3), // Increased border width
+              color: Colors.orange, width: 3),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(
-              color: Colors.orange, width: 2), // Border when not focused
+              color: Colors.orange, width: 2), 
         ),
         filled: true,
         fillColor: Colors.white,
@@ -345,7 +343,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 DropdownButtonFormField<String>(
                   value: cuisineType.isNotEmpty
                       ? cuisineType
-                      : null, // Current value or null
+                      : null, 
                   decoration: InputDecoration(
                     labelText: "Cuisine Type",
                     border: OutlineInputBorder(
@@ -362,7 +360,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      cuisineType = newValue ?? ''; // Update the state
+                      cuisineType = newValue ?? ''; 
                     });
                   },
                   validator: (value) {

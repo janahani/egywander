@@ -35,7 +35,6 @@ class ScheduleItem extends StatelessWidget {
         String formattedDate = DateFormat('EEEE, d MMM y').format(date);
 
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Date Display
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
@@ -46,7 +45,6 @@ class ScheduleItem extends StatelessWidget {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          // Schedule Box
           Card(
             margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: ListTile(
@@ -88,7 +86,7 @@ class ScheduleItem extends StatelessWidget {
                         ),
                       ],
                     )
-                  : null, // If editing/deleting is not allowed, hide the buttons
+                  : null, 
             ),
           )
         ]);

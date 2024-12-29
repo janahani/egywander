@@ -130,34 +130,4 @@ class RestaurantProvider extends ChangeNotifier {
       return null;
     }
   }
-
-  /* Future<void> fetchRestaurantDetails(String name) async {
-    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
-    final url = Uri.parse(
-        "https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(name)}&key=$apiKey&region=EG");
-
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['results'] != null && data['results'].isNotEmpty) {
-        restaurantDetails = data['results'][0];
-        notifyListeners();
-      } else {
-        restaurantDetails = null;
-        notifyListeners();
-      }
-    } else {
-      throw Exception("Failed to fetch restaurant details");
-    }
-  }
-
- 
-   Future<void> cachePlacesInFirestore(
-      String city, List<Restaurant> places) async {
-    final collection = FirebaseFirestore.instance.collection('places');
-    await collection.doc(city).set({
-      'places': places.map((place) => place.toMap()).toList(),
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  } */
 }

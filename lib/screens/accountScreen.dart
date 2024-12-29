@@ -24,8 +24,6 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
-        print("User Type in AccountScreen: ${userProvider.userType}");
-
         return Scaffold(
           appBar: appBar(context),
           bottomNavigationBar: bottomNavigationBar(context),
@@ -54,14 +52,15 @@ class AccountScreen extends StatelessWidget {
                           userProvider.email ?? "",
                           style: TextStyle(
                             fontSize: 14,
-                            color: Theme.of(context).brightness ==
-                                    Brightness.dark
-                                ? Colors.white // White text in dark mode
-                                : Colors.grey[700], // Grey text in light mode
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
                           ),
                         ),
 
                         const SizedBox(height: 20),
+
                         // Common Buttons for All Users
                         buildMenuButton(
                           context,
@@ -91,6 +90,8 @@ class AccountScreen extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 10),
+
+                        //Custom buttons based on userType
                         if (userProvider.userType == "Owner") ...[
                           buildMenuButton(
                             context,
@@ -137,6 +138,8 @@ class AccountScreen extends StatelessWidget {
                           ),
                         ],
                         const SizedBox(height: 10),
+
+                        // Logout for all userTypes
                         buildMenuButton(
                           context,
                           icon: Icons.logout,
@@ -148,6 +151,7 @@ class AccountScreen extends StatelessWidget {
                       ],
                     ),
                   )
+                //If not logged in
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
