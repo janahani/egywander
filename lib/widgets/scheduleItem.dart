@@ -9,7 +9,6 @@ import 'package:egywander/providers/scheduleProvider.dart';
 //screen
 import 'package:egywander/screens/scheduleScreen.dart';
 
-
 class ScheduleItem extends StatelessWidget {
   final List<DocumentSnapshot> schedules;
   final String tabName;
@@ -66,7 +65,12 @@ class ScheduleItem extends StatelessWidget {
               ),
               subtitle: Text(
                 "${data['startingTime']} - ${data['endingTime']}",
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey[600],
+                ),
               ),
               trailing: allowEditDelete
                   ? Row(
@@ -86,7 +90,7 @@ class ScheduleItem extends StatelessWidget {
                         ),
                       ],
                     )
-                  : null, 
+                  : null,
             ),
           )
         ]);

@@ -30,7 +30,6 @@ class FavoritesCard extends StatelessWidget {
         width: double.infinity,
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.white,
           boxShadow: [
             BoxShadow(
               blurRadius: 4,
@@ -66,13 +65,23 @@ class FavoritesCard extends StatelessWidget {
                       activity.name,
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                           ),
                     ),
                     SizedBox(height: 8),
                     Text(
                       activity.location,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
                     ),
+
                     // SizedBox(height: 8),
                     Row(
                       children: [
@@ -80,7 +89,13 @@ class FavoritesCard extends StatelessWidget {
                         SizedBox(width: 5),
                         Text(
                           activity.rating!.toStringAsFixed(1),
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                         ),
                         Spacer(),
                         IconButton(

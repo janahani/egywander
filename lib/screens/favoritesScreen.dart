@@ -66,11 +66,19 @@ class FavoritesScreen extends StatelessWidget {
                 final favoriteActivities = snapshot.data ?? [];
 
                 if (favoriteActivities.isEmpty) {
-                  return Center(child: Text('No favorite activities found'));
+                  return Center(
+                    child: Text(
+                      'No favorite activities found',
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  );
                 }
 
                 return ListView.builder(
-                  // padding: EdgeInsets.all(), // Add padding to avoid overflow
                   itemCount: favoriteActivities.length,
                   itemBuilder: (context, index) {
                     final activity = favoriteActivities[index];
