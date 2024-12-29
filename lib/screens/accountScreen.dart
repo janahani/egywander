@@ -27,7 +27,7 @@ class AccountScreen extends StatelessWidget {
         print("User Type in AccountScreen: ${userProvider.userType}");
 
         return Scaffold(
-          appBar: accountScreenAppBar(context),
+          appBar: appBar(context),
           bottomNavigationBar: bottomNavigationBar(context),
           body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
