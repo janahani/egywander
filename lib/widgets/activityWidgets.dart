@@ -40,6 +40,8 @@ class TitleAndLocation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -48,7 +50,7 @@ class TitleAndLocation extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
         SizedBox(height: 4),
@@ -56,7 +58,7 @@ class TitleAndLocation extends StatelessWidget {
           location,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey[600],
+            color: isDarkMode ? Colors.white70 : Colors.grey[600],
           ),
         ),
       ],
@@ -118,8 +120,13 @@ class InfoTile extends StatelessWidget {
         SizedBox(height: 4),
         Text(
           text,
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-        ),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.grey[700],
+          ),
+        )
       ],
     );
   }
@@ -228,13 +235,17 @@ class _ReviewsState extends State<Reviews> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
             IconButton(
               icon: Icon(
                 isExpanded ? Icons.expand_less : Icons.expand_more,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
               onPressed: () {
                 setState(() {
@@ -256,6 +267,9 @@ class _ReviewsState extends State<Reviews> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -263,7 +277,9 @@ class _ReviewsState extends State<Reviews> {
                     review['text'] ?? 'No review text available',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.grey[700],
                     ),
                   ),
                 ],
@@ -300,13 +316,17 @@ class _OpeningHoursState extends State<OpeningHours> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
             IconButton(
               icon: Icon(
                 isExpanded ? Icons.expand_less : Icons.expand_more,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
               onPressed: () {
                 setState(() {
@@ -322,7 +342,12 @@ class _OpeningHoursState extends State<OpeningHours> {
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
                 hour,
-                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey[700],
+                ),
               ),
             );
           }).toList(),
