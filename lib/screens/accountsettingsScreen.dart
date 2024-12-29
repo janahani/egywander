@@ -229,8 +229,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       return 'Location is required';
     }
     // Ensures a valid google maps link
-    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value) &&
-        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$").hasMatch(value)) {
+    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$")
+            .hasMatch(value) &&
+        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$")
+            .hasMatch(value)) {
       return 'Enter a valid google maps location link';
     }
     return null;
@@ -268,28 +270,26 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       style: TextStyle(
         color: readOnly
             ? (Theme.of(context).brightness == Brightness.dark
-                ? Colors.black 
-                : Colors.black) 
-            : Colors.black, 
+                ? Colors.black
+                : Colors.black)
+            : Colors.black,
       ),
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: TextStyle(
-          color: Colors.orange, 
-          fontWeight: FontWeight.bold, 
+          color: Colors.orange,
+          fontWeight: FontWeight.bold,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(
-              color: Colors.orange, width: 3),
+          borderSide: const BorderSide(color: Colors.orange, width: 3),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(
-              color: Colors.orange, width: 2), 
+          borderSide: const BorderSide(color: Colors.orange, width: 2),
         ),
         filled: true,
         fillColor: Colors.white,
@@ -350,13 +350,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildTextField("Restaurant Location",
                     initialValue: restaurantLocation,
                     onChanged: (value) => restaurantLocation = value,
-                    validator: (value) =>
-                        validateRestaurantLocation(value)),
+                    validator: (value) => validateRestaurantLocation(value)),
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
-                  value: cuisineType.isNotEmpty
-                      ? cuisineType
-                      : null, 
+                  value: cuisineType.isNotEmpty ? cuisineType : null,
                   decoration: InputDecoration(
                     labelText: "Cuisine Type",
                     border: OutlineInputBorder(
@@ -373,7 +370,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      cuisineType = newValue ?? ''; 
+                      cuisineType = newValue ?? '';
                     });
                   },
                   validator: (value) {

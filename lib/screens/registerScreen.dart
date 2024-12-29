@@ -121,8 +121,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return 'Location is required';
     }
     // Ensures a valid google maps link
-    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value) &&
-        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$").hasMatch(value)) {
+    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$")
+            .hasMatch(value) &&
+        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$")
+            .hasMatch(value)) {
       return 'Enter a valid google maps location link';
     }
     return null;
@@ -434,18 +436,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           FadeInUp(
                             duration: const Duration(milliseconds: 2000),
                             child: _buildTextField(
-                              "Restaurant Name",
-                              restaurantNameController,
-                            ),
+                                "Restaurant Name", restaurantNameController,
+                                validator: (value) =>
+                                    validateRequired(value, "Restaurant Name")),
                           ),
                           const SizedBox(height: 20),
                           FadeInUp(
                             duration: const Duration(milliseconds: 2100),
-                            child: _buildTextField(
-                              "Restaurant Location",
-                              restaurantLocationController,
-                              validator: validateRestaurantLocation
-                            ),
+                            child: _buildTextField("Restaurant Location",
+                                restaurantLocationController,
+                                validator: validateRestaurantLocation),
                           ),
                           const SizedBox(height: 20),
                           FadeInUp(
@@ -531,7 +531,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
                                       ? Colors.white // White text in dark mode
-                                      : Colors.grey, 
+                                      : Colors.grey,
                                   fontSize: 14,
                                 ),
                               ),
