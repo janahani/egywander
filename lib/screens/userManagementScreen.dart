@@ -42,10 +42,25 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
   List<Map<String, dynamic>> _filterUsers(
       List<Map<String, dynamic>> users, String query) {
     if (query.isEmpty) return users;
+
     return users
-        .where((user) =>
-            user["firstname"].toLowerCase().contains(query.toLowerCase()) ||
-            user["email"].toLowerCase().contains(query.toLowerCase()))
+        .where((user) {
+          // Combine firstname and lastname for full name search
+          final fullName =
+              "${user["firstname"]} ${user["lastname"]}".toLowerCase();
+          final email = user["email"].toLowerCase();
+          final searchQuery = query.toLowerCase();
+
+          return fullName.contains(searchQuery) || email.contains(searchQuery);
+        })
+        .toList()
+        .map((user) {
+          // added a new field that includes the full name
+          return {
+            ...user,
+            "fullName": "${user["firstname"]} ${user["lastname"]}"
+          };
+        })
         .toList();
   }
 
