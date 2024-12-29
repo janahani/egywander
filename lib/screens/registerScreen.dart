@@ -115,14 +115,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+  // Restaurant location text
+  String? validateRestaurantLocation(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Location is required';
+    }
+    // Ensures a valid google maps link
+    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value)) {
+      return 'Enter a valid google maps location link';
+    }
+    return null;
+  }
+
   // Restaurant Phone Number Validation
   String? validateRestaurantPhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone number is required';
     }
-    // Regex for 5-digit hotline or 11-digit mobile number starting with 0
-    if (!RegExp(r"^\d{5}$").hasMatch(value) &&
-        !RegExp(r"^0\d{10}$").hasMatch(value)) {
+    // Regex for 5-digit hotline strting with 19 or 11-digit mobile number starting with 010, 011, 012, or 015
+    if (!RegExp(r"^19\d{3}$").hasMatch(value) &&
+        !RegExp(r"^(010|011|012|015)\d{8}$").hasMatch(value)) {
       return 'Phone number must be either a 5-digit hotline or an 11-digit number starting with 0';
     }
     return null;
@@ -431,6 +443,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: _buildTextField(
                               "Restaurant Location",
                               restaurantLocationController,
+                              validator: validateRestaurantLocation
                             ),
                           ),
                           const SizedBox(height: 20),
