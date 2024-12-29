@@ -81,8 +81,6 @@ class FavoritesCard extends StatelessWidget {
                                     : Colors.black,
                           ),
                     ),
-
-                    // SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.star, color: Colors.amber, size: 18),

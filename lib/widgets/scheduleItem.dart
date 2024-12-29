@@ -79,7 +79,7 @@ class ScheduleItem extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.edit, color: Colors.blue),
                           onPressed: () {
-                            editSchedule(context, schedules[index]);
+                            editSchedule(context, schedules[index],fetchPlaceName(data['placeId']));
                           },
                         ),
                         IconButton(

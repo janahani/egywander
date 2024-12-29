@@ -1,4 +1,6 @@
 //packages
+import 'package:egywander/helper/notificationsDbHelper.dart';
+import 'package:egywander/models/usernotification.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -156,7 +158,8 @@ void deleteSchedule(DocumentSnapshot schedule) {
   FirebaseFirestore.instance.collection('schedule').doc(schedule.id).delete();
 }
 
-void editSchedule(BuildContext context, DocumentSnapshot schedule) {
+void editSchedule(BuildContext context, DocumentSnapshot schedule,
+    Future<String?> placeName) {
   final data = schedule.data() as Map<String, dynamic>;
 
   TextEditingController dateController =
@@ -307,34 +310,33 @@ void editSchedule(BuildContext context, DocumentSnapshot schedule) {
                 child: Text("Cancel"),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  // Reset error messages
                   setState(() {
-                    // Reset error messages
                     dateError = null;
                     startTimeError = null;
                     endTimeError = null;
+                  });
 
-                    // Perform validations
-                    if (dateController.text.isEmpty ||
-                        startTimeController.text.isEmpty ||
-                        endTimeController.text.isEmpty) {
+                  // Perform validations
+                  if (dateController.text.isEmpty ||
+                      startTimeController.text.isEmpty ||
+                      endTimeController.text.isEmpty) {
+                    setState(() {
                       dateError = 'All fields must be filled.';
                       startTimeError = 'All fields must be filled.';
                       endTimeError = 'All fields must be filled.';
-                      return;
-                    }
+                    });
+                    return;
+                  }
 
-                    startTimeError = _validateStartTime();
-                    endTimeError = _validateEndTime();
+                  startTimeError = _validateStartTime();
+                  endTimeError = _validateEndTime();
 
-                    if (startTimeError != null || endTimeError != null) {
-                      return; // Don't save if there are errors
-                    }
-                  });
-
-                  // Save data if valid
+// Save data if valid
                   if (startTimeError == null && endTimeError == null) {
-                    FirebaseFirestore.instance
+                    // Update Firestore schedule
+                    await FirebaseFirestore.instance
                         .collection('schedule')
                         .doc(schedule.id)
                         .update({
@@ -343,11 +345,35 @@ void editSchedule(BuildContext context, DocumentSnapshot schedule) {
                       'endingTime': endTimeController.text,
                     });
 
-                    Navigator.pop(context);
+                    // Await the place name
+                    String? place = await placeName;
+
+                    if (place != null) {
+                      // Update the notification in the local SQLite database by place name
+                      int result = await NotificationDbHelper.instance
+                          .updateNotificationByPlaceName(
+                        place,
+                        dateController.text,
+                        startTimeController.text,
+                        endTimeController.text,
+                      );
+
+                      if (result > 0) {
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Failed to update local notification'),
+                        ));
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Place name is not valid'),
+                      ));
+                    }
                   }
                 },
                 child: Text("Save"),
-              ),
+              )
             ],
           );
         },
