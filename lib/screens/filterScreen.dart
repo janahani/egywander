@@ -20,7 +20,7 @@ class _FilterScreenState extends State<FilterScreen> {
   String selectedCategory = 'Entertainment'; // Default category
   double selectedRating = 3.0; // Default rating
   String selectedPlace = 'All'; // Default place
-  List<String> cities = ['All', 'Cairo', 'Luxor and Aswan', 'Hurghada'];
+  List<String> cities = ['All', 'Cairo', 'Luxor and Aswan'];
 
   void _fetchActivities(BuildContext context, String city) async {
     final provider =
