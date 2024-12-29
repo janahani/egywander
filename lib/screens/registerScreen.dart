@@ -120,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (value == null || value.isEmpty) {
       return 'Location is required';
     }
-    // Regex for 5-digit hotline strting with 19 or 11-digit mobile number starting with 010, 011, 012, or 015
+    // Ensures a valid google maps link
     if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value)) {
       return 'Enter a valid google maps location link';
     }
