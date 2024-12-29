@@ -90,20 +90,22 @@ class _AddUserScreenState extends State<AddUserScreen> {
     return null;
   }
 
-   // Restaurant location text
+  // Restaurant location text
   String? validateRestaurantLocation(String? value) {
     if (value == null || value.isEmpty) {
       return 'Location is required';
     }
     // Ensures a valid google maps link
-    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$").hasMatch(value) &&
-        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$").hasMatch(value)) {
+    if (!RegExp(r"^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl)\/[^\s]+$")
+            .hasMatch(value) &&
+        !RegExp(r"^(https?:\/\/)?(www\.)?(maps\.google\.com(\/.*|\?.*)|maps\.app\.goo\.gl\/[^\s]+)$")
+            .hasMatch(value)) {
       return 'Enter a valid google maps location link';
     }
     return null;
   }
 
- // Restaurant Phone Number Validation
+  // Restaurant Phone Number Validation
   String? validateRestaurantPhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone number is required';
@@ -289,15 +291,15 @@ class _AddUserScreenState extends State<AddUserScreen> {
               // Additional Fields for Owner
               if (_selectedUserType == 'Owner') ...[
                 TextFormField(
-                  controller: _restaurantNameController,
-                  decoration: customInputDecoration('Restaurant Name'),
-                ),
+                    controller: _restaurantNameController,
+                    decoration: customInputDecoration('Restaurant Name'),
+                    validator: (value) =>
+                        validateRequired(value, "Restaurant Name")),
                 SizedBox(height: 20),
                 TextFormField(
-                  controller: _restaurantLocationController,
-                  decoration: customInputDecoration('Restaurant Location'),
-                  validator: validateRestaurantLocation
-                ),
+                    controller: _restaurantLocationController,
+                    decoration: customInputDecoration('Restaurant Location'),
+                    validator: validateRestaurantLocation),
                 SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   value: _selectedCuisine,
