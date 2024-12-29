@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 //screen
-import 'package:egywander/screens/welcomeScreen.dart';
+import 'package:egywander/screens/homepageScreen.dart';
 
 //providers
 import 'package:egywander/providers/favoriteProvider.dart';
@@ -13,6 +13,7 @@ import 'package:egywander/providers/homepageactivityprovider.dart';
 import 'package:egywander/providers/restaurantProvider.dart';
 import 'package:egywander/providers/searchProvider.dart';
 import 'package:egywander/providers/userProvider.dart';
+import 'package:egywander/providers/themeProvider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
@@ -43,6 +44,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],
       child: MyApp(),
     ),
@@ -54,9 +56,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: Colors.grey[100], // Background for light mode
+            primarySwatch: Colors.orange,
+          ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: Color(0xFF333333), // Background for dark mode
+            primarySwatch: Colors.orange,
+          ),
+          themeMode: themeProvider.themeMode,
+          home: HomeScreen(),
+        );
+      },
     );
   }
 }
+
