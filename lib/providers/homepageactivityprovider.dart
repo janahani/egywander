@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:egywander/models/homepageActivities.dart';
 
 class Homepageactivityprovider with ChangeNotifier {
-  final Map<String, List<HomePageActivity>> _cache = {}; 
+  final Map<String, List<HomePageActivity>> _cache = {};
 
   List<HomePageActivity> _activities = [];
   List<HomePageActivity> _popularActivities = [];
@@ -228,7 +228,6 @@ class Homepageactivityprovider with ChangeNotifier {
       final response = await http.get(detailsUrl);
       if (response.statusCode == 200) {
         final details = json.decode(response.body)['result'];
-        // Assuming you have a method to parse the details into a HomePageActivity object
         return HomePageActivity.fromGooglePlace(details, 'Unknown');
       } else {
         throw Exception(
